@@ -1431,6 +1431,26 @@ body{
   }
 }
 
+
+/* welcome screen info cards */
+.welcomeHomeInfo{
+  margin-top:16px !important;
+}
+#welcome .welcomeHomeInfo + .installHint{
+  margin-top:12px !important;
+}
+@media(max-width:720px){
+  .welcomeHomeInfo{
+    margin-top:14px !important;
+  }
+  #welcome .welcomeHomeInfo .homeInfoCard{
+    padding:11px 12px !important;
+  }
+  #welcome .welcomeHomeInfo .quoteCard{
+    align-items:flex-start !important;
+  }
+}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
@@ -1452,6 +1472,36 @@ body{
       <div><label>今日の目標</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
     </div>
     <button class="btn big" type="button" onclick="startApp()">スタート</button>
+
+    <div class="homeInfoGrid welcomeHomeInfo" id="welcomeHomeInfo">
+      <div class="homeInfoCard usersCard">
+        <div class="homeInfoIcon">👥</div>
+        <div>
+          <div class="homeInfoTitle">今日の利用人数</div>
+          <div class="homeInfoSub">記録を送信した人数</div>
+        </div>
+        <div class="homeInfoValue"><span id="welcomeTodayUserCount">0</span><small>人</small></div>
+      </div>
+
+      <div class="homeInfoCard streakCard">
+        <div class="homeInfoIcon">🔥</div>
+        <div>
+          <div class="homeInfoTitle">連続記録</div>
+          <div class="homeInfoSub">続けるほど力になる</div>
+        </div>
+        <div class="homeInfoValue"><span id="welcomeStreakDays">0</span><small>日</small></div>
+      </div>
+
+      <div class="homeInfoCard quoteCard">
+        <div class="homeInfoIcon">“</div>
+        <div class="quoteTextWrap">
+          <div class="homeInfoTitle">今日の名言</div>
+          <div class="quoteText" id="welcomeDailyQuote">まず5分だけ始めよう。</div>
+        </div>
+        <button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
+      </div>
+    </div>
+
 <div class="installHint small">入力内容とタイマー状態は自動保存されます。</div>
     <div id="welcomeMsg"></div>
   </section>
