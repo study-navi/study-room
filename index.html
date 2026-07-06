@@ -1213,6 +1213,61 @@ body{
   }
 }
 
+
+/* final mobile header adjustment */
+@media(max-width:720px){
+  .appHeader{
+    height:52px !important;
+    min-height:52px !important;
+    padding:0 14px !important;
+    margin:0 -14px 12px !important;
+    border-radius:0 0 16px 16px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    background:linear-gradient(135deg,#143b73,#2563eb) !important;
+    box-shadow:0 7px 16px rgba(20,59,115,.12) !important;
+  }
+  .appHeader h1{
+    font-size:21px !important;
+    line-height:1 !important;
+    margin:0 !important;
+    letter-spacing:.01em !important;
+  }
+  .appHeader p,
+  .appHeader .badge,
+  .appHeader:before,
+  .appHeader:after{
+    display:none !important;
+  }
+  .headerTeacherBtn{
+    position:absolute !important;
+    top:7px !important;
+    right:8px !important;
+    padding:5px 8px !important;
+    font-size:10.5px !important;
+    line-height:1 !important;
+    min-width:auto !important;
+    border-radius:999px !important;
+    background:rgba(255,255,255,.16) !important;
+    border:1px solid rgba(255,255,255,.34) !important;
+    color:#fff !important;
+    box-shadow:none !important;
+  }
+  #welcome{
+    margin-top:8px !important;
+  }
+}
+
+
+/* active in-room provisional record */
+.inRoomItem{
+  background:#f0fdf4 !important;
+}
+.inRoomItem .statusPill.green{
+  font-variant-numeric:tabular-nums;
+}
+
 </style>
 </head>
 <body>
@@ -1409,7 +1464,8 @@ let appState = {
   breakStartAt:null,
   breakTotalMs:0,
   focus:3,
-  achievement:3
+  achievement:3,
+  activeRecordId:null
 };
 let timerId = null;
 let records = [];
@@ -1618,14 +1674,42 @@ function startApp(){
   saveState();
   goScreen('timerScreen');
 }
-function enterRoom(){
+async function enterRoom(){
   appState.status = 'studying';
   appState.startAt = nowISO();
   appState.endAt = null;
   appState.breakStartAt = null;
   appState.breakTotalMs = 0;
+  appState.activeRecordId = null;
   saveState();
-  setMsg('timerMsg','入室しました。','ok');
+  setMsg('timerMsg','入室中として記録しています...');
+
+  // 入室時点でスプレッドシートへ仮保存することで、ログ確認の「現在自習中」に反映します。
+  try{
+    const res = await api('add', {
+      date: todayISO(),
+      name: appState.name || '',
+      grade: appState.grade || '',
+      subject: '',
+      startTime: timeText(appState.startAt),
+      endTime: '',
+      minutes: '',
+      focus: '',
+      achievement: '',
+      content: '入室中',
+      comment: ''
+    });
+    if(res && res.result === 'success'){
+      appState.activeRecordId = res.id || null;
+      saveState();
+      setMsg('timerMsg','入室しました。ログ確認にも反映されます。','ok');
+    }else{
+      setMsg('timerMsg','入室しました。ただしログ確認への仮反映に失敗しました。退室後の送信はできます。','err');
+    }
+  }catch(err){
+    setMsg('timerMsg','入室しました。ただし通信できないため、ログ確認への仮反映はできませんでした。','err');
+  }
+
   startTicker();
 }
 function toggleBreak(){
@@ -1762,10 +1846,13 @@ async function submitToTeacher(){
   btn.disabled = true;
   setMsg('reviewMsg','送信中です...');
   try{
-    const res = await api('add', data);
+    const action = appState.activeRecordId ? 'update' : 'add';
+    if(appState.activeRecordId) data.id = appState.activeRecordId;
+    const res = await api(action, data);
     if(res && res.result === 'success'){
       addLocalTotal(minutes);
       localStorage.setItem('lastCompleteSummary', JSON.stringify({minutes:minutes, today:Number(localTotals()[todayISO()] || 0) + minutes}));
+      appState.activeRecordId = null;
       localStorage.removeItem(STATE_KEY);
       appState.status = 'idle';
       appState.startAt = null;
@@ -1775,7 +1862,7 @@ async function submitToTeacher(){
       saveState();
       goScreen('completeScreen');
     }else{
-      setMsg('reviewMsg','送信できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
+      setMsg('reviewMsg','保存できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
     }
   }catch(err){
     setMsg('reviewMsg', err.message || String(err), 'err');
@@ -1999,6 +2086,7 @@ function useStudyRoomAgain(){
     endAt:null,
     breakStartAt:null,
     breakTotalMs:0,
+    activeRecordId:null,
     focus:3,
     achievement:3
   });
@@ -2023,6 +2111,7 @@ function finishAndExit(){
     endAt:null,
     breakStartAt:null,
     breakTotalMs:0,
+    activeRecordId:null,
     focus:3,
     achievement:3
   });
@@ -2041,6 +2130,7 @@ function cleanFinishedStateOnLoad(){
     appState.endAt = null;
     appState.breakStartAt = null;
     appState.breakTotalMs = 0;
+    appState.activeRecordId = null;
     saveState();
   }
 }
@@ -2055,6 +2145,7 @@ function normalizeStartupState(){
     appState.endAt = null;
     appState.breakStartAt = null;
     appState.breakTotalMs = 0;
+    appState.activeRecordId = null;
     saveState();
   }
 }
@@ -2196,6 +2287,7 @@ function init(){
     appState.endAt = null;
     appState.breakStartAt = null;
     appState.breakTotalMs = 0;
+    appState.activeRecordId = null;
     saveState();
     goScreen('welcome');
   }
