@@ -480,20 +480,273 @@ body{
   margin-top:16px;
 }
 
+
+/* mobile timer redesign */
+@media(max-width:720px){
+  .wrap{
+    padding:8px;
+  }
+
+  .appHeader{
+    min-height:72px !important;
+    padding:14px 16px !important;
+    border-radius:0 0 22px 22px !important;
+    margin:-8px -8px 10px !important;
+    box-shadow:0 8px 20px rgba(20,59,115,.14) !important;
+  }
+
+  .appHeader h1{
+    font-size:25px !important;
+    line-height:1.1 !important;
+  }
+
+  .appHeader p,
+  .appHeader .badge{
+    display:none !important;
+  }
+
+  .card{
+    padding:14px !important;
+    border-radius:22px !important;
+    margin:10px 0 !important;
+  }
+
+  /* タイマー画面だけ専用レイアウト */
+  #timerScreen{
+    padding:12px !important;
+    background:rgba(255,255,255,.88) !important;
+  }
+
+  #timerScreen .center,
+  #timerScreen h2,
+  #timerScreen .stepPill{
+    display:none !important;
+  }
+
+  .timerPanel{
+    margin:0 !important;
+    padding:16px 14px 14px !important;
+    border-radius:26px !important;
+    min-height:auto !important;
+    background:
+      radial-gradient(circle at 85% 0%, rgba(37,99,235,.16), transparent 28%),
+      linear-gradient(180deg,#f8fbff,#ffffff) !important;
+    border:1px solid #dbeafe !important;
+    box-shadow:0 12px 26px rgba(20,59,115,.10) !important;
+  }
+
+  .timerPanel:after{
+    display:none !important;
+  }
+
+  .state{
+    padding:5px 13px !important;
+    font-size:13px !important;
+    border-radius:999px !important;
+    margin-bottom:4px !important;
+  }
+
+  .clock{
+    font-size:48px !important;
+    line-height:1 !important;
+    margin:8px 0 4px !important;
+    letter-spacing:.02em !important;
+  }
+
+  .timeNote{
+    font-size:12px !important;
+    margin-bottom:8px !important;
+  }
+
+  /* ボタンを横3つにする */
+  .actionGrid{
+    display:grid !important;
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:7px !important;
+    margin-top:12px !important;
+  }
+
+  .actionGrid .btn,
+  .actionGrid .breakBtn{
+    min-height:54px !important;
+    height:54px !important;
+    padding:8px 4px !important;
+    border-radius:17px !important;
+    font-size:14px !important;
+    line-height:1.22 !important;
+    grid-column:auto !important;
+    width:100% !important;
+    box-shadow:0 8px 16px rgba(20,59,115,.12) !important;
+  }
+
+  .actionGrid .btn.gold{
+    background:linear-gradient(135deg,#f6b73c,#ffd76f) !important;
+  }
+
+  .actionGrid .btn.gray{
+    background:linear-gradient(135deg,#64748b,#94a3b8) !important;
+  }
+
+  .actionGrid .btn.green{
+    background:linear-gradient(135deg,#16a34a,#4ade80) !important;
+  }
+
+  /* 学習時間カードを2列で短く */
+  #timerScreen .statGrid{
+    display:grid !important;
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:7px !important;
+    margin-top:10px !important;
+  }
+
+  #timerScreen .stat{
+    min-height:62px !important;
+    padding:9px 5px !important;
+    border-radius:17px !important;
+    font-size:12px !important;
+    background:#ffffff !important;
+  }
+
+  #timerScreen .stat b{
+    font-size:20px !important;
+    margin-top:2px !important;
+  }
+
+  /* 目標カードをコンパクトに */
+  #timerScreen > .card{
+    padding:11px 12px !important;
+    border-radius:18px !important;
+    margin-top:9px !important;
+  }
+
+  #timerScreen > .card b{
+    font-size:13px !important;
+  }
+
+  #timerScreen .progressOuter{
+    height:10px !important;
+    margin:7px 0 3px !important;
+  }
+
+  #timerScreen .small{
+    font-size:11px !important;
+  }
+
+  /* タイマー画面の戻る・名前変更系は邪魔なので非表示 */
+  #timerScreen .row{
+    display:none !important;
+  }
+}
+
+@media(max-width:390px){
+  .clock{
+    font-size:42px !important;
+  }
+  .actionGrid .btn,
+  .actionGrid .breakBtn{
+    font-size:13px !important;
+    height:50px !important;
+    min-height:50px !important;
+  }
+  #timerScreen .stat b{
+    font-size:18px !important;
+  }
+}
+
+
+/* final header-only app name + today total label */
+#welcome{
+  position:relative;
+}
+.teacherMiniBtn{
+  position:absolute;
+  top:14px;
+  right:14px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.84);
+  color:#64748b;
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 6px 14px rgba(20,59,115,.08);
+}
+.teacherMiniBtn:active{transform:scale(.97)}
+#welcome .center{
+  display:none;
+}
+#welcome label:first-of-type{
+  margin-top:10px;
+}
+#welcome .btn.big{
+  margin-top:16px;
+}
+@media(max-width:720px){
+  .appHeader{
+    min-height:66px !important;
+    padding:14px 16px !important;
+    border-radius:0 0 22px 22px !important;
+    margin:-8px -8px 10px !important;
+  }
+  .appHeader h1{
+    font-size:25px !important;
+  }
+  .appHeader p,
+  .appHeader .badge{
+    display:none !important;
+  }
+  #welcome{
+    padding-top:28px !important;
+  }
+  #timerScreen .statGrid{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+  #timerScreen .stat{
+    font-size:12px !important;
+  }
+}
+
+
+/* remove duplicate title in welcome card */
+#welcome .center{
+  display:none !important;
+}
+#welcome{
+  padding-top:34px !important;
+}
+#welcome label:first-of-type{
+  margin-top:0 !important;
+}
+#welcome .teacherMiniBtn{
+  top:12px;
+  right:12px;
+}
+@media(max-width:720px){
+  #welcome{
+    padding-top:32px !important;
+  }
+  .appHeader{
+    min-height:60px !important;
+    padding:12px 16px !important;
+  }
+  .appHeader h1{
+    font-size:24px !important;
+  }
+}
+
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="appHeader">
     <h1>Study Room</h1>
-    <p>シンプルに記録、すぐ送信。</p>
+    <p></p>
     <span class="badge">Study Room</span>
   </header>
 <section id="welcome" class="card">
     <div class="center">
       <span class="stepPill">① 名前入力</span>
-<h2 class="screenTitle compactTitle">Study Room</h2>
-      <p class="small">名前を入力してスタート</p>
+<p class="small"></p>
     </div>
     <label>名前</label>
     <input id="studentName" placeholder="例：山田太郎" autocomplete="name">
@@ -503,7 +756,7 @@ body{
     </div>
     <button class="btn big" type="button" onclick="startApp()">スタート</button>
     <button class="teacherMiniBtn" type="button" onclick="openTeacherFromWelcome()">先生画面</button>
-    <div class="installHint small">入力した名前・学年・タイマー状態はこの端末に保存されます。アプリを自動保存されています。</div>
+    <div class="installHint small">入力した名前・学年・タイマー状態はこの端末に保存されます。アプリを自動保存中。</div>
     <div id="welcomeMsg"></div>
   </section>
 
@@ -517,15 +770,15 @@ body{
       <div class="clock" id="mainClock">00:00:00</div>
       <div class="timeNote" id="clockNote">現在時刻で入室を押すと計測します</div>
       <div class="actionGrid">
-        <button class="btn gold" type="button" onclick="enterRoom()">現在時刻で<br>入室</button>
+        <button class="btn gold" type="button" onclick="enterRoom()">入室</button>
         <button class="btn gray breakBtn" id="breakBtn" type="button" onclick="toggleBreak()">休憩</button>
-        <button class="btn green" type="button" onclick="exitRoom()">現在時刻で<br>退室</button>
+        <button class="btn green" type="button" onclick="exitRoom()">退室</button>
       </div>
     </div>
     <div class="statGrid">
-      <div class="stat">今回の学習時間<b id="sessionTimeText">0分</b></div>
-      <div class="stat">休憩時間<b id="breakTimeText">0分</b></div>
-      <div class="stat">今日の端末合計<b id="localTodayText">0分</b></div>
+      <div class="stat">今回<b id="sessionTimeText">0分</b></div>
+      <div class="stat">休憩<b id="breakTimeText">0分</b></div>
+      <div class="stat">今日の合計<b id="localTodayText">0分</b></div>
     </div>
     <div class="card">
       <div class="row" style="justify-content:space-between">
@@ -814,17 +1067,17 @@ function renderTimer(){
   if(appState.status === 'break'){
     if(panel) panel.classList.add('breakMode');
     $('stateText').textContent = '休憩中';
-    $('clockNote').textContent = '休憩中は自習時間を止めています';
+    $('clockNote').textContent = '休憩中';
     $('breakBtn').textContent = '休憩終了';
   }else if(appState.status === 'studying'){
     if(panel) panel.classList.add('studyingMode');
     $('stateText').textContent = '入室中';
-    $('clockNote').textContent = '自動保存されています';
+    $('clockNote').textContent = '自動保存中';
     $('breakBtn').textContent = '休憩';
   }else if(appState.status === 'finished'){
     if(panel) panel.classList.add('finishedMode');
     $('stateText').textContent = '退室済み';
-    $('clockNote').textContent = '振り返りへ進みます';
+    $('clockNote').textContent = '振り返りへ';
     $('breakBtn').textContent = '休憩';
   }else{
     $('stateText').textContent = '未入室';
@@ -1044,6 +1297,20 @@ function cleanFinishedStateOnLoad(){
   }
 }
 
+
+function normalizeStartupState(){
+  const canRestoreTimer = appState.startAt && !appState.endAt && (appState.status === 'studying' || appState.status === 'break');
+  if(!canRestoreTimer){
+    appState.screen = 'welcome';
+    appState.status = 'idle';
+    appState.startAt = null;
+    appState.endAt = null;
+    appState.breakStartAt = null;
+    appState.breakTotalMs = 0;
+    saveState();
+  }
+}
+
 function init(){
   loadState();
   cleanFinishedStateOnLoad();
@@ -1057,6 +1324,7 @@ function init(){
   if(appState.startAt && !appState.endAt && (appState.status === 'studying' || appState.status === 'break')) {
     goScreen('timerScreen');
   } else {
+    appState.screen = 'welcome';
     appState.status = 'idle';
     appState.startAt = null;
     appState.endAt = null;
