@@ -443,6 +443,43 @@ body{
   }
 }
 
+
+/* final navigation simplification */
+#welcome .btn.big{
+  margin-top:10px;
+}
+#completeScreen .btn.big{
+  margin-top:10px;
+}
+#welcome .installHint{
+  margin-top:14px;
+}
+
+
+/* welcome teacher mini button */
+#welcome{
+  position:relative;
+}
+.teacherMiniBtn{
+  position:absolute;
+  top:14px;
+  right:14px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.82);
+  color:#64748b;
+  border-radius:999px;
+  padding:7px 11px;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 6px 14px rgba(20,59,115,.08);
+}
+.teacherMiniBtn:active{
+  transform:scale(.97);
+}
+#welcome .btn.big{
+  margin-top:16px;
+}
+
 </style>
 </head>
 <body>
@@ -452,14 +489,7 @@ body{
     <p>シンプルに記録、すぐ送信。</p>
     <span class="badge">Study Room</span>
   </header>
-
-  <div class="topNav">
-    <button class="btn light" type="button" onclick="goScreen('welcome')">生徒</button>
-    <button class="btn light" type="button" onclick="goScreen('teacher')">先生画面</button>
-    <button class="btn light" type="button" onclick="resetSessionConfirm()">リセット</button>
-  </div>
-
-  <section id="welcome" class="card">
+<section id="welcome" class="card">
     <div class="center">
       <span class="stepPill">① 名前入力</span>
 <h2 class="screenTitle compactTitle">Study Room</h2>
@@ -472,6 +502,7 @@ body{
       <div><label>今日の目標時間（分）</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
     </div>
     <button class="btn big" type="button" onclick="startApp()">スタート</button>
+    <button class="teacherMiniBtn" type="button" onclick="openTeacherFromWelcome()">先生画面</button>
     <div class="installHint small">入力した名前・学年・タイマー状態はこの端末に保存されます。アプリを自動保存されています。</div>
     <div id="welcomeMsg"></div>
   </section>
@@ -555,7 +586,8 @@ body{
       </div>
       <h2>保存しました！</h2>
       <p class="small">記録が保存されました。</p>
-      <button class="btn big" type="button" onclick="newRecord()">次の自習を記録する</button>
+      <button class="btn big" type="button" onclick="useStudyRoomAgain()">自習室を利用する</button>
+      <button class="btn light big" type="button" onclick="finishAndExit()">終了する</button>
     </div>
   </section>
 
@@ -947,14 +979,92 @@ function downloadCSV(){
   a.click();
 }
 
+
+function openTeacherFromWelcome(){
+  goScreen('teacher');
+}
+
+function useStudyRoomAgain(){
+  const keepName = appState.name;
+  const keepGrade = appState.grade;
+  const keepGoal = appState.goalMinutes;
+  appState = Object.assign(appState, {
+    screen:'timerScreen',
+    name:keepName,
+    grade:keepGrade,
+    goalMinutes:keepGoal,
+    status:'idle',
+    startAt:null,
+    endAt:null,
+    breakStartAt:null,
+    breakTotalMs:0,
+    focus:3,
+    achievement:3
+  });
+  $('content').value = '';
+  $('comment').value = '';
+  saveState();
+  goScreen('timerScreen');
+}
+
+function finishAndExit(){
+  const keepName = appState.name;
+  const keepGrade = appState.grade;
+  const keepGoal = appState.goalMinutes;
+  localStorage.removeItem(STATE_KEY);
+  appState = Object.assign(appState, {
+    screen:'welcome',
+    name:keepName,
+    grade:keepGrade,
+    goalMinutes:keepGoal,
+    status:'idle',
+    startAt:null,
+    endAt:null,
+    breakStartAt:null,
+    breakTotalMs:0,
+    focus:3,
+    achievement:3
+  });
+  $('studentName').value = keepName || '';
+  $('grade').value = keepGrade || '中1';
+  $('goalMinutes').value = keepGoal || '';
+  saveProfile();
+  goScreen('welcome');
+}
+
+
+function cleanFinishedStateOnLoad(){
+  if(appState && appState.status === 'finished'){
+    appState.status = 'idle';
+    appState.startAt = null;
+    appState.endAt = null;
+    appState.breakStartAt = null;
+    appState.breakTotalMs = 0;
+    saveState();
+  }
+}
+
 function init(){
   loadState();
+  cleanFinishedStateOnLoad();
   $('studentName').value = appState.name || '';
   $('grade').value = appState.grade || '中1';
   $('goalMinutes').value = appState.goalMinutes || '';
-  if(appState.startAt && !appState.endAt) goScreen('timerScreen');
-  else if(appState.endAt && appState.status === 'finished') goScreen('reviewScreen');
-  else goScreen(appState.screen || 'welcome');
+  // 起動時の復元ルール：
+  // 1. 入室中・休憩中だけタイマー画面を復元
+  // 2. 退室済みの状態は勝手に振り返り画面へ飛ばさない
+  // 3. それ以外は必ず最初の画面
+  if(appState.startAt && !appState.endAt && (appState.status === 'studying' || appState.status === 'break')) {
+    goScreen('timerScreen');
+  } else {
+    appState.status = 'idle';
+    appState.startAt = null;
+    appState.endAt = null;
+    appState.breakStartAt = null;
+    appState.breakTotalMs = 0;
+    saveState();
+    goScreen('welcome');
+  }
   startTicker();
   $('search').addEventListener('input', renderTeacher);
   document.addEventListener('visibilitychange', () => { if(!document.hidden) renderTimer(); });
