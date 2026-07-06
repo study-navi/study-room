@@ -2,7 +2,7 @@
   "name": "Study Room 自習室記録アプリ",
   "short_name": "Study Room",
   "description": "自習室記録アプリ",
-  "start_url": "./index.html",
+  "start_url": "./index.html?v=stable",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>自習室記録アプリ v8 PWA PWA</title>
+<title>自習室記録アプリ v8 PWA 安定版 安定版</title>
 <style>
 :root {
   --main:#2563eb;--dark:#143b73;--gold:#f6b73c;--bg:#f3f7ff;--card:#fff;--line:#dbe5f5;
@@ -68,7 +68,7 @@ th{background:#f8fbff;position:sticky;top:0;z-index:1}td button{margin:2px}
 </head>
 <body>
 <div class="wrap">
-<header><h1>自習室記録アプリ v8</h1><p class="lead">在室一覧・生徒カルテ・ランキングを強化した版です。</p><span class="badge">School IE 共和校｜自習室ログ</span></header>
+<header><h1>自習室記録アプリ v8</h1><p class="lead">在室一覧・生徒カルテ・ランキングを強化した版です。</p><span class="badge">School IE 共和校｜自習室ログ｜安定版</span></header>
 
 <div class="tabs">
   <button class="tab active" id="tabStudent" type="button">生徒入力</button>
@@ -110,13 +110,13 @@ th{background:#f8fbff;position:sticky;top:0;z-index:1}td button{margin:2px}
 
 <div class="grid">
   <div><label>日付<input id="date" type="date"></label></div>
-  <div><label>名前<input id="studentName" placeholder="例：山田太郎" autocomplete="name"></label></div>
+  <div><label>名前<input id="studentName" oninput="updateProfileStatus()" placeholder="例：山田太郎" autocomplete="name"></label></div>
   <div><label>学年<select id="grade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select></label></div>
   <div><label>科目<select id="subject"><option>英語</option><option>数学</option><option>国語</option><option>理科</option><option>社会</option><option>物理</option><option>化学</option><option>生物</option><option>日本史</option><option>世界史</option><option>その他</option></select></label></div>
 </div>
 <div class="quick">
-  <div class="quickCard"><b>入室</b><input id="startTime" type="time"><button class="btn gold bigBtn" id="startNowBtn" type="button">現在時刻で入室</button></div>
-  <div class="quickCard"><b>退室</b><input id="endTime" type="time"><button class="btn ok bigBtn" id="endNowBtn" type="button">現在時刻で退室</button></div>
+  <div class="quickCard"><b>入室</b><input id="startTime" type="time"><button class="btn gold bigBtn" id="startNowBtn" type="button" onclick="handleStartNow()">現在時刻で入室</button></div>
+  <div class="quickCard"><b>退室</b><input id="endTime" type="time"><button class="btn ok bigBtn" id="endNowBtn" type="button" onclick="handleEndNow()">現在時刻で退室</button></div>
 </div>
 <div class="grid">
   <div><label>集中度<select id="focus"><option>5</option><option>4</option><option selected>3</option><option>2</option><option>1</option></select></label></div>
@@ -125,8 +125,8 @@ th{background:#f8fbff;position:sticky;top:0;z-index:1}td button{margin:2px}
 <label>学習内容<textarea id="content" placeholder="例：数学ワーク p.20〜25"></textarea></label>
 <label>コメント<textarea id="comment" placeholder="質問・先生に伝えたいこと"></textarea></label>
 <div class="row">
-  <button class="btn" id="submitBtn" type="button">記録を送信する</button>
-  <button class="btn sub" id="clearProfileBtn" type="button">端末の生徒情報を消す</button>
+  <button class="btn" id="submitBtn" type="button" onclick="submitRecord()">記録を送信する</button>
+  <button class="btn sub" id="clearProfileBtn" type="button" onclick="clearProfile()">端末の生徒情報を消す</button>
 </div>
 <div id="studentMsg"></div>
 </section>
@@ -464,26 +464,43 @@ function downloadCSV() {
 }
 function logoutTeacher() { teacherSession=''; sessionStorage.removeItem(TEACHER_SESSION_KEY); $('teacherPanel').classList.add('hide'); $('loginBox').classList.remove('hide'); records=[]; renderTable(); }
 
+
+function safeEl(id){ return document.getElementById(id); }
+
+function handleStartNow(){
+  const el = safeEl('startTime');
+  if(el) el.value = nowTime();
+  const end = safeEl('endTime');
+  if(end) end.value = '';
+  if(typeof updateCurrentMinutes === 'function') updateCurrentMinutes();
+  if(typeof startLiveTimer === 'function') startLiveTimer();
+  if(typeof setMsg === 'function') setMsg('studentMsg','入室時刻を入力しました。','ok');
+}
+
+function handleEndNow(){
+  const el = safeEl('endTime');
+  if(el) el.value = nowTime();
+  if(typeof stopLiveTimer === 'function') stopLiveTimer();
+  if(typeof updateCurrentMinutes === 'function') updateCurrentMinutes();
+  if(typeof setMsg === 'function') setMsg('studentMsg','退室時刻を入力しました。必要事項を確認して保存してください。','ok');
+}
+
 function init() {
   $('date').value=todayISO(); loadProfile(); updateProfileStatus(); loadStudentDashboard();
-  $('tabStudent').addEventListener('click',()=>showTab('student'));
-  $('tabTeacher').addEventListener('click',()=>showTab('teacher'));
-  $('submitBtn').addEventListener('click',submitRecord);
-  $('loginBtn').addEventListener('click',teacherLogin);
-  $('refreshBtn').addEventListener('click',loadRecords);
-  $('csvBtn').addEventListener('click',downloadCSV);
-  $('logoutBtn').addEventListener('click',logoutTeacher);
-  $('search').addEventListener('input',renderTable);
-  $('filterName').addEventListener('input',renderTable);
-  $('filterGrade').addEventListener('change',renderTable);
-  $('filterSubject').addEventListener('change',renderTable);
-  $('filterDate').addEventListener('change',renderTable);
-  $('startNowBtn').addEventListener('click',()=>{$('startTime').value=nowTime();});
-  $('endNowBtn').addEventListener('click',()=>{$('endTime').value=nowTime();});
-  $('studentName').addEventListener('input',updateProfileStatus);
-  $('grade').addEventListener('change',saveProfile);
-  $('clearProfileBtn').addEventListener('click',clearProfile);
-  $('tbody').addEventListener('click',(e)=>{const editId=e.target.getAttribute('data-edit'); const delId=e.target.getAttribute('data-del'); if(editId)openEdit(editId); if(delId)deleteRecord(delId);});
+  if($('tabStudent')) $('tabStudent').addEventListener('click',()=>showTab('student'));
+  if($('tabTeacher')) $('tabTeacher').addEventListener('click',()=>showTab('teacher'));
+    if($('loginBtn')) $('loginBtn').addEventListener('click',teacherLogin);
+  if($('refreshBtn')) $('refreshBtn').addEventListener('click',loadRecords);
+  if($('csvBtn')) $('csvBtn').addEventListener('click',downloadCSV);
+  if($('logoutBtn')) $('logoutBtn').addEventListener('click',logoutTeacher);
+  if($('search')) $('search').addEventListener('input',renderTable);
+  if($('filterName')) $('filterName').addEventListener('input',renderTable);
+  if($('filterGrade')) $('filterGrade').addEventListener('change',renderTable);
+  if($('filterSubject')) $('filterSubject').addEventListener('change',renderTable);
+  if($('filterDate')) $('filterDate').addEventListener('change',renderTable);
+      if($('studentName')) $('studentName').addEventListener('input',updateProfileStatus);
+  if($('grade')) $('grade').addEventListener('change',saveProfile);
+    if($('tbody')) $('tbody').addEventListener('click',(e)=>{const editId=e.target.getAttribute('data-edit'); const delId=e.target.getAttribute('data-del'); if(editId)openEdit(editId); if(delId)deleteRecord(delId);});
   const savedSession=sessionStorage.getItem(TEACHER_SESSION_KEY);
   if(savedSession) teacherSession=savedSession;
 }
