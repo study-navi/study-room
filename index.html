@@ -734,29 +734,282 @@ body{
   }
 }
 
+
+/* clean rebuild from uploaded index: header-only title + balanced mobile */
+.appHeader{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+}
+.headerTeacherBtn{
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+  position:relative;
+  z-index:2;
+}
+.headerTeacherBtn:active{transform:scale(.97)}
+.appHeader p,
+.appHeader .badge{
+  display:none !important;
+}
+#welcome .center,
+#welcome .screenTitle,
+#welcome .stepPill,
+#welcome h2{
+  display:none !important;
+}
+#welcome{
+  position:relative;
+}
+#welcome label:first-of-type{
+  margin-top:0 !important;
+}
+#welcome .teacherMiniBtn{
+  display:none !important;
+}
+#welcome .installHint{
+  background:#f8fbff !important;
+  border-color:#dbe5f5 !important;
+  color:#64748b !important;
+}
+
+/* PCは今の良さを残しつつ少し整理 */
+@media(min-width:721px){
+  .appHeader{
+    min-height:86px !important;
+    padding:22px 24px !important;
+  }
+  .appHeader h1{
+    font-size:32px !important;
+  }
+  #welcome{
+    padding-top:26px !important;
+  }
+}
+
+/* スマホ専用：縦長感・重複感を解消 */
+@media(max-width:720px){
+  body{
+    background:linear-gradient(180deg,#f6f9ff,#ffffff) !important;
+  }
+  .wrap{
+    padding:0 14px 14px !important;
+    max-width:480px !important;
+  }
+  .appHeader{
+    height:58px !important;
+    min-height:58px !important;
+    padding:0 16px !important;
+    margin:0 -14px 14px !important;
+    border-radius:0 0 18px 18px !important;
+    box-shadow:0 8px 18px rgba(20,59,115,.12) !important;
+    background:linear-gradient(135deg,#143b73,#2563eb) !important;
+  }
+  .appHeader:before,
+  .appHeader:after{
+    display:none !important;
+  }
+  .appHeader h1{
+    font-size:23px !important;
+    line-height:1 !important;
+    margin:0 !important;
+  }
+  .headerTeacherBtn{
+    padding:6px 11px !important;
+    font-size:12px !important;
+  }
+  .card{
+    padding:18px !important;
+    border-radius:24px !important;
+    margin:10px 0 !important;
+    box-shadow:0 10px 24px rgba(20,59,115,.08) !important;
+    background:rgba(255,255,255,.94) !important;
+  }
+  #welcome{
+    padding-top:22px !important;
+  }
+  #welcome label{
+    font-size:14px !important;
+    margin:14px 0 6px !important;
+  }
+  #welcome label:first-of-type{
+    margin-top:0 !important;
+  }
+  #welcome .grid2{
+    display:block !important;
+  }
+  #welcome input,
+  #welcome select{
+    height:52px !important;
+    border-radius:16px !important;
+    font-size:17px !important;
+    background:#fff !important;
+  }
+  #welcome .btn.big{
+    margin-top:22px !important;
+    height:58px !important;
+    border-radius:18px !important;
+    font-size:18px !important;
+  }
+  #welcome .installHint{
+    margin-top:14px !important;
+    padding:11px 13px !important;
+    border-radius:15px !important;
+    font-size:12px !important;
+    line-height:1.5 !important;
+  }
+  /* タイマー画面も1画面に収まりやすく */
+  #timerScreen{
+    padding:12px !important;
+  }
+  #timerScreen .center,
+  #timerScreen h2,
+  #timerScreen .stepPill{
+    display:none !important;
+  }
+  .timerPanel{
+    margin:0 !important;
+    padding:16px 14px 14px !important;
+    border-radius:26px !important;
+    background:linear-gradient(180deg,#f8fbff,#ffffff) !important;
+    border:1px solid #dbeafe !important;
+    box-shadow:0 12px 26px rgba(20,59,115,.10) !important;
+  }
+  .timerPanel:after{
+    display:none !important;
+  }
+  .state{
+    padding:5px 13px !important;
+    font-size:13px !important;
+    margin-bottom:4px !important;
+  }
+  .clock{
+    font-size:46px !important;
+    line-height:1 !important;
+    margin:8px 0 4px !important;
+  }
+  .timeNote{
+    font-size:12px !important;
+    margin-bottom:8px !important;
+  }
+  .actionGrid{
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:7px !important;
+    margin-top:12px !important;
+  }
+  .actionGrid .btn,
+  .actionGrid .breakBtn{
+    grid-column:auto !important;
+    height:52px !important;
+    min-height:52px !important;
+    padding:8px 4px !important;
+    border-radius:17px !important;
+    font-size:14px !important;
+    line-height:1.2 !important;
+  }
+  #timerScreen .statGrid{
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:7px !important;
+    margin-top:10px !important;
+  }
+  #timerScreen .stat{
+    min-height:60px !important;
+    padding:9px 5px !important;
+    border-radius:17px !important;
+    font-size:12px !important;
+  }
+  #timerScreen .stat b{
+    font-size:18px !important;
+    margin-top:2px !important;
+  }
+  #timerScreen > .card{
+    padding:11px 12px !important;
+    border-radius:18px !important;
+    margin-top:9px !important;
+  }
+  #timerScreen .row{
+    display:none !important;
+  }
+}
+@media(max-width:390px){
+  .clock{font-size:41px !important}
+}
+
+
+/* teacher button corner placement + teacher back button */
+.appHeader{
+  position:relative !important;
+}
+.headerTeacherBtn{
+  position:absolute !important;
+  top:8px !important;
+  right:8px !important;
+  z-index:5 !important;
+  border:1px solid rgba(255,255,255,.42) !important;
+  background:rgba(255,255,255,.18) !important;
+  color:#fff !important;
+  border-radius:999px !important;
+  padding:5px 9px !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  box-shadow:none !important;
+}
+.headerTeacherBtn:active{
+  transform:scale(.96);
+}
+.teacherHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.teacherHead h2{
+  margin:0;
+}
+.teacherBackBtn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:#64748b;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+  font-weight:900;
+  box-shadow:none;
+}
+@media(max-width:720px){
+  .headerTeacherBtn{
+    top:7px !important;
+    right:8px !important;
+    font-size:11px !important;
+    padding:5px 8px !important;
+  }
+}
+
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="appHeader">
     <h1>Study Room</h1>
-    <p></p>
-    <span class="badge">Study Room</span>
+    <button class="headerTeacherBtn" type="button" onclick="openTeacherFromWelcome()">先生</button>
   </header>
 <section id="welcome" class="card">
-    <div class="center">
-      <span class="stepPill">① 名前入力</span>
-<p class="small"></p>
-    </div>
-    <label>名前</label>
+<label>名前</label>
     <input id="studentName" placeholder="例：山田太郎" autocomplete="name">
     <div class="grid2">
       <div><label>学年</label><select id="grade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select></div>
       <div><label>今日の目標時間（分）</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
     </div>
     <button class="btn big" type="button" onclick="startApp()">スタート</button>
-    <button class="teacherMiniBtn" type="button" onclick="openTeacherFromWelcome()">先生画面</button>
-    <div class="installHint small">入力した名前・学年・タイマー状態はこの端末に保存されます。アプリを自動保存中。</div>
+<div class="installHint small">入力内容とタイマー状態は自動保存されます。</div>
     <div id="welcomeMsg"></div>
   </section>
 
@@ -845,7 +1098,7 @@ body{
   </section>
 
   <section id="teacher" class="card hide">
-    <h2>先生画面</h2>
+    <div class="teacherHead"><h2>先生画面</h2><button class="teacherBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button></div>
     <div id="loginBox" class="card">
       <div class="grid2">
         <div><label>先生ID</label><input id="teacherId" placeholder="先生ID"></div>
