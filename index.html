@@ -1451,6 +1451,35 @@ body{
   }
 }
 
+
+/* safe timer back button */
+#timerScreen{ position:relative; }
+.timerBackBtn{
+  position:absolute;
+  top:10px;
+  left:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:#64748b;
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:13px;
+  font-weight:1000;
+  box-shadow:none;
+  z-index:3;
+}
+@media(max-width:720px){
+  .timerBackBtn{
+    top:8px !important;
+    left:10px !important;
+    padding:6px 10px !important;
+    font-size:12px !important;
+  }
+  #timerScreen{
+    padding-top:42px !important;
+  }
+}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
@@ -1496,7 +1525,7 @@ body{
         <div class="homeInfoIcon">“</div>
         <div class="quoteTextWrap">
           <div class="homeInfoTitle">今日の名言</div>
-          <div class="quoteText" id="welcomeDailyQuote">まず5分だけ始めよう。</div>
+          <div class="quoteText" id="welcomeDailyQuote">学問に近道なし。</div>
         </div>
         <button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
       </div>
@@ -1507,6 +1536,7 @@ body{
   </section>
 
   <section id="timerScreen" class="card hide">
+    <button class="timerBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button>
     <div class="center">
       <span class="stepPill">② 自習中</span>
       <h2>タイマー</h2>
@@ -1557,7 +1587,7 @@ body{
         <div class="homeInfoIcon">“</div>
         <div class="quoteTextWrap">
           <div class="homeInfoTitle">今日の名言</div>
-          <div class="quoteText" id="dailyQuote">まず5分だけ始めよう。</div>
+          <div class="quoteText" id="dailyQuote">学問に近道なし。</div>
         </div>
         <button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
       </div>
