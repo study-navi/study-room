@@ -1312,6 +1312,148 @@ body{
   }
 }
 
+
+/* Study Room v1.1 safe additions */
+#timerScreen{position:relative}
+.timerBackBtn{
+  position:absolute;
+  top:10px;
+  left:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:#64748b;
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:13px;
+  font-weight:1000;
+  box-shadow:none;
+  z-index:3;
+}
+.homeInfoGrid{
+  display:grid;
+  gap:10px;
+  margin:14px 0 4px;
+}
+.homeInfoCard{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:13px 14px;
+  box-shadow:0 10px 24px rgba(20,59,115,.07);
+}
+.homeInfoIcon{
+  width:46px;
+  height:46px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  font-size:23px;
+  font-weight:1000;
+  background:#eff6ff;
+  color:#2563eb;
+}
+.usersCard .homeInfoIcon{background:#eff6ff;color:#2563eb}
+.streakCard .homeInfoIcon{background:#ecfdf5;color:#16a34a}
+.quoteCard .homeInfoIcon{background:#f5f3ff;color:#7c3aed;font-size:34px;line-height:1}
+.homeInfoTitle{
+  font-weight:1000;
+  color:#152033;
+  font-size:16px;
+}
+.homeInfoSub{
+  color:#64748b;
+  font-size:12px;
+  margin-top:2px;
+}
+.homeInfoValue{
+  margin-left:auto;
+  font-size:28px;
+  font-weight:1000;
+  color:#2563eb;
+  white-space:nowrap;
+}
+.streakCard .homeInfoValue{color:#16a34a}
+.homeInfoValue small{
+  font-size:14px;
+  margin-left:2px;
+}
+.quoteCard{
+  align-items:flex-start;
+}
+.quoteTextWrap{
+  flex:1;
+  min-width:0;
+}
+.quoteText{
+  margin-top:6px;
+  line-height:1.65;
+  color:#152033;
+  font-size:14px;
+  font-weight:800;
+  white-space:pre-wrap;
+}
+.quoteBtn{
+  border:1px solid #bfdbfe;
+  background:#fff;
+  color:#2563eb;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:1000;
+  cursor:pointer;
+  white-space:nowrap;
+}
+@media(max-width:720px){
+  .timerBackBtn{
+    top:8px !important;
+    left:10px !important;
+    padding:6px 10px !important;
+    font-size:12px !important;
+  }
+  #timerScreen{
+    padding-top:42px !important;
+  }
+  .homeInfoGrid{
+    margin-top:12px !important;
+    gap:9px !important;
+  }
+  .homeInfoCard{
+    border-radius:19px !important;
+    padding:11px 12px !important;
+    gap:10px !important;
+  }
+  .homeInfoIcon{
+    width:40px !important;
+    height:40px !important;
+    font-size:20px !important;
+  }
+  .quoteCard .homeInfoIcon{
+    font-size:30px !important;
+  }
+  .homeInfoTitle{
+    font-size:14px !important;
+  }
+  .homeInfoSub{
+    font-size:11px !important;
+  }
+  .homeInfoValue{
+    font-size:25px !important;
+  }
+  .quoteText{
+    font-size:13px !important;
+    line-height:1.55 !important;
+  }
+  .quoteBtn{
+    padding:6px 8px !important;
+    font-size:11px !important;
+  }
+}
+
 </style>
 
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
@@ -1333,11 +1475,42 @@ body{
       <div><label>今日の目標</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
     </div>
     <button class="btn big" type="button" onclick="startApp()">スタート</button>
+
+    <div class="homeInfoGrid welcomeHomeInfo" id="welcomeHomeInfo">
+      <div class="homeInfoCard usersCard">
+        <div class="homeInfoIcon">👥</div>
+        <div>
+          <div class="homeInfoTitle">今日の利用人数</div>
+          <div class="homeInfoSub">記録を送信した人数</div>
+        </div>
+        <div class="homeInfoValue"><span id="welcomeTodayUserCount">0</span><small>人</small></div>
+      </div>
+
+      <div class="homeInfoCard streakCard">
+        <div class="homeInfoIcon">🔥</div>
+        <div>
+          <div class="homeInfoTitle">連続記録</div>
+          <div class="homeInfoSub">続けるほど力になる</div>
+        </div>
+        <div class="homeInfoValue"><span id="welcomeStreakDays">0</span><small>日</small></div>
+      </div>
+
+      <div class="homeInfoCard quoteCard">
+        <div class="homeInfoIcon">“</div>
+        <div class="quoteTextWrap">
+          <div class="homeInfoTitle">今日の名言</div>
+          <div class="quoteText" id="welcomeDailyQuote">学問に近道なし。</div>
+        </div>
+        <button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
+      </div>
+    </div>
+
 <div class="installHint small">入力内容とタイマー状態は自動保存されます。</div>
     <div id="welcomeMsg"></div>
   </section>
 
   <section id="timerScreen" class="card hide">
+    <button class="timerBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button>
     <div class="center">
       <span class="stepPill">② 自習中</span>
       <h2>タイマー</h2>
@@ -1364,6 +1537,36 @@ body{
       <div class="progressOuter"><div class="progressInner" id="goalBar"></div></div>
       <div class="small" id="goalDetail">0 / 0分</div>
     </div>
+
+    <div class="homeInfoGrid timerHomeInfo" id="timerHomeInfo">
+      <div class="homeInfoCard usersCard">
+        <div class="homeInfoIcon">👥</div>
+        <div>
+          <div class="homeInfoTitle">今日の利用人数</div>
+          <div class="homeInfoSub">記録を送信した人数</div>
+        </div>
+        <div class="homeInfoValue"><span id="todayUserCount">0</span><small>人</small></div>
+      </div>
+
+      <div class="homeInfoCard streakCard">
+        <div class="homeInfoIcon">🔥</div>
+        <div>
+          <div class="homeInfoTitle">連続記録</div>
+          <div class="homeInfoSub">続けるほど力になる</div>
+        </div>
+        <div class="homeInfoValue"><span id="streakDays">0</span><small>日</small></div>
+      </div>
+
+      <div class="homeInfoCard quoteCard">
+        <div class="homeInfoIcon">“</div>
+        <div class="quoteTextWrap">
+          <div class="homeInfoTitle">今日の名言</div>
+          <div class="quoteText" id="dailyQuote">学問に近道なし。</div>
+        </div>
+        <button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
+      </div>
+    </div>
+
     <div class="row">
       <button class="btn light" type="button" onclick="goScreen('welcome')">名前を変更</button>
     </div>
@@ -1909,6 +2112,7 @@ async function submitToTeacher(){
       appState.breakStartAt = null;
       appState.breakTotalMs = 0;
       saveState();
+      try{ updateHomeCards(); updateTodayUserCountFromSheet(); }catch(e){}
       goScreen('completeScreen');
     }else{
       setMsg('reviewMsg','保存できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
@@ -2367,6 +2571,105 @@ if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
 document.addEventListener('DOMContentLoaded', init);
+
+/* Study Room v1.1 safe JS additions */
+const STUDY_QUOTES_V11 = ["学問に近道なし。", "継続は力なり。", "千里の道も一歩から。", "急がば回れ。", "ローマは一日にして成らず。", "できるかどうかより、やるかどうか。", "小さな努力を軽く見ない。", "昨日より一歩進めば十分。", "苦手は、伸びしろの名前。", "分からないことは、成長の入口。", "一問ずつ、確実に前へ。", "集中は、始めたあとについてくる。", "目標は、行動にして初めて意味を持つ。", "積み重ねた時間は、自分を裏切らない。", "勉強は未来の選択肢を増やす。", "続けた人だけが見える景色がある。", "今日の努力は、未来の安心になる。", "失敗は、次に直す場所を教えてくれる。", "できない問題ほど、価値がある。", "一日一歩でも、止まらなければ進んでいる。", "勉強は、自分を助ける準備。", "時間を大切にする人は、結果に近づく。", "始める勇気が、集中をつくる。", "できたことを記録すれば、自信になる。", "答え合わせは、伸びるためにある。", "今日の自分にできることをやる。", "大きな成果は、小さな反復から生まれる。", "努力の差は、毎日の差。", "今やる人が、あとで楽になる。", "迷ったら、まず一問。", "集中できる場所に来た時点で、一歩前進。", "苦手から逃げない人は強い。", "短い時間でも、本気なら意味がある。", "勉強は量だけでなく、戻る力も大切。", "振り返りは、次の作戦になる。", "できないを減らすことが、成績を上げること。", "続ける力は、才能より強い。", "今日の記録は、明日の自分への手紙。", "やる気より、まず行動。", "一問解けば、流れが変わる。", "学び続ける人は、変わり続ける。", "努力は見えにくい。でも積み上がる。", "焦る日は、目の前だけを見る。", "積み重ねは、必ず形になる。", "今日も机に向かえた。それだけで前進。", "考える時間は、力になる。", "間違いは、学びの材料。", "一度でできなくても、二度目がある。", "目標がある人は、時間の使い方が変わる。", "自分で決めて始める勉強は強い。", "昨日の反省を、今日の行動に変える。", "勉強は、未来の自分への投資。", "一つ覚えれば、一つ世界が広がる。", "小さな勝ちを積み重ねよう。", "最後に伸びる人は、続けた人。", "記録は、努力を見える形にする。", "今日の10分が、本番の自信になる。", "できる問題を増やし、できない問題を減らす。", "学力は、毎日の選択で育つ。", "休憩してもいい。戻ることが大切。", "集中は短くても、何度でも戻ればいい。", "自習は、自分を育てる時間。", "今できる一番小さなことから始めよう。", "前進は、いつも小さな一歩から。", "勉強した事実は消えない。", "苦手な単元ほど、早めに向き合う。", "目標時間は、自分との約束。", "分かった瞬間は、努力のごほうび。", "できるまで続ける人が、できる人になる。", "学ぶ姿勢が、結果を変える。", "自分のペースで、でも止まらずに。", "毎日少しずつが、一番強い。", "本気の一問は、ただの一問ではない。", "成長は、記録すると見つけやすい。", "今日の努力を、明日の普通にしよう。", "やり切った経験は、次の自信になる。", "考え抜いた時間は、無駄にならない。", "始めた人から変わっていく。", "復習する人は、同じ失敗を減らせる。", "勉強は、自分を裏切らない準備。", "習慣になった努力は、とても強い。", "小さく始めて、大きく続ける。", "今ここでの努力が、未来を変える。", "自分の成長は、自分の行動から始まる。", "今日の一歩を、明日の力に。", "続けるほど、昨日の自分を超えていく。", "学ぶことは、自分の武器を増やすこと。", "できない日は、少しだけやる。", "机に向かうことから、勝負は始まる。", "努力は、未来の不安を減らす。", "勉強は、可能性を広げる作業。", "今日の集中を、明日の自信に。", "積み上げたものだけが、本番で支えになる。", "一問一答の積み重ねが、大きな力になる。", "準備した人ほど、本番で落ち着ける。", "学ぶ人は、未来を自分で広げる。", "今日の小さな集中が、明日の大きな差になる。", "できたところより、直したところが力になる。", "続けることが、いちばん確かな才能。", "努力はすぐ見えなくても、必ず残る。", "自分を変えるのは、今日の行動。"];
+let quoteOffsetV11 = 0;
+
+function srDateKeyFromOffset(offset){
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function srQuoteIndexForToday(){
+  const d = new Date();
+  const base = Number(String(d.getFullYear()) + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0'));
+  return base % STUDY_QUOTES_V11.length;
+}
+
+function renderDailyQuote(){
+  const idx = (srQuoteIndexForToday() + quoteOffsetV11) % STUDY_QUOTES_V11.length;
+  const text = STUDY_QUOTES_V11[idx];
+  ['dailyQuote','welcomeDailyQuote'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = text;
+  });
+}
+
+function nextQuote(){
+  quoteOffsetV11 = (quoteOffsetV11 + 1) % STUDY_QUOTES_V11.length;
+  renderDailyQuote();
+}
+
+function srLocalTotalsSafe(){
+  try {
+    if(typeof localTotals === 'function') return localTotals();
+    return JSON.parse(localStorage.getItem('studyRoomV9LocalTotal') || '{}');
+  } catch(e) {
+    return {};
+  }
+}
+
+function srTodayISOSafe(){
+  if(typeof todayISO === 'function') return todayISO();
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function calculateStreakDays(){
+  const totals = srLocalTotalsSafe();
+  let streak = 0;
+  for(let i=0; i<365; i++){
+    const key = srDateKeyFromOffset(-i);
+    if(Number(totals[key] || 0) > 0) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function updateHomeCards(){
+  const streak = calculateStreakDays();
+  ['streakDays','welcomeStreakDays'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = streak;
+  });
+
+  const localToday = Number(srLocalTotalsSafe()[srTodayISOSafe()] || 0);
+  ['todayUserCount','welcomeTodayUserCount'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = localToday > 0 ? '1' : '0';
+  });
+
+  renderDailyQuote();
+}
+
+async function updateTodayUserCountFromSheet(){
+  if(typeof api !== 'function') return;
+  try{
+    const res = await api('list', {});
+    if(res && res.result === 'success' && Array.isArray(res.records)){
+      const today = srTodayISOSafe();
+      const names = new Set();
+      res.records.forEach(r => {
+        const d = typeof formatDateForCompare === 'function' ? formatDateForCompare(r['日付']) : String(r['日付'] || '').slice(0,10).replaceAll('/','-');
+        if(d === today && r['名前']) names.add(String(r['名前']).trim());
+      });
+      ['todayUserCount','welcomeTodayUserCount'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.textContent = names.size;
+      });
+    }
+  }catch(e){}
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    updateHomeCards();
+    updateTodayUserCountFromSheet();
+  }, 300);
+});
+
 </script>
 
 <div id="editModal" class="modalBg hide">
