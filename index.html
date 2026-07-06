@@ -1686,18 +1686,18 @@ async function enterRoom(){
 
   // 入室時点でスプレッドシートへ仮保存することで、ログ確認の「現在自習中」に反映します。
   try{
-    const res = await api('add', {
+    const res = await api('addActive', {
       date: todayISO(),
       name: appState.name || '',
       grade: appState.grade || '',
-      subject: '',
+      subject: '入室中',
       startTime: timeText(appState.startAt),
       endTime: '',
       minutes: '',
       focus: '',
       achievement: '',
       content: '入室中',
-      comment: ''
+      comment: '現在自習中'
     });
     if(res && res.result === 'success'){
       appState.activeRecordId = res.id || null;
@@ -1894,6 +1894,24 @@ function saveStateNow(){
   setMsg('timerMsg','途中状態を保存しました。','ok');
 }
 
+
+let teacherAutoRefreshId = null;
+
+function startTeacherAutoRefresh(){
+  if(teacherAutoRefreshId) clearInterval(teacherAutoRefreshId);
+  teacherAutoRefreshId = setInterval(() => {
+    const panel = $('teacherPanel');
+    if(panel && !panel.classList.contains('hide')){
+      loadRecords();
+    }
+  }, 15000);
+}
+
+function stopTeacherAutoRefresh(){
+  if(teacherAutoRefreshId) clearInterval(teacherAutoRefreshId);
+  teacherAutoRefreshId = null;
+}
+
 function teacherAuthData(extra={}){ return Object.assign({session:teacherSession}, extra); }
 async function teacherLogin(){
   setMsg('loginMsg','認証中です...');
@@ -1907,6 +1925,7 @@ async function teacherLogin(){
       $('teacherPass').value = '';
       setMsg('loginMsg','');
       await loadRecords();
+      startTeacherAutoRefresh();
     }else{
       setMsg('loginMsg','ログ確認へ進むできません：' + (res && res.message ? res.message : '認証失敗'), 'err');
     }
@@ -1931,8 +1950,8 @@ function renderTeacher(){
   $('statCount').textContent = rows.length;
   $('statMinutes').textContent = safeDisplayMinutes(rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0));
   $('statToday').textContent = rows.filter(r=>formatDateForCompare(r['日付'])===today).length;
-  const active = rows.filter(r => r['入室時間'] && !r['退室時間']);
-  $('inRoomList').innerHTML = active.length ? active.map(r=>`<div class="inRoomItem"><b>${escapeHtml(r['名前'])}</b><span class="statusPill green">${escapeHtml(safeDisplayTime(r['入室時間']))}〜</span></div>`).join('') : '<div class="small">現在自習中の生徒はいません。</div>';
+  const active = rows.filter(r => r['入室時間'] && !r['退室時間'] && (String(r['学習内容'] || '').includes('入室中') || String(r['コメント'] || '').includes('現在自習中') || !r['自習分数'] || Number(r['自習分数']) === 0));
+  $('inRoomList').innerHTML = active.length ? active.map(r=>`<div class="inRoomItem"><b>${escapeHtml(r['名前'])}</b><span class="statusPill green">${escapeHtml(safeDisplayTime(r['入室時間']))}〜</span></div>`).join('') : '<div class="small">現在自習中の生徒はいません。入室直後の反映には数秒かかる場合があります。</div>';
   $('tbody').innerHTML = rows.map((r,idx)=>`<tr>
     <td>${escapeHtml(r['日付'])}</td>
     <td>${escapeHtml(r['名前'])}</td>
