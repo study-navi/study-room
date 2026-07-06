@@ -993,6 +993,59 @@ body{
   }
 }
 
+
+/* final finishing touches */
+.completeSummary{
+  margin:14px 0 4px;
+}
+.completeStats{
+  grid-template-columns:repeat(2,1fr) !important;
+}
+@media(max-width:720px){
+  /* timer final compact */
+  #timerScreen .clock{
+    font-size:43px !important;
+  }
+  #timerScreen .timerPanel{
+    padding:14px 12px 12px !important;
+  }
+  #timerScreen .actionGrid .btn,
+  #timerScreen .actionGrid .breakBtn{
+    height:48px !important;
+    min-height:48px !important;
+    font-size:13px !important;
+  }
+  #timerScreen .stat{
+    min-height:54px !important;
+    padding:8px 4px !important;
+  }
+  #timerScreen .stat b{
+    font-size:17px !important;
+  }
+  #timerScreen > .card{
+    padding:9px 10px !important;
+  }
+  #timerScreen .progressOuter{
+    height:8px !important;
+  }
+  /* welcome labels easier */
+  #welcome label::first-letter{
+    color:var(--blue);
+  }
+  #welcome .installHint{
+    display:none !important;
+  }
+  /* review and complete cleaner */
+  #completeScreen .heroIcon{
+    width:88px !important;
+    height:88px !important;
+    margin:10px auto !important;
+  }
+  #completeScreen h2{
+    font-size:24px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1006,7 +1059,7 @@ body{
     <input id="studentName" placeholder="例：山田太郎" autocomplete="name">
     <div class="grid2">
       <div><label>学年</label><select id="grade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select></div>
-      <div><label>今日の目標時間（分）</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
+      <div><label>今日の目標</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
     </div>
     <button class="btn big" type="button" onclick="startApp()">スタート</button>
 <div class="installHint small">入力内容とタイマー状態は自動保存されます。</div>
@@ -1090,8 +1143,8 @@ body{
           <path d="M21 32l7 7 16-17" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <h2>保存しました！</h2>
-      <p class="small">記録が保存されました。</p>
+      <h2>お疲れさまでした！</h2>
+      <p class="small">記録が保存されました。</p><div id="completeSummary" class="completeSummary"></div>
       <button class="btn big" type="button" onclick="useStudyRoomAgain()">自習室を利用する</button>
       <button class="btn light big" type="button" onclick="finishAndExit()">終了する</button>
     </div>
@@ -1110,8 +1163,8 @@ body{
     <div id="teacherPanel" class="hide">
       <div class="statGrid">
         <div class="stat">記録数<b id="statCount">0</b></div>
-        <div class="stat">合計分数<b id="statMinutes">0</b></div>
-        <div class="stat">今日の記録<b id="statToday">0</b></div>
+        <div class="stat">合計時間<b id="statMinutes">0</b></div>
+        <div class="stat">今日の人数<b id="statToday">0</b></div>
       </div>
       <div class="card">
         <h3>現在自習中の生徒</h3>
@@ -1237,6 +1290,7 @@ function goScreen(id){
   saveState();
   if(id === 'timerScreen') startTicker();
   if(id === 'reviewScreen') renderReview();
+  if(id === 'completeScreen') renderCompleteSummary();
 }
 function startApp(){
   const name = $('studentName').value.trim();
@@ -1395,6 +1449,7 @@ async function submitToTeacher(){
     const res = await api('add', data);
     if(res && res.result === 'success'){
       addLocalTotal(minutes);
+      localStorage.setItem('lastCompleteSummary', JSON.stringify({minutes:minutes, today:Number(localTotals()[todayISO()] || 0) + minutes}));
       localStorage.removeItem(STATE_KEY);
       appState.status = 'idle';
       appState.startAt = null;
@@ -1562,6 +1617,22 @@ function normalizeStartupState(){
     appState.breakTotalMs = 0;
     saveState();
   }
+}
+
+
+function renderCompleteSummary(){
+  const box = $('completeSummary');
+  if(!box) return;
+  let data = {};
+  try{ data = JSON.parse(localStorage.getItem('lastCompleteSummary') || '{}'); }catch(e){}
+  const minutes = Number(data.minutes || 0);
+  const today = Number(data.today || 0);
+  box.innerHTML = `
+    <div class="statGrid completeStats">
+      <div class="stat">今回<b>${minutes}分</b></div>
+      <div class="stat">今日の合計<b>${today}分</b></div>
+    </div>
+  `;
 }
 
 function init(){
