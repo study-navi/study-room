@@ -1029,9 +1029,7 @@ body{
     height:8px !important;
   }
   /* welcome labels easier */
-  #welcome label::first-letter{
-    color:var(--blue);
-  }
+  
   #welcome .installHint{
     display:none !important;
   }
@@ -1061,6 +1059,129 @@ body{
     padding:5px 8px !important;
     font-size:11px !important;
   }
+}
+
+
+/* log detail panel */
+.detailOpenBtn{
+  margin:12px 0 4px;
+}
+.detailHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+.detailHead h3{
+  margin:0;
+}
+.detailFilters{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:10px 0 12px;
+}
+.periodBtn{
+  border:1px solid var(--line);
+  background:#fff;
+  color:#143b73;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+}
+.periodBtn.active{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+}
+.detailSelects{
+  margin-bottom:10px;
+}
+.innerCard{
+  margin:10px 0 0;
+  box-shadow:none;
+}
+@media(max-width:720px){
+  .detailOpenBtn{
+    height:50px !important;
+    font-size:16px !important;
+  }
+  .detailFilters{
+    gap:6px;
+  }
+  .periodBtn{
+    flex:1;
+    min-width:64px;
+    padding:8px 6px;
+    font-size:12px;
+  }
+  .detailStats{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+  .detailStats .stat{
+    font-size:11px !important;
+  }
+  .detailStats .stat b{
+    font-size:16px !important;
+  }
+}
+
+
+/* mobile color/header/time readability fix */
+@media(max-width:720px){
+  .appHeader{
+    height:56px !important;
+    min-height:56px !important;
+    padding:0 14px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+  }
+  .appHeader h1{
+    font-size:22px !important;
+    font-weight:1000 !important;
+    margin:0 !important;
+    text-align:left !important;
+    line-height:1 !important;
+    letter-spacing:.01em !important;
+  }
+  .headerTeacherBtn{
+    position:absolute !important;
+    top:8px !important;
+    right:8px !important;
+    padding:5px 8px !important;
+    min-width:auto !important;
+    font-size:10.5px !important;
+    border-radius:999px !important;
+    background:rgba(255,255,255,.16) !important;
+    color:#fff !important;
+  }
+  #welcome label,
+  #reviewScreen label,
+  #teacher label{
+    color:#334155 !important;
+  }
+  #welcome input,
+  #welcome select,
+  #reviewScreen input,
+  #reviewScreen select,
+  #reviewScreen textarea{
+    color:#111827 !important;
+  }
+  #welcome input::placeholder,
+  #reviewScreen textarea::placeholder{
+    color:#9ca3af !important;
+  }
+  #welcome{
+    margin-top:10px !important;
+  }
+}
+.timeReadable{
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
 }
 
 </style>
@@ -1183,6 +1304,43 @@ body{
         <div class="stat">合計時間<b id="statMinutes">0</b></div>
         <div class="stat">今日の人数<b id="statToday">0</b></div>
       </div>
+      <button class="btn big detailOpenBtn" id="detailBtn" type="button" onclick="showDetailPanel()">詳しく見る</button>
+
+      <div id="detailPanel" class="card hide">
+        <div class="detailHead">
+          <h3>詳細・ランキング</h3>
+          <button class="teacherBackBtn" type="button" onclick="hideDetailPanel()">閉じる</button>
+        </div>
+
+        <div class="detailFilters">
+          <button class="periodBtn active" type="button" data-period="today" onclick="setDetailPeriod('today')">今日</button>
+          <button class="periodBtn" type="button" data-period="month" onclick="setDetailPeriod('month')">今月</button>
+          <button class="periodBtn" type="button" data-period="year" onclick="setDetailPeriod('year')">今年</button>
+          <button class="periodBtn" type="button" data-period="all" onclick="setDetailPeriod('all')">全期間</button>
+        </div>
+
+        <div class="grid2 detailSelects">
+          <div><label>月別</label><input id="detailMonth" type="month" onchange="setDetailPeriod('customMonth')"></div>
+          <div><label>年別</label><input id="detailYear" type="number" min="2020" max="2100" placeholder="例：2026" onchange="setDetailPeriod('customYear')"></div>
+        </div>
+
+        <div class="statGrid detailStats">
+          <div class="stat">対象記録<b id="detailCount">0</b></div>
+          <div class="stat">合計時間<b id="detailMinutes">0分</b></div>
+          <div class="stat">平均時間<b id="detailAvg">0分</b></div>
+        </div>
+
+        <div class="grid2">
+          <div class="card innerCard">
+            <h3>学習時間ランキング</h3>
+            <div id="detailRanking" class="rankList"></div>
+          </div>
+          <div class="card innerCard">
+            <h3>科目別 合計</h3>
+            <div id="subjectRanking" class="rankList"></div>
+          </div>
+        </div>
+      </div>
       <div class="card">
         <h3>現在自習中の生徒</h3>
         <div id="inRoomList" class="rankList"></div>
@@ -1251,6 +1409,57 @@ function api(action, data={}){
     script.onerror = () => { cleanup(); reject(new Error('Apps Scriptに接続できませんでした。')); };
     document.body.appendChild(script);
   });
+}
+
+
+function displayTimeValue(v){
+  if(v === null || v === undefined || v === '') return '';
+  if(typeof v === 'number'){
+    const totalMinutes = Math.round((v % 1) * 24 * 60);
+    const hh = Math.floor(totalMinutes / 60) % 24;
+    const mm = totalMinutes % 60;
+    return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+  }
+  let s = String(v).trim();
+  if(!s) return '';
+
+  // Google Sheets由来の 1899/12/30 や Date文字列対策
+  if(s.includes('1899') || s.includes('GMT') || /^\d{4}-\d{2}-\d{2}T/.test(s)){
+    const d = new Date(s);
+    if(!isNaN(d.getTime())){
+      return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+  }
+
+  // 1899/12/30 22:15 のような文字列から時刻だけ抽出
+  const timeMatch = s.match(/(\d{1,2}):(\d{2})/);
+  if(timeMatch){
+    return String(Number(timeMatch[1])).padStart(2,'0') + ':' + timeMatch[2];
+  }
+
+  // シリアル値文字列 0.5 など
+  if(/^\d+(\.\d+)?$/.test(s)){
+    const n = Number(s);
+    if(n > 0 && n < 1){
+      const totalMinutes = Math.round(n * 24 * 60);
+      const hh = Math.floor(totalMinutes / 60) % 24;
+      const mm = totalMinutes % 60;
+      return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+    }
+  }
+
+  return s;
+}
+
+function displayMinutesValue(v){
+  const n = Number(v || 0);
+  if(!isFinite(n)) return '0分';
+  if(n >= 60){
+    const h = Math.floor(n / 60);
+    const m = Math.round(n % 60);
+    return h + '時間' + (m ? m + '分' : '');
+  }
+  return Math.round(n) + '分';
 }
 
 function escapeHtml(v){ return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -1534,6 +1743,7 @@ async function loadRecords(){
     records = Array.isArray(res.records) ? res.records : [];
     setMsg('teacherMsg','');
     renderTeacher();
+    renderDetailPanel();
   }catch(err){ setMsg('teacherMsg','取得できませんでした：' + (err.message || err), 'err'); }
 }
 function formatDateForCompare(v){ return String(v || '').replaceAll('/','-').slice(0,10); }
@@ -1542,11 +1752,11 @@ function renderTeacher(){
   const rows = records.filter(r => !q || JSON.stringify(r).toLowerCase().includes(q));
   const today = todayISO();
   $('statCount').textContent = rows.length;
-  $('statMinutes').textContent = rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
+  $('statMinutes').textContent = displayMinutesValue(rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0));
   $('statToday').textContent = rows.filter(r=>formatDateForCompare(r['日付'])===today).length;
   const active = rows.filter(r => r['入室時間'] && !r['退室時間']);
-  $('inRoomList').innerHTML = active.length ? active.map(r=>`<div class="inRoomItem"><b>${escapeHtml(r['名前'])}</b><span class="statusPill green">${escapeHtml(r['入室時間'])}〜</span></div>`).join('') : '<div class="small">現在自習中の生徒はいません。</div>';
-  $('tbody').innerHTML = rows.map(r=>`<tr><td>${escapeHtml(r['日付'])}</td><td>${escapeHtml(r['名前'])}</td><td>${escapeHtml(r['学年'])}</td><td>${escapeHtml(r['科目'])}</td><td>${escapeHtml(r['入室時間'])}-${escapeHtml(r['退室時間'])}</td><td>${escapeHtml(r['自習分数'])}</td><td>${escapeHtml(r['集中度'])}</td><td>${escapeHtml(r['達成度'])}</td><td>${escapeHtml(r['学習内容'])}</td><td>${escapeHtml(r['コメント'])}</td></tr>`).join('');
+  $('inRoomList').innerHTML = active.length ? active.map(r=>`<div class="inRoomItem"><b>${escapeHtml(r['名前'])}</b><span class="statusPill green">${escapeHtml(displayTimeValue(r['入室時間']))}〜</span></div>`).join('') : '<div class="small">現在自習中の生徒はいません。</div>';
+  $('tbody').innerHTML = rows.map(r=>`<tr><td>${escapeHtml(r['日付'])}</td><td>${escapeHtml(r['名前'])}</td><td>${escapeHtml(r['学年'])}</td><td>${escapeHtml(r['科目'])}</td><td><span class="timeReadable">${escapeHtml(displayTimeValue(r['入室時間']))}-${escapeHtml(displayTimeValue(r['退室時間']))}</span></td><td>${escapeHtml(displayMinutesValue(r['自習分数']))}</td><td>${escapeHtml(r['集中度'])}</td><td>${escapeHtml(r['達成度'])}</td><td>${escapeHtml(r['学習内容'])}</td><td>${escapeHtml(r['コメント'])}</td></tr>`).join('');
 }
 function downloadCSV(){
   const headers = ['ID','送信日時','日付','名前','学年','科目','入室時間','退室時間','自習分数','集中度','達成度','学習内容','コメント'];
@@ -1650,6 +1860,108 @@ function renderCompleteSummary(){
       <div class="stat">今日の合計<b>${today}分</b></div>
     </div>
   `;
+}
+
+
+let detailPeriod = 'today';
+
+function showDetailPanel(){
+  const panel = $('detailPanel');
+  if(panel) panel.classList.remove('hide');
+  renderDetailPanel();
+}
+
+function hideDetailPanel(){
+  const panel = $('detailPanel');
+  if(panel) panel.classList.add('hide');
+}
+
+function setDetailPeriod(period){
+  detailPeriod = period;
+  document.querySelectorAll('.periodBtn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.period === period);
+  });
+  renderDetailPanel();
+}
+
+function minutesToText(min){
+  return displayMinutesValue(min);
+}
+
+function recordDateObj(r){
+  const raw = formatDateForCompare(r['日付']);
+  if(!raw) return null;
+  const d = new Date(raw + 'T00:00:00');
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function detailFilteredRows(){
+  const now = new Date();
+  return records.filter(r=>{
+    const d = recordDateObj(r);
+    if(!d) return false;
+
+    if(detailPeriod === 'today'){
+      return formatDateForCompare(r['日付']) === todayISO();
+    }
+
+    if(detailPeriod === 'month'){
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }
+
+    if(detailPeriod === 'year'){
+      return d.getFullYear() === now.getFullYear();
+    }
+
+    if(detailPeriod === 'customMonth'){
+      const val = $('detailMonth') ? $('detailMonth').value : '';
+      if(!val) return false;
+      const [y,m] = val.split('-').map(Number);
+      return d.getFullYear() === y && d.getMonth() === m - 1;
+    }
+
+    if(detailPeriod === 'customYear'){
+      const y = Number($('detailYear') ? $('detailYear').value : 0);
+      if(!y) return false;
+      return d.getFullYear() === y;
+    }
+
+    return true;
+  });
+}
+
+function renderDetailPanel(){
+  if(!$('detailPanel') || $('detailPanel').classList.contains('hide')) return;
+
+  const rows = detailFilteredRows();
+  const total = rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
+  const avg = rows.length ? Math.round(total / rows.length) : 0;
+
+  $('detailCount').textContent = rows.length;
+  $('detailMinutes').textContent = minutesToText(total);
+  $('detailAvg').textContent = minutesToText(avg);
+
+  const byStudent = {};
+  rows.forEach(r=>{
+    const name = r['名前'] || '未入力';
+    byStudent[name] = (byStudent[name] || 0) + (Number(r['自習分数']) || 0);
+  });
+
+  const ranking = Object.entries(byStudent).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  $('detailRanking').innerHTML = ranking.length
+    ? ranking.map((x,i)=>`<div class="rankItem"><b>${i+1}位　${escapeHtml(x[0])}</b><span>${minutesToText(x[1])}</span></div>`).join('')
+    : '<div class="small">対象期間の記録がありません。</div>';
+
+  const bySubject = {};
+  rows.forEach(r=>{
+    const sub = r['科目'] || '未入力';
+    bySubject[sub] = (bySubject[sub] || 0) + (Number(r['自習分数']) || 0);
+  });
+
+  const subject = Object.entries(bySubject).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  $('subjectRanking').innerHTML = subject.length
+    ? subject.map((x,i)=>`<div class="rankItem"><b>${escapeHtml(x[0])}</b><span>${minutesToText(x[1])}</span></div>`).join('')
+    : '<div class="small">対象期間の記録がありません。</div>';
 }
 
 function init(){
