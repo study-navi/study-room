@@ -1312,174 +1312,6 @@ body{
   }
 }
 
-
-/* home lower information cards */
-.homeInfoGrid{
-  display:grid;
-  gap:10px;
-  margin:12px 0 2px;
-}
-.homeInfoCard{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:13px 14px;
-  box-shadow:0 10px 24px rgba(20,59,115,.07);
-}
-.homeInfoIcon{
-  width:46px;
-  height:46px;
-  border-radius:999px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex:0 0 auto;
-  font-size:23px;
-  font-weight:1000;
-  background:#eff6ff;
-  color:#2563eb;
-}
-.usersCard .homeInfoIcon{background:#eff6ff;color:#2563eb}
-.streakCard .homeInfoIcon{background:#ecfdf5;color:#16a34a}
-.quoteCard .homeInfoIcon{background:#f5f3ff;color:#7c3aed;font-size:34px;line-height:1}
-.homeInfoTitle{
-  font-weight:1000;
-  color:#152033;
-  font-size:16px;
-}
-.homeInfoSub{
-  color:#64748b;
-  font-size:12px;
-  margin-top:2px;
-}
-.homeInfoValue{
-  margin-left:auto;
-  font-size:28px;
-  font-weight:1000;
-  color:#2563eb;
-  white-space:nowrap;
-}
-.streakCard .homeInfoValue{color:#16a34a}
-.homeInfoValue small{
-  font-size:14px;
-  margin-left:2px;
-}
-.quoteCard{
-  align-items:flex-start;
-  position:relative;
-}
-.quoteTextWrap{
-  flex:1;
-  min-width:0;
-}
-.quoteText{
-  margin-top:6px;
-  line-height:1.65;
-  color:#152033;
-  font-size:14px;
-  font-weight:800;
-  white-space:pre-wrap;
-}
-.quoteBtn{
-  border:1px solid #bfdbfe;
-  background:#fff;
-  color:#2563eb;
-  border-radius:999px;
-  padding:7px 10px;
-  font-size:12px;
-  font-weight:1000;
-  cursor:pointer;
-  white-space:nowrap;
-}
-@media(max-width:720px){
-  .homeInfoGrid{
-    margin-top:12px !important;
-    gap:9px !important;
-  }
-  .homeInfoCard{
-    border-radius:19px !important;
-    padding:11px 12px !important;
-    gap:10px !important;
-  }
-  .homeInfoIcon{
-    width:40px !important;
-    height:40px !important;
-    font-size:20px !important;
-  }
-  .quoteCard .homeInfoIcon{
-    font-size:30px !important;
-  }
-  .homeInfoTitle{
-    font-size:14px !important;
-  }
-  .homeInfoSub{
-    font-size:11px !important;
-  }
-  .homeInfoValue{
-    font-size:25px !important;
-  }
-  .quoteText{
-    font-size:13px !important;
-    line-height:1.55 !important;
-  }
-  .quoteBtn{
-    padding:6px 8px !important;
-    font-size:11px !important;
-  }
-}
-
-
-/* welcome screen info cards */
-.welcomeHomeInfo{
-  margin-top:16px !important;
-}
-#welcome .welcomeHomeInfo + .installHint{
-  margin-top:12px !important;
-}
-@media(max-width:720px){
-  .welcomeHomeInfo{
-    margin-top:14px !important;
-  }
-  #welcome .welcomeHomeInfo .homeInfoCard{
-    padding:11px 12px !important;
-  }
-  #welcome .welcomeHomeInfo .quoteCard{
-    align-items:flex-start !important;
-  }
-}
-
-
-/* safe timer back button */
-#timerScreen{ position:relative; }
-.timerBackBtn{
-  position:absolute;
-  top:10px;
-  left:12px;
-  border:1px solid var(--line);
-  background:#fff;
-  color:#64748b;
-  border-radius:999px;
-  padding:7px 12px;
-  font-size:13px;
-  font-weight:1000;
-  box-shadow:none;
-  z-index:3;
-}
-@media(max-width:720px){
-  .timerBackBtn{
-    top:8px !important;
-    left:10px !important;
-    padding:6px 10px !important;
-    font-size:12px !important;
-  }
-  #timerScreen{
-    padding-top:42px !important;
-  }
-}
-
 </style>
 
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
@@ -1501,42 +1333,11 @@ body{
       <div><label>今日の目標</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
     </div>
     <button class="btn big" type="button" onclick="startApp()">スタート</button>
-
-    <div class="homeInfoGrid welcomeHomeInfo" id="welcomeHomeInfo">
-      <div class="homeInfoCard usersCard">
-        <div class="homeInfoIcon">👥</div>
-        <div>
-          <div class="homeInfoTitle">今日の利用人数</div>
-          <div class="homeInfoSub">記録を送信した人数</div>
-        </div>
-        <div class="homeInfoValue"><span id="welcomeTodayUserCount">0</span><small>人</small></div>
-      </div>
-
-      <div class="homeInfoCard streakCard">
-        <div class="homeInfoIcon">🔥</div>
-        <div>
-          <div class="homeInfoTitle">連続記録</div>
-          <div class="homeInfoSub">続けるほど力になる</div>
-        </div>
-        <div class="homeInfoValue"><span id="welcomeStreakDays">0</span><small>日</small></div>
-      </div>
-
-      <div class="homeInfoCard quoteCard">
-        <div class="homeInfoIcon">“</div>
-        <div class="quoteTextWrap">
-          <div class="homeInfoTitle">今日の名言</div>
-          <div class="quoteText" id="welcomeDailyQuote">学問に近道なし。</div>
-        </div>
-        <button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
-      </div>
-    </div>
-
 <div class="installHint small">入力内容とタイマー状態は自動保存されます。</div>
     <div id="welcomeMsg"></div>
   </section>
 
   <section id="timerScreen" class="card hide">
-    <button class="timerBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button>
     <div class="center">
       <span class="stepPill">② 自習中</span>
       <h2>タイマー</h2>
@@ -1563,36 +1364,6 @@ body{
       <div class="progressOuter"><div class="progressInner" id="goalBar"></div></div>
       <div class="small" id="goalDetail">0 / 0分</div>
     </div>
-
-    <div class="homeInfoGrid" id="homeInfoGrid">
-      <div class="homeInfoCard usersCard">
-        <div class="homeInfoIcon">👥</div>
-        <div>
-          <div class="homeInfoTitle">今日の利用人数</div>
-          <div class="homeInfoSub">記録を送信した人数</div>
-        </div>
-        <div class="homeInfoValue"><span id="todayUserCount">0</span><small>人</small></div>
-      </div>
-
-      <div class="homeInfoCard streakCard">
-        <div class="homeInfoIcon">🔥</div>
-        <div>
-          <div class="homeInfoTitle">連続記録</div>
-          <div class="homeInfoSub">続けるほど力になる</div>
-        </div>
-        <div class="homeInfoValue"><span id="streakDays">0</span><small>日</small></div>
-      </div>
-
-      <div class="homeInfoCard quoteCard">
-        <div class="homeInfoIcon">“</div>
-        <div class="quoteTextWrap">
-          <div class="homeInfoTitle">今日の名言</div>
-          <div class="quoteText" id="dailyQuote">学問に近道なし。</div>
-        </div>
-        <button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
-      </div>
-    </div>
-
     <div class="row">
       <button class="btn light" type="button" onclick="goScreen('welcome')">名前を変更</button>
     </div>
@@ -1951,8 +1722,6 @@ function startApp(){
   saveProfile();
   saveState();
   goScreen('timerScreen');
-  updateHomeCards();
-  updateTodayUserCountFromSheet();
 }
 async function enterRoom(){
   appState.status = 'studying';
@@ -2140,8 +1909,6 @@ async function submitToTeacher(){
       appState.breakStartAt = null;
       appState.breakTotalMs = 0;
       saveState();
-      updateHomeCards();
-      updateTodayUserCountFromSheet();
       goScreen('completeScreen');
     }else{
       setMsg('reviewMsg','保存できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
