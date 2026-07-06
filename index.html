@@ -1925,6 +1925,7 @@ function startApp(){
   saveProfile();
   saveState();
   goScreen('timerScreen');
+  updateAccurateStatsFromSheet();
 }
 async function enterRoom(){
   appState.status = 'studying';
@@ -2112,7 +2113,8 @@ async function submitToTeacher(){
       appState.breakStartAt = null;
       appState.breakTotalMs = 0;
       saveState();
-      try{ updateHomeCards(); updateTodayUserCountFromSheet(); }catch(e){}
+      try{ updateHomeCards(); updateTodayUserCountFromSheet();
+    updateAccurateStatsFromSheet(); }catch(e){}
       goScreen('completeScreen');
     }else{
       setMsg('reviewMsg','保存できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
@@ -2667,8 +2669,32 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     updateHomeCards();
     updateTodayUserCountFromSheet();
+    updateAccurateStatsFromSheet();
   }, 300);
 });
+
+
+/* Study Room v1.2 accurate stats from spreadsheet */
+async function updateAccurateStatsFromSheet(){
+  if(typeof api !== 'function') return;
+  try{
+    const nameEl = document.getElementById('studentName');
+    const name = nameEl ? nameEl.value.trim() : (typeof appState !== 'undefined' ? (appState.name || '') : '');
+    const res = await api('stats', { name: name });
+    if(res && res.result === 'success'){
+      ['todayUserCount','welcomeTodayUserCount'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.textContent = Number(res.todayUserCount || 0);
+      });
+      ['streakDays','welcomeStreakDays'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.textContent = Number(res.streakDays || 0);
+      });
+    }
+  }catch(e){
+    // 通信できない場合は従来のローカル表示のまま
+  }
+}
 
 </script>
 

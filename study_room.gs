@@ -45,7 +45,9 @@ function handleRequest_(e) {
     const data = parseData_(p.data);
     let result;
 
-    if (action === 'add') {
+    if (action === 'stats') {
+      result = getStats_(data);
+    } else if (action === 'add') {
       result = addRecord_(data);
     } else if (action === 'addActive') {
       result = addActiveRecord_(data);
@@ -260,4 +262,95 @@ function deleteRecord_(data) {
   const sheet = getSheet_();
   sheet.deleteRow(row);
   return { result: 'success', id: data.id };
+}
+
+
+function getStats_(data) {
+  const sheet = getSheet_();
+  const lastRow = sheet.getLastRow();
+  const lastCol = Math.max(sheet.getLastColumn(), HEADERS.length);
+
+  if (lastRow <= 1) {
+    return {
+      result: 'success',
+      todayUserCount: 0,
+      streakDays: 0
+    };
+  }
+
+  const headers = sheet.getRange(1, 1, 1, lastCol).getDisplayValues()[0];
+  const values = sheet.getRange(2, 1, lastRow - 1, lastCol).getDisplayValues();
+
+  const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  const targetName = String((data && data.name) || '').trim();
+
+  const todayNames = {};
+  const targetDates = {};
+
+  values.forEach(row => {
+    const obj = {};
+    headers.forEach((h, i) => {
+      if (h) obj[h] = row[i];
+    });
+
+    const date = normalizeDateForStats_(obj['日付']);
+    const name = String(obj['名前'] || '').trim();
+    const minutes = Number(obj['自習分数'] || 0);
+
+    if (date === today && name && minutes > 0) {
+      todayNames[name] = true;
+    }
+
+    if (targetName && name === targetName && minutes > 0 && date) {
+      targetDates[date] = true;
+    }
+  });
+
+  return {
+    result: 'success',
+    todayUserCount: Object.keys(todayNames).length,
+    streakDays: calculateStreakFromDates_(targetDates)
+  };
+}
+
+function normalizeDateForStats_(value) {
+  if (!value) return '';
+  value = String(value).trim();
+
+  // 2026-07-07
+  let m = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) {
+    return m[1] + '-' + ('0' + Number(m[2])).slice(-2) + '-' + ('0' + Number(m[3])).slice(-2);
+  }
+
+  // 2026/7/7
+  m = value.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})/);
+  if (m) {
+    return m[1] + '-' + ('0' + Number(m[2])).slice(-2) + '-' + ('0' + Number(m[3])).slice(-2);
+  }
+
+  const d = new Date(value);
+  if (!isNaN(d.getTime())) {
+    return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  }
+
+  return '';
+}
+
+function calculateStreakFromDates_(dateMap) {
+  let streak = 0;
+  const tz = Session.getScriptTimeZone();
+  const d = new Date();
+
+  for (let i = 0; i < 365; i++) {
+    const key = Utilities.formatDate(d, tz, 'yyyy-MM-dd');
+    if (dateMap[key]) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
 }
