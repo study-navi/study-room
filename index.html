@@ -2,194 +2,640 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>自習室記録アプリ v8 PWA 安定版 安定版</title>
-<style>
-:root {
-  --main:#2563eb;--dark:#143b73;--gold:#f6b73c;--bg:#f3f7ff;--card:#fff;--line:#dbe5f5;
-  --danger:#dc2626;--ok:#16a34a;--text:#172033;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;background:linear-gradient(135deg,#eef5ff,#fff);color:var(--text)}
-.wrap{max-width:1120px;margin:auto;padding:18px}
-header{background:linear-gradient(135deg,var(--dark),var(--main));color:#fff;border-radius:24px;padding:24px;box-shadow:0 10px 25px rgba(20,59,115,.18);position:relative;overflow:hidden}
-header:after{content:"";position:absolute;right:-60px;top:-60px;width:180px;height:180px;background:rgba(246,183,60,.22);border-radius:50%}
-h1{margin:0;font-size:28px;position:relative;z-index:1}.lead{margin:8px 0 0;opacity:.95;position:relative;z-index:1}
-.badge{display:inline-block;margin-top:12px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:7px 12px;border-radius:999px;font-size:13px;font-weight:800;position:relative;z-index:1}
-.tabs{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}
-.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:11px 18px;font-weight:800;cursor:pointer}
-.tab.active{background:var(--main);color:#fff}
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 6px 18px rgba(20,59,115,.08)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-label{font-weight:800;font-size:14px;display:block}
-input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:16px;margin-top:6px;background:#fff}
-textarea{min-height:92px}
-.btn{border:0;border-radius:13px;background:var(--main);color:#fff;font-weight:900;padding:13px 18px;cursor:pointer}
-.btn:disabled{opacity:.55;cursor:not-allowed}.btn.sub{background:#64748b}.btn.danger{background:var(--danger)}.btn.ok{background:var(--ok)}.btn.gold{background:var(--gold);color:#172033}
-.bigBtn{font-size:18px;padding:18px 20px;border-radius:18px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.msg{padding:12px;border-radius:12px;margin-top:12px;background:#eff6ff;border:1px solid #bfdbfe;white-space:pre-wrap}
-.msg.err{background:#fff1f2;border-color:#fecdd3}.msg.ok{background:#f0fdf4;border-color:#bbf7d0}
-.hide{display:none}
-.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
-table{width:100%;border-collapse:collapse;min-width:960px}
-th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;font-size:14px;vertical-align:top}
-th{background:#f8fbff;position:sticky;top:0;z-index:1}td button{margin:2px}
-.small{font-size:13px;color:#64748b}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.stat{background:#f8fbff;border:1px solid var(--line);border-radius:16px;padding:14px}.stat b{font-size:24px;color:var(--main)}
-.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.quickCard{background:#f8fbff;border:1px solid var(--line);border-radius:18px;padding:14px}
-.statusPill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:900;font-size:13px;background:#eef2ff;color:#1d4ed8}
-.rankList{display:grid;gap:8px}.rankItem{display:flex;justify-content:space-between;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
-.modalBg{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
-.modal{background:#fff;border-radius:20px;max-width:760px;width:100%;max-height:92vh;overflow:auto;padding:18px}
-.editGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-
-.goalBox{background:#fff7ed;border:1px solid #fed7aa;border-radius:18px;padding:14px;margin:12px 0}
-.progressOuter{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:8px}
-.progressInner{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#2563eb);transition:.3s}
-.livePanel{background:linear-gradient(135deg,#ecfdf5,#eff6ff);border:1px solid #bbf7d0;border-radius:20px;padding:18px;margin:14px 0;text-align:center}
-.livePanel .state{font-size:22px;font-weight:900;color:#16a34a}
-.livePanel .timer{font-size:42px;font-weight:900;color:#143b73;margin:8px 0}
-.studentSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-.summaryCard{background:#f8fbff;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
-.summaryCard b{font-size:24px;color:var(--main)}
-
-@media(max-width:720px){.grid,.stats,.editGrid,.quick,.studentSummary{grid-template-columns:1fr}h1{font-size:23px}.wrap{padding:12px}.btn{width:100%}.row .btn{width:auto}}
-</style>
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Room</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 <meta name="theme-color" content="#143b73">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Study Room">
+<meta name="apple-mobile-web-app-title" content="自習室記録">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+  --navy:#143b73;
+  --blue:#2563eb;
+  --gold:#f6b73c;
+  --green:#16a34a;
+  --red:#dc2626;
+  --gray:#64748b;
+  --text:#152033;
+  --muted:#64748b;
+  --line:#dbe5f5;
+  --bg:#f3f7ff;
+  --card:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  background:linear-gradient(135deg,#edf5ff,#ffffff 52%,#f8fbff);
+  color:var(--text);
+}
+button,input,select,textarea{font:inherit}
+.wrap{max-width:980px;margin:auto;padding:14px;min-height:100vh}
+.appHeader{
+  background:linear-gradient(135deg,var(--navy),var(--blue));
+  color:#fff;border-radius:24px;padding:22px;
+  box-shadow:0 14px 30px rgba(20,59,115,.20);
+  position:relative;overflow:hidden;margin-bottom:14px;
+}
+.appHeader:after{content:"";position:absolute;right:-55px;top:-55px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.16)}
+.appHeader h1{margin:0;font-size:26px;position:relative;z-index:1}
+.appHeader p{margin:8px 0 0;opacity:.94;position:relative;z-index:1;line-height:1.55}
+.badge{display:inline-block;margin-top:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:7px 12px;font-weight:900;font-size:13px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin:14px 0;box-shadow:0 8px 22px rgba(20,59,115,.08)}
+.center{text-align:center}
+.hide{display:none!important}
+h2{margin:0 0 14px;font-size:24px}
+h3{margin:0 0 10px}
+label{display:block;font-weight:900;font-size:14px;margin:12px 0 6px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:15px;padding:13px 14px;background:#fff;font-size:16px}
+textarea{min-height:110px;resize:vertical}
+.btn{border:0;border-radius:16px;background:var(--blue);color:#fff;font-weight:1000;padding:14px 18px;cursor:pointer;box-shadow:0 8px 18px rgba(37,99,235,.18)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.big{width:100%;font-size:18px;padding:17px 20px}
+.btn.gold{background:var(--gold);color:#142033}
+.btn.green{background:var(--green)}
+.btn.gray{background:var(--gray)}
+.btn.red{background:var(--red)}
+.btn.light{background:#fff;color:var(--blue);border:1px solid var(--line);box-shadow:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.small{font-size:13px;color:var(--muted);line-height:1.55}
+.msg{padding:12px;border-radius:15px;margin-top:12px;background:#eff6ff;border:1px solid #bfdbfe;white-space:pre-wrap}
+.msg.ok{background:#f0fdf4;border-color:#bbf7d0}
+.msg.err{background:#fff1f2;border-color:#fecdd3}
+.stepPill{display:inline-block;background:#eef2ff;color:#1d4ed8;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:1000;margin-bottom:12px}
+.heroIcon{width:118px;height:118px;margin:18px auto;border-radius:30px;background:linear-gradient(135deg,#eff6ff,#ffffff);display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.heroIcon svg{width:74px;height:74px}
+.timerPanel{background:linear-gradient(135deg,#ecfdf5,#eff6ff);border:1px solid #bbf7d0;border-radius:26px;padding:18px;text-align:center;margin:12px 0}
+.state{display:inline-block;background:#dcfce7;color:#166534;border-radius:999px;padding:7px 14px;font-weight:1000}
+.clock{font-size:50px;font-weight:1000;color:var(--navy);letter-spacing:.03em;line-height:1.1;margin:10px 0}
+.timeNote{font-size:13px;color:#475569;font-weight:800}
+.actionGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.actionGrid .btn{min-height:76px;font-size:16px;line-height:1.3}
+.statGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#f8fbff;border:1px solid var(--line);border-radius:18px;padding:13px;text-align:center}
+.stat b{display:block;font-size:24px;color:var(--blue);margin-top:4px}
+.progressOuter{height:13px;border-radius:999px;background:#e5e7eb;overflow:hidden;margin:9px 0}
+.progressInner{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--gold));transition:.25s}
+.starRow{display:flex;gap:8px;flex-wrap:wrap}
+.star{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;font-size:22px;cursor:pointer;color:#cbd5e1}
+.star.active{background:#fff7ed;color:#f59e0b;border-color:#fdba74}
+.topNav{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+.topNav .btn{box-shadow:none;padding:10px 14px;border-radius:999px}
+.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:16px}
+table{width:100%;min-width:930px;border-collapse:collapse}
+th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;font-size:14px;vertical-align:top}
+th{background:#f8fbff}
+.nameLink{font-weight:900;color:var(--blue);text-decoration:underline;cursor:pointer}
+.rankList{display:grid;gap:8px}
+.rankItem{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px}
+.inRoomItem{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:10px}
+.statusPill{display:inline-block;padding:7px 11px;border-radius:999px;font-weight:900;font-size:13px;background:#eef2ff;color:#1d4ed8}
+.statusPill.green{background:#dcfce7;color:#166534}
+.modalBg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal{background:#fff;border-radius:22px;max-width:760px;width:100%;max-height:92vh;overflow:auto;padding:18px}
+.installHint{background:#fff7ed;border:1px solid #fed7aa;border-radius:18px;padding:12px;margin-top:12px}
+@media(max-width:720px){
+  .wrap{padding:12px}
+  .appHeader{padding:18px;border-radius:22px}
+  .appHeader h1{font-size:23px}
+  .clock{font-size:43px}
+  .grid2,.grid3,.statGrid{grid-template-columns:1fr}
+  .actionGrid{grid-template-columns:1fr 1fr}
+  .actionGrid .breakBtn{grid-column:1/3;min-height:62px}
+  .actionGrid .btn{min-height:72px}
+  .card{padding:16px;border-radius:21px}
+  .heroIcon{width:104px;height:104px}
+}
 
+/* v10 premium mobile app polish */
+body{
+  background:
+    radial-gradient(circle at 20% 0%, rgba(37,99,235,.14), transparent 34%),
+    radial-gradient(circle at 95% 12%, rgba(246,183,60,.18), transparent 32%),
+    linear-gradient(135deg,#f4f8ff,#ffffff 52%,#eef5ff);
+}
+.wrap{max-width:780px;padding:12px}
+.appHeader{
+  border-radius:30px;
+  padding:24px 22px;
+  min-height:142px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.appHeader h1{font-size:32px;letter-spacing:.01em}
+.appHeader p{font-size:14px}
+.badge{
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(10px);
+  width:max-content;
+}
+.topNav{
+  position:sticky;
+  top:8px;
+  z-index:9;
+  background:rgba(255,255,255,.72);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(219,229,245,.75);
+  border-radius:999px;
+  padding:8px;
+  box-shadow:0 10px 24px rgba(20,59,115,.08);
+}
+.topNav .btn{
+  flex:1;
+  min-width:84px;
+  background:transparent;
+  border:0;
+  color:#143b73;
+  font-size:13px;
+}
+.topNav .btn:hover{background:#eff6ff}
+.card{
+  border-radius:30px;
+  padding:22px;
+  box-shadow:0 18px 38px rgba(20,59,115,.10);
+  border:1px solid rgba(219,229,245,.92);
+}
+.stepPill{
+  background:linear-gradient(135deg,#eef2ff,#eff6ff);
+  color:#143b73;
+  border:1px solid #dbeafe;
+}
+.heroIcon{
+  background:linear-gradient(135deg,#ffffff,#eff6ff);
+  box-shadow:inset 0 0 0 1px rgba(219,229,245,.9), 0 16px 28px rgba(20,59,115,.10);
+}
+input,select,textarea{
+  border-radius:18px;
+  background:#fbfdff;
+  border-color:#d9e6f8;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:#93c5fd;
+  box-shadow:0 0 0 4px rgba(147,197,253,.22);
+}
+.btn{
+  border-radius:18px;
+  box-shadow:0 12px 24px rgba(37,99,235,.18);
+  transform:translateY(0);
+  transition:.15s ease;
+}
+.btn:active{transform:scale(.98)}
+.timerPanel{
+  border-radius:34px;
+  padding:22px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),
+    linear-gradient(135deg,#e8fff2,#edf5ff);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.65), 0 18px 34px rgba(22,163,74,.12);
+}
+.state{
+  font-size:14px;
+  padding:8px 16px;
+}
+.clock{
+  font-size:58px;
+  letter-spacing:.04em;
+  text-shadow:0 6px 18px rgba(20,59,115,.12);
+}
+.actionGrid .btn{
+  min-height:88px;
+  border-radius:24px;
+  font-size:17px;
+}
+.actionGrid .btn.gold{
+  background:linear-gradient(135deg,#f6b73c,#ffd977);
+}
+.actionGrid .btn.green{
+  background:linear-gradient(135deg,#16a34a,#4ade80);
+}
+.actionGrid .btn.gray{
+  background:linear-gradient(135deg,#64748b,#94a3b8);
+}
+.stat{
+  border-radius:22px;
+  background:rgba(255,255,255,.86);
+  box-shadow:0 8px 18px rgba(20,59,115,.06);
+}
+.stat b{font-size:27px}
+.progressOuter{height:16px;background:#e8eef7}
+.progressInner{background:linear-gradient(90deg,#22c55e,#2563eb,#f6b73c)}
+.star{
+  flex:1;
+  text-align:center;
+  border-radius:18px;
+  padding:12px 4px;
+  box-shadow:0 8px 16px rgba(20,59,115,.06);
+}
+.completeGlow{
+  animation:popIn .35s ease both;
+}
+@keyframes popIn{
+  from{opacity:0;transform:scale(.96) translateY(8px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.screenTitle{
+  font-size:28px;
+  letter-spacing:.01em;
+}
+@media(max-width:720px){
+  .wrap{padding:10px}
+  .appHeader{border-radius:26px;min-height:128px}
+  .appHeader h1{font-size:30px}
+  .card{padding:18px;border-radius:28px}
+  .clock{font-size:52px}
+  .actionGrid{gap:9px}
+  .actionGrid .btn{min-height:82px}
+}
+@media(max-width:390px){
+  .clock{font-size:46px}
+  .actionGrid .btn{font-size:15px}
+}
+
+
+/* v11 final polish */
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 12% 4%, rgba(37,99,235,.16), transparent 28%),
+    radial-gradient(circle at 88% 8%, rgba(246,183,60,.18), transparent 26%),
+    radial-gradient(circle at 50% 100%, rgba(22,163,74,.08), transparent 35%),
+    linear-gradient(145deg,#f5f9ff,#ffffff 55%,#edf5ff);
+}
+.wrap{max-width:760px}
+.appHeader{
+  min-height:156px;
+  border-radius:34px;
+  background:
+    radial-gradient(circle at 82% 12%, rgba(246,183,60,.34), transparent 27%),
+    linear-gradient(135deg,#0f2f5f,#2563eb);
+}
+.appHeader h1{font-size:36px;letter-spacing:.02em}
+.appHeader p{font-size:14px;max-width:520px}
+.card{
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(219,229,245,.95);
+}
+#welcome,#timerScreen,#reviewScreen,#completeScreen,#teacher{
+  animation:screenEnter .26s ease both;
+}
+@keyframes screenEnter{
+  from{opacity:0;transform:translateY(10px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.topNav{
+  justify-content:center;
+  margin-top:-2px;
+}
+.topNav .btn{
+  border-radius:999px;
+  font-weight:1000;
+}
+.heroIcon{
+  transform:translateZ(0);
+  animation:floatIcon 3.2s ease-in-out infinite;
+}
+@keyframes floatIcon{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+.clock{
+  font-variant-numeric:tabular-nums;
+}
+.timerPanel{
+  position:relative;
+  overflow:hidden;
+}
+.timerPanel:after{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  right:-70px;
+  top:-70px;
+  border-radius:50%;
+  background:rgba(255,255,255,.35);
+}
+.actionGrid .btn{
+  position:relative;
+  overflow:hidden;
+}
+.actionGrid .btn:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+  transform:translateX(-120%);
+}
+.actionGrid .btn:active:after{
+  transform:translateX(120%);
+  transition:.35s;
+}
+.star{
+  transition:.15s ease;
+}
+.star.active{
+  transform:translateY(-2px);
+  box-shadow:0 10px 18px rgba(245,158,11,.18);
+}
+.msg.ok{
+  animation:toastIn .22s ease both;
+}
+@keyframes toastIn{
+  from{opacity:0;transform:translateY(5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.statGrid .stat{
+  min-height:78px;
+}
+.completeGlow .heroIcon{
+  animation:successPop .7s ease both;
+}
+@keyframes successPop{
+  0%{transform:scale(.82);opacity:.4}
+  60%{transform:scale(1.08);opacity:1}
+  100%{transform:scale(1)}
+}
+@media(max-width:720px){
+  .appHeader{min-height:132px}
+  .appHeader h1{font-size:32px}
+  .topNav{position:sticky;top:8px}
+  .card{box-shadow:0 14px 30px rgba(20,59,115,.09)}
+  .actionGrid .btn{font-size:16px}
+}
+
+
+/* compact final adjustment */
+#welcome{padding-top:24px}
+#welcome .center{margin-bottom:8px}
+.compactTitle{font-size:34px;margin-top:2px;margin-bottom:4px}
+#welcome .stepPill{display:none}
+#welcome label{margin-top:16px}
+#welcome .installHint{font-size:12px;opacity:.82}
+.timerPanel{margin-top:6px}
+.timerPanel .clock{font-size:62px}
+.timerPanel .state{font-size:15px}
+.timerPanel.studyingMode{
+  background:radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),linear-gradient(135deg,#e8fff2,#eff6ff);
+}
+.timerPanel.breakMode{
+  background:radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),linear-gradient(135deg,#fff7ed,#eff6ff);
+}
+.timerPanel.finishedMode{
+  background:radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),linear-gradient(135deg,#eff6ff,#ffffff);
+}
+#timerScreen h2{display:none}
+#timerScreen .stepPill{display:none}
+#timerScreen > .center{margin:0}
+@media(max-width:720px){
+  #welcome{padding-top:18px}
+  .compactTitle{font-size:32px}
+  #welcome .heroIcon{display:none}
+  .timerPanel .clock{font-size:56px}
+  .timerPanel{padding:20px 16px}
+}
+@media(max-width:390px){
+  .timerPanel .clock{font-size:49px}
+  .compactTitle{font-size:30px}
+}
+
+
+/* remove unnecessary save button / final timer compact */
+#timerScreen .row{
+  justify-content:center;
+}
+#timerScreen .row .btn.light{
+  width:auto;
+  min-width:140px;
+}
+.timerPanel{
+  padding-top:18px;
+  padding-bottom:18px;
+}
+.timerPanel .clock{
+  margin:6px 0;
+}
+.actionGrid{
+  margin-top:10px;
+}
+.statGrid{
+  margin-top:10px;
+}
+@media(max-width:720px){
+  #timerScreen .row{
+    display:none;
+  }
+  .timerPanel{
+    margin-bottom:10px;
+  }
+  .statGrid .stat{
+    padding:11px;
+    min-height:auto;
+  }
+  .stat b{
+    font-size:22px;
+  }
+}
+
+</style>
 </head>
 <body>
 <div class="wrap">
-<header><h1>自習室記録アプリ v8</h1><p class="lead">在室一覧・生徒カルテ・ランキングを強化した版です。</p><span class="badge">School IE 共和校｜自習室ログ｜安定版</span></header>
+  <header class="appHeader">
+    <h1>Study Room</h1>
+    <p>シンプルに記録、すぐ送信。</p>
+    <span class="badge">Study Room</span>
+  </header>
 
-<div class="tabs">
-  <button class="tab active" id="tabStudent" type="button">生徒入力</button>
-  <button class="tab" id="tabTeacher" type="button">先生画面</button>
-</div>
-
-<section id="student" class="card">
-<h2>今日の自習記録</h2>
-<div id="profileBox" class="quickCard">
-  <div class="row" style="justify-content:space-between">
-    <div><b>生徒情報</b><div class="small">一度入力すると、この端末では次回から自動入力されます。</div></div>
-    <span id="loginStatus" class="statusPill">未設定</span>
+  <div class="topNav">
+    <button class="btn light" type="button" onclick="goScreen('welcome')">生徒</button>
+    <button class="btn light" type="button" onclick="goScreen('teacher')">先生画面</button>
+    <button class="btn light" type="button" onclick="resetSessionConfirm()">リセット</button>
   </div>
-</div>
 
-<div class="goalBox">
-  <div class="row" style="justify-content:space-between">
-    <div>
-      <b>今日の目標時間</b>
-      <div class="small">目標を設定すると達成率が表示されます。</div>
+  <section id="welcome" class="card">
+    <div class="center">
+      <span class="stepPill">① 名前入力</span>
+<h2 class="screenTitle compactTitle">Study Room</h2>
+      <p class="small">名前を入力してスタート</p>
     </div>
-    <div style="min-width:160px"><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
-  </div>
-  <div class="progressOuter"><div class="progressInner" id="goalProgress"></div></div>
-  <div class="small" id="goalText">今日の達成率：0%</div>
-</div>
+    <label>名前</label>
+    <input id="studentName" placeholder="例：山田太郎" autocomplete="name">
+    <div class="grid2">
+      <div><label>学年</label><select id="grade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select></div>
+      <div><label>今日の目標時間（分）</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
+    </div>
+    <button class="btn big" type="button" onclick="startApp()">スタート</button>
+    <div class="installHint small">入力した名前・学年・タイマー状態はこの端末に保存されます。アプリを自動保存されています。</div>
+    <div id="welcomeMsg"></div>
+  </section>
 
-<div class="livePanel">
-  <div class="state" id="liveState">まだ入室していません</div>
-  <div class="timer" id="liveTimer">00:00</div>
-  <div class="small">入室ボタンを押すと経過時間がリアルタイムで増えます。</div>
-</div>
+  <section id="timerScreen" class="card hide">
+    <div class="center">
+      <span class="stepPill">② 自習中</span>
+      <h2>タイマー</h2>
+    </div>
+    <div class="timerPanel">
+      <div class="state" id="stateText">まだ入室していません</div>
+      <div class="clock" id="mainClock">00:00:00</div>
+      <div class="timeNote" id="clockNote">現在時刻で入室を押すと計測します</div>
+      <div class="actionGrid">
+        <button class="btn gold" type="button" onclick="enterRoom()">現在時刻で<br>入室</button>
+        <button class="btn gray breakBtn" id="breakBtn" type="button" onclick="toggleBreak()">休憩</button>
+        <button class="btn green" type="button" onclick="exitRoom()">現在時刻で<br>退室</button>
+      </div>
+    </div>
+    <div class="statGrid">
+      <div class="stat">今回の学習時間<b id="sessionTimeText">0分</b></div>
+      <div class="stat">休憩時間<b id="breakTimeText">0分</b></div>
+      <div class="stat">今日の端末合計<b id="localTodayText">0分</b></div>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <b>今日の目標</b><span id="goalPercent">0%</span>
+      </div>
+      <div class="progressOuter"><div class="progressInner" id="goalBar"></div></div>
+      <div class="small" id="goalDetail">0 / 0分</div>
+    </div>
+    <div class="row">
+      <button class="btn light" type="button" onclick="goScreen('welcome')">名前を変更</button>
+    </div>
+    <div id="timerMsg"></div>
+  </section>
 
-<div class="studentSummary">
-  <div class="summaryCard">今回の自習時間<br><b id="currentMinutes">0</b><span class="small"> 分</span></div>
-  <div class="summaryCard">この端末の今日合計<br><b id="localTodayMinutes">0</b><span class="small"> 分</span></div>
-  <div class="summaryCard">連続利用メモ<br><b id="streakDays">1</b><span class="small"> 日</span></div>
-</div>
+  <section id="reviewScreen" class="card hide">
+    <div class="center">
+      <span class="stepPill">③ 退室後の振り返り</span>
+      <h2>振り返り入力</h2>
+      <p class="small">退室しました。今日の学習をまとめて先生へ送信しましょう。</p>
+    </div>
+    <div class="statGrid">
+      <div class="stat">入室<b id="reviewStart">--:--</b></div>
+      <div class="stat">退室<b id="reviewEnd">--:--</b></div>
+      <div class="stat">自習時間<b id="reviewMinutes">0分</b></div>
+    </div>
+    <div class="grid2">
+      <div><label>科目</label><select id="subject"><option>英語</option><option>数学</option><option>国語</option><option>理科</option><option>社会</option><option>物理</option><option>化学</option><option>生物</option><option>日本史</option><option>世界史</option><option>その他</option></select></div>
+      <div><label>日付</label><input id="date" type="date"></div>
+    </div>
 
-<div class="grid">
-  <div><label>日付<input id="date" type="date"></label></div>
-  <div><label>名前<input id="studentName" oninput="updateProfileStatus()" placeholder="例：山田太郎" autocomplete="name"></label></div>
-  <div><label>学年<select id="grade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select></label></div>
-  <div><label>科目<select id="subject"><option>英語</option><option>数学</option><option>国語</option><option>理科</option><option>社会</option><option>物理</option><option>化学</option><option>生物</option><option>日本史</option><option>世界史</option><option>その他</option></select></label></div>
-</div>
-<div class="quick">
-  <div class="quickCard"><b>入室</b><input id="startTime" type="time"><button class="btn gold bigBtn" id="startNowBtn" type="button" onclick="handleStartNow()">現在時刻で入室</button></div>
-  <div class="quickCard"><b>退室</b><input id="endTime" type="time"><button class="btn ok bigBtn" id="endNowBtn" type="button" onclick="handleEndNow()">現在時刻で退室</button></div>
-</div>
-<div class="grid">
-  <div><label>集中度<select id="focus"><option>5</option><option>4</option><option selected>3</option><option>2</option><option>1</option></select></label></div>
-  <div><label>達成度<select id="achievement"><option>5</option><option>4</option><option selected>3</option><option>2</option><option>1</option></select></label></div>
-</div>
-<label>学習内容<textarea id="content" placeholder="例：数学ワーク p.20〜25"></textarea></label>
-<label>コメント<textarea id="comment" placeholder="質問・先生に伝えたいこと"></textarea></label>
-<div class="row">
-  <button class="btn" id="submitBtn" type="button" onclick="submitRecord()">記録を送信する</button>
-  <button class="btn sub" id="clearProfileBtn" type="button" onclick="clearProfile()">端末の生徒情報を消す</button>
-</div>
-<div id="studentMsg"></div>
-</section>
+    <label>集中度</label>
+    <div class="starRow" id="focusStars"></div>
+    <div class="small" id="focusLabel">3：ふつう</div>
 
-<section id="teacher" class="card hide">
-<h2>先生画面</h2>
-<div id="loginBox" class="card">
-  <div class="grid">
-    <div><label>先生ID<input id="teacherId" placeholder="先生ID"></label></div>
-    <div><label>パスワード<input id="teacherPass" type="password" placeholder="パスワード"></label></div>
-  </div>
-  <button class="btn" id="loginBtn" type="button">ログイン</button>
-  <div class="small">先生ID・パスワードはApps Script側だけで確認します。</div>
-  <div id="loginMsg"></div>
-</div>
+    <label>達成度</label>
+    <div class="starRow" id="achievementStars"></div>
+    <div class="small" id="achievementLabel">3：ふつう</div>
 
-<div id="teacherPanel" class="hide">
-  <div class="stats">
-    <div class="stat">記録数<br><b id="statCount">0</b></div>
-    <div class="stat">合計分数<br><b id="statMinutes">0</b></div>
-    <div class="stat">平均集中度<br><b id="statFocus">0</b></div>
-    <div class="stat">今日の記録<br><b id="statToday">0</b></div>
-  </div>
-  <div class="card"><h3>自習時間ランキング</h3><div id="ranking" class="rankList"></div></div>
-  <div class="row card">
-    <input id="search" placeholder="名前・科目・内容で検索">
-    <button class="btn sub" id="refreshBtn" type="button">最新表示</button>
-    <button class="btn ok" id="csvBtn" type="button">CSV出力</button>
-    <button class="btn danger" id="logoutBtn" type="button">ログアウト</button>
-  </div>
-  <div id="teacherMsg"></div>
-  <div class="tableWrap"><table><thead><tr><th>日付</th><th>名前</th><th>学年</th><th>科目</th><th>時間</th><th>分数</th><th>集中</th><th>達成</th><th>内容</th><th>コメント</th><th>操作</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    <label>学習内容</label>
+    <textarea id="content" placeholder="例：数学ワーク p.20〜35、英単語50個テスト勉強"></textarea>
+
+    <label>先生へのコメント（任意）</label>
+    <textarea id="comment" placeholder="例：図形の問題が難しかったです。次回質問したいです。"></textarea>
+
+    <button class="btn big" id="sendBtn" type="button" onclick="submitToTeacher()">先生へ送信</button>
+    <button class="btn light big" type="button" onclick="goScreen('timerScreen')">タイマーに戻る</button>
+    <div id="reviewMsg"></div>
+  </section>
+
+  <section id="completeScreen" class="card hide completeGlow">
+    <div class="center">
+      <span class="stepPill">送信完了</span>
+      <div class="heroIcon">
+        <svg viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="24" fill="#16a34a"/>
+          <path d="M21 32l7 7 16-17" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>保存しました！</h2>
+      <p class="small">記録が保存されました。</p>
+      <button class="btn big" type="button" onclick="newRecord()">次の自習を記録する</button>
+    </div>
+  </section>
+
+  <section id="teacher" class="card hide">
+    <h2>先生画面</h2>
+    <div id="loginBox" class="card">
+      <div class="grid2">
+        <div><label>先生ID</label><input id="teacherId" placeholder="先生ID"></div>
+        <div><label>パスワード</label><input id="teacherPass" type="password" placeholder="パスワード"></div>
+      </div>
+      <button class="btn" type="button" onclick="teacherLogin()">ログイン</button>
+      <div id="loginMsg"></div>
+    </div>
+    <div id="teacherPanel" class="hide">
+      <div class="statGrid">
+        <div class="stat">記録数<b id="statCount">0</b></div>
+        <div class="stat">合計分数<b id="statMinutes">0</b></div>
+        <div class="stat">今日の記録<b id="statToday">0</b></div>
+      </div>
+      <div class="card">
+        <h3>現在自習中の生徒</h3>
+        <div id="inRoomList" class="rankList"></div>
+      </div>
+      <div class="row">
+        <input id="search" placeholder="名前・科目・内容で検索" style="flex:1;min-width:220px">
+        <button class="btn light" type="button" onclick="loadRecords()">更新</button>
+        <button class="btn green" type="button" onclick="downloadCSV()">CSV</button>
+      </div>
+      <div id="teacherMsg"></div>
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>日付</th><th>名前</th><th>学年</th><th>科目</th><th>時間</th><th>分数</th><th>集中</th><th>達成</th><th>内容</th><th>コメント</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </div>
-</section>
-</div>
-<div id="modalRoot"></div>
 
 <script>
 'use strict';
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxYbjE0ZO9B-kdn1HbQU1pD7q8p11RL6aKA4zfNiV1yb1ZXGJulGcazf9670xm9zVAp/exec';
-const PROFILE_KEY = 'studyRoomStudentProfileV6';
-const TEACHER_SESSION_KEY = 'studyRoomTeacherSessionV6';
+const STATE_KEY = 'studyRoomV9State';
+const PROFILE_KEY = 'studyRoomV9Profile';
+const LOCAL_TOTAL_KEY = 'studyRoomV9LocalTotal';
+const TEACHER_SESSION_KEY = 'studyRoomV9TeacherSession';
+
+let appState = {
+  screen:'welcome',
+  name:'',
+  grade:'中1',
+  goalMinutes:'',
+  status:'idle',
+  startAt:null,
+  endAt:null,
+  breakStartAt:null,
+  breakTotalMs:0,
+  focus:3,
+  achievement:3
+};
+let timerId = null;
 let records = [];
-let teacherSession = '';
+let teacherSession = sessionStorage.getItem(TEACHER_SESSION_KEY) || '';
 
-const $ = (id) => document.getElementById(id);
-function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-function setMsg(id, text, type='') { $(id).innerHTML = text ? `<div class="msg ${type}">${escapeHtml(text)}</div>` : ''; }
-function showTab(id) { $('tabStudent').classList.toggle('active', id==='student'); $('tabTeacher').classList.toggle('active', id==='teacher'); $('student').classList.toggle('hide', id!=='student'); $('teacher').classList.toggle('hide', id!=='teacher'); }
-function nowTime() { const d = new Date(); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
-function todayISO() { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function calcMinutes(start,end) { if(!start||!end)return ''; const [sh,sm]=start.split(':').map(Number); const [eh,em]=end.split(':').map(Number); let m=(eh*60+em)-(sh*60+sm); if(m<0)m+=1440; return String(m); }
+const $ = id => document.getElementById(id);
 
-function api(action, data={}) {
-  return new Promise((resolve, reject) => {
-    const callbackName = '__studyRoomCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+function api(action, data={}){
+  return new Promise((resolve,reject)=>{
+    const cb = '__sr_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
     let script;
-    const timer = setTimeout(() => { cleanup(); reject(new Error('通信がタイムアウトしました。')); }, 20000);
-    function cleanup() { clearTimeout(timer); try{delete window[callbackName];}catch(e){window[callbackName]=undefined;} if(script&&script.parentNode)script.parentNode.removeChild(script); }
-    window[callbackName] = (result) => { cleanup(); resolve(result); };
+    const timer = setTimeout(()=>{ cleanup(); reject(new Error('通信がタイムアウトしました。')); }, 20000);
+    function cleanup(){
+      clearTimeout(timer);
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+      if(script && script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cb] = result => { cleanup(); resolve(result); };
     const params = new URLSearchParams();
     params.set('action', action);
-    params.set('callback', callbackName);
+    params.set('callback', cb);
     params.set('data', JSON.stringify(data));
     params.set('_', String(Date.now()));
     script = document.createElement('script');
@@ -199,321 +645,324 @@ function api(action, data={}) {
   });
 }
 
-function saveProfile() { const profile={name:$('studentName').value.trim(),grade:$('grade').value}; if(profile.name){localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));updateProfileStatus();} }
-function loadProfile() { try{const raw=localStorage.getItem(PROFILE_KEY); if(!raw)return; const p=JSON.parse(raw); if(p.name)$('studentName').value=p.name; if(p.grade)$('grade').value=p.grade;}catch(e){} updateProfileStatus(); }
-function clearProfile() { localStorage.removeItem(PROFILE_KEY); $('studentName').value=''; updateProfileStatus(); setMsg('studentMsg','この端末の生徒情報を消しました。','ok'); }
-function updateProfileStatus() { const name=$('studentName').value.trim(); $('loginStatus').textContent=name ? name+' で入力中' : '未設定'; }
-
-
-function getLocalStats(){
+function escapeHtml(v){ return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function setMsg(id,text,type=''){ $(id).innerHTML = text ? `<div class="msg ${type}">${escapeHtml(text)}</div>` : ''; }
+function nowISO(){ return new Date().toISOString(); }
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function timeText(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function formatHMS(ms){
+  ms = Math.max(0, ms || 0);
+  const t = Math.floor(ms/1000);
+  const h = Math.floor(t/3600);
+  const m = Math.floor((t%3600)/60);
+  const s = t%60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+function formatMin(ms){ return Math.floor(Math.max(0, ms || 0)/60000) + '分'; }
+function elapsedMs(){
+  if(!appState.startAt) return 0;
+  const end = appState.endAt ? new Date(appState.endAt).getTime() : Date.now();
+  const start = new Date(appState.startAt).getTime();
+  const activeBreak = appState.status === 'break' && appState.breakStartAt ? Date.now() - new Date(appState.breakStartAt).getTime() : 0;
+  return Math.max(0, end - start - appState.breakTotalMs - activeBreak);
+}
+function breakMs(){
+  const active = appState.status === 'break' && appState.breakStartAt ? Date.now() - new Date(appState.breakStartAt).getTime() : 0;
+  return appState.breakTotalMs + active;
+}
+function saveState(){
+  localStorage.setItem(STATE_KEY, JSON.stringify(appState));
+}
+function loadState(){
   try{
-    return JSON.parse(localStorage.getItem('studyRoomLocalStatsV8') || '{}');
-  }catch(e){
-    return {};
+    const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+    if(p.name) appState.name = p.name;
+    if(p.grade) appState.grade = p.grade;
+    if(p.goalMinutes) appState.goalMinutes = p.goalMinutes;
+    const s = JSON.parse(localStorage.getItem(STATE_KEY) || '{}');
+    if(s && s.startAt) appState = Object.assign(appState, s);
+  }catch(e){}
+}
+function saveProfile(){
+  localStorage.setItem(PROFILE_KEY, JSON.stringify({name:appState.name, grade:appState.grade, goalMinutes:appState.goalMinutes}));
+}
+function goScreen(id){
+  ['welcome','timerScreen','reviewScreen','completeScreen','teacher'].forEach(x => $(x).classList.toggle('hide', x !== id));
+  appState.screen = id;
+  saveState();
+  if(id === 'timerScreen') startTicker();
+  if(id === 'reviewScreen') renderReview();
+}
+function startApp(){
+  const name = $('studentName').value.trim();
+  if(!name){ setMsg('welcomeMsg','名前を入力してください。','err'); return; }
+  appState.name = name;
+  appState.grade = $('grade').value;
+  appState.goalMinutes = $('goalMinutes').value;
+  saveProfile();
+  saveState();
+  goScreen('timerScreen');
+}
+function enterRoom(){
+  appState.status = 'studying';
+  appState.startAt = nowISO();
+  appState.endAt = null;
+  appState.breakStartAt = null;
+  appState.breakTotalMs = 0;
+  saveState();
+  setMsg('timerMsg','入室しました。','ok');
+  startTicker();
+}
+function toggleBreak(){
+  if(!appState.startAt){ setMsg('timerMsg','先に入室してください。','err'); return; }
+  if(appState.endAt){ setMsg('timerMsg','退室後は休憩できません。','err'); return; }
+  if(appState.status === 'break'){
+    appState.breakTotalMs += Date.now() - new Date(appState.breakStartAt).getTime();
+    appState.breakStartAt = null;
+    appState.status = 'studying';
+    setMsg('timerMsg','休憩を終了しました。','ok');
+  }else{
+    appState.breakStartAt = nowISO();
+    appState.status = 'break';
+    setMsg('timerMsg','休憩を開始しました。','ok');
+  }
+  saveState();
+  renderTimer();
+}
+function exitRoom(){
+  if(!appState.startAt){ setMsg('timerMsg','先に入室してください。','err'); return; }
+  if(appState.status === 'break') toggleBreak();
+  appState.endAt = nowISO();
+  appState.status = 'finished';
+  saveState();
+  goScreen('reviewScreen');
+}
+function startTicker(){
+  if(timerId) clearInterval(timerId);
+  timerId = setInterval(renderTimer, 1000);
+  renderTimer();
+}
+function localTotals(){
+  try{ return JSON.parse(localStorage.getItem(LOCAL_TOTAL_KEY) || '{}'); }catch(e){ return {}; }
+}
+function addLocalTotal(minutes){
+  const totals = localTotals();
+  const key = todayISO();
+  totals[key] = (Number(totals[key] || 0) + Number(minutes || 0));
+  localStorage.setItem(LOCAL_TOTAL_KEY, JSON.stringify(totals));
+}
+function renderTimer(){
+  const e = elapsedMs();
+  const b = breakMs();
+  $('mainClock').textContent = formatHMS(e);
+  $('sessionTimeText').textContent = formatMin(e);
+  $('breakTimeText').textContent = formatMin(b);
+  const totals = localTotals();
+  const todayMin = Number(totals[todayISO()] || 0);
+  $('localTodayText').textContent = todayMin + '分';
+  const goal = Number(appState.goalMinutes || 0);
+  const currentMin = Math.floor(e/60000);
+  const totalNow = todayMin + currentMin;
+  const percent = goal ? Math.min(100, Math.round(totalNow / goal * 100)) : 0;
+  $('goalBar').style.width = percent + '%';
+  $('goalPercent').textContent = percent + '%';
+  $('goalDetail').textContent = goal ? `${totalNow} / ${goal}分` : '目標未設定';
+
+  const panel = document.querySelector('.timerPanel');
+  if(panel){
+    panel.classList.remove('studyingMode','breakMode','finishedMode');
+  }
+  if(appState.status === 'break'){
+    if(panel) panel.classList.add('breakMode');
+    $('stateText').textContent = '休憩中';
+    $('clockNote').textContent = '休憩中は自習時間を止めています';
+    $('breakBtn').textContent = '休憩終了';
+  }else if(appState.status === 'studying'){
+    if(panel) panel.classList.add('studyingMode');
+    $('stateText').textContent = '入室中';
+    $('clockNote').textContent = '自動保存されています';
+    $('breakBtn').textContent = '休憩';
+  }else if(appState.status === 'finished'){
+    if(panel) panel.classList.add('finishedMode');
+    $('stateText').textContent = '退室済み';
+    $('clockNote').textContent = '振り返りへ進みます';
+    $('breakBtn').textContent = '休憩';
+  }else{
+    $('stateText').textContent = '未入室';
+    $('clockNote').textContent = '入室で計測開始';
+    $('breakBtn').textContent = '休憩';
   }
 }
-
-function saveLocalStats(stats){
-  localStorage.setItem('studyRoomLocalStatsV8', JSON.stringify(stats));
+function renderStars(targetId, value, setter){
+  const el = $(targetId);
+  el.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'star' + (i <= value ? ' active' : '');
+    b.textContent = '★';
+    b.onclick = () => setter(i);
+    el.appendChild(b);
+  }
+}
+function setFocus(n){
+  appState.focus = n;
+  $('focusLabel').textContent = n + '：' + ['','かなり低い','少し低い','ふつう','集中できた','とても集中できた'][n];
+  renderStars('focusStars', n, setFocus);
+  saveState();
+}
+function setAchievement(n){
+  appState.achievement = n;
+  $('achievementLabel').textContent = n + '：' + ['','あまり進まなかった','少し進んだ','ふつう','達成できた','かなり達成できた'][n];
+  renderStars('achievementStars', n, setAchievement);
+  saveState();
+}
+function renderReview(){
+  $('date').value = todayISO();
+  $('reviewStart').textContent = timeText(appState.startAt) || '--:--';
+  $('reviewEnd').textContent = timeText(appState.endAt) || '--:--';
+  $('reviewMinutes').textContent = Math.floor(elapsedMs()/60000) + '分';
+  setFocus(appState.focus || 3);
+  setAchievement(appState.achievement || 3);
+}
+async function submitToTeacher(){
+  const btn = $('sendBtn');
+  const minutes = Math.floor(elapsedMs()/60000);
+  if(!appState.name){ setMsg('reviewMsg','名前がありません。','err'); return; }
+  if(!appState.startAt || !appState.endAt){ setMsg('reviewMsg','入室・退室時刻がありません。','err'); return; }
+  const breakMinutes = Math.floor(breakMs()/60000);
+  const data = {
+    date:$('date').value || todayISO(),
+    name:appState.name,
+    grade:appState.grade,
+    subject:$('subject').value,
+    startTime:timeText(appState.startAt),
+    endTime:timeText(appState.endAt),
+    minutes:String(minutes),
+    focus:String(appState.focus || 3),
+    achievement:String(appState.achievement || 3),
+    content:$('content').value.trim(),
+    comment:($('comment').value.trim() + (breakMinutes ? '\n休憩：' + breakMinutes + '分' : '')).trim()
+  };
+  btn.disabled = true;
+  setMsg('reviewMsg','送信中です...');
+  try{
+    const res = await api('add', data);
+    if(res && res.result === 'success'){
+      addLocalTotal(minutes);
+      localStorage.removeItem(STATE_KEY);
+      appState.status = 'idle';
+      appState.startAt = null;
+      appState.endAt = null;
+      appState.breakStartAt = null;
+      appState.breakTotalMs = 0;
+      saveState();
+      goScreen('completeScreen');
+    }else{
+      setMsg('reviewMsg','送信できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
+    }
+  }catch(err){
+    setMsg('reviewMsg', err.message || String(err), 'err');
+  }finally{
+    btn.disabled = false;
+  }
+}
+function newRecord(){
+  $('content').value = '';
+  $('comment').value = '';
+  appState.status = 'idle';
+  appState.startAt = null;
+  appState.endAt = null;
+  appState.breakStartAt = null;
+  appState.breakTotalMs = 0;
+  saveState();
+  goScreen('timerScreen');
+}
+function resetSessionConfirm(){
+  if(confirm('現在の途中記録をリセットしますか？')){
+    localStorage.removeItem(STATE_KEY);
+    appState.status='idle'; appState.startAt=null; appState.endAt=null; appState.breakStartAt=null; appState.breakTotalMs=0;
+    goScreen('welcome');
+    renderTimer();
+  }
+}
+function saveStateNow(){
+  saveState();
+  setMsg('timerMsg','途中状態を保存しました。','ok');
 }
 
-function getTodayKey(){
-  return todayISO();
-}
-
-function updateCurrentMinutes(){
-  const m = calcMinutes($('startTime').value, $('endTime').value);
-  $('currentMinutes').textContent = m || '0';
-  updateGoalProgress();
-}
-
-function updateGoalProgress(){
-  const goal = Number($('goalMinutes').value || 0);
-  const current = Number($('currentMinutes').textContent || 0);
-  const localToday = Number($('localTodayMinutes').textContent || 0);
-  const total = Math.max(current, localToday);
-  const percent = goal > 0 ? Math.min(100, Math.round(total / goal * 100)) : 0;
-  $('goalProgress').style.width = percent + '%';
-  $('goalText').textContent = goal > 0 ? `今日の達成率：${percent}%（${total}/${goal}分）` : '今日の達成率：0%';
-  localStorage.setItem('studyRoomGoalMinutesV8', String(goal || ''));
-}
-
-function loadStudentDashboard(){
-  const stats = getLocalStats();
-  const today = getTodayKey();
-  $('localTodayMinutes').textContent = stats[today] || 0;
-  $('goalMinutes').value = localStorage.getItem('studyRoomGoalMinutesV8') || '';
-  updateCurrentMinutes();
-  updateGoalProgress();
-}
-
-let liveTimerId = null;
-function startLiveTimer(){
-  if(liveTimerId) clearInterval(liveTimerId);
-  $('liveState').textContent = '入室中';
-  liveTimerId = setInterval(() => {
-    const start = $('startTime').value;
-    if(!start) return;
-    const endNow = nowTime();
-    const elapsed = calcMinutes(start, endNow);
-    const mm = String(Math.floor(Number(elapsed || 0) / 60)).padStart(2,'0');
-    const ss = String(Number(elapsed || 0) % 60).padStart(2,'0');
-    $('liveTimer').textContent = `${mm}:${ss}`;
-  }, 1000);
-}
-
-function stopLiveTimer(){
-  if(liveTimerId) clearInterval(liveTimerId);
-  liveTimerId = null;
-  $('liveState').textContent = '退室済み';
-  updateCurrentMinutes();
-}
-
-function addLocalTodayMinutes(minutes){
-  const m = Number(minutes || 0);
-  if(!m) return;
-  const stats = getLocalStats();
-  const today = getTodayKey();
-  stats[today] = (Number(stats[today] || 0) + m);
-  saveLocalStats(stats);
-  $('localTodayMinutes').textContent = stats[today];
-  updateGoalProgress();
-}
-
-
-function getStudentData() {
-  const start=$('startTime').value, end=$('endTime').value;
-  return {date:$('date').value,name:$('studentName').value.trim(),grade:$('grade').value,subject:$('subject').value,startTime:start,endTime:end,minutes:calcMinutes(start,end),focus:$('focus').value,achievement:$('achievement').value,content:$('content').value.trim(),comment:$('comment').value.trim()};
-}
-
-async function submitRecord() {
-  const btn=$('submitBtn'); const data=getStudentData();
-  if(!data.name){setMsg('studentMsg','名前を入力してください。','err');return;}
-  if(!data.date){setMsg('studentMsg','日付を入力してください。','err');return;}
-  saveProfile(); btn.disabled=true; setMsg('studentMsg','送信中です...');
-  try{const res=await api('add',data); if(res&&res.result==='success'){setMsg('studentMsg',`保存しました。自習時間：${data.minutes||0}分`,'ok');addLocalTodayMinutes(data.minutes); $('content').value='';$('comment').value='';}else{setMsg('studentMsg','保存できませんでした：'+(res&&res.message?res.message:'原因不明'),'err');}}
-  catch(err){setMsg('studentMsg',err.message||String(err),'err');}
-  finally{btn.disabled=false;}
-}
-
-async function teacherLogin() {
-  const teacherId=$('teacherId').value.trim();
-  const teacherPass=$('teacherPass').value;
-  if(!teacherId || !teacherPass){setMsg('loginMsg','先生IDとパスワードを入力してください。','err');return;}
+function teacherAuthData(extra={}){ return Object.assign({session:teacherSession}, extra); }
+async function teacherLogin(){
   setMsg('loginMsg','認証中です...');
-  try {
-    const res = await api('teacherLogin', {teacherId, teacherPass});
-    if(res && res.result === 'success') {
+  try{
+    const res = await api('teacherLogin', {teacherId:$('teacherId').value.trim(), teacherPass:$('teacherPass').value});
+    if(res && res.result === 'success'){
       teacherSession = res.session || '';
       sessionStorage.setItem(TEACHER_SESSION_KEY, teacherSession);
-      $('teacherPass').value = '';
-      setMsg('loginMsg','');
       $('loginBox').classList.add('hide');
       $('teacherPanel').classList.remove('hide');
+      $('teacherPass').value = '';
+      setMsg('loginMsg','');
       await loadRecords();
-    } else {
+    }else{
       setMsg('loginMsg','ログインできません：' + (res && res.message ? res.message : '認証失敗'), 'err');
     }
-  } catch(err) {
-    setMsg('loginMsg','ログインできません：' + (err.message || err), 'err');
-  }
+  }catch(err){ setMsg('loginMsg', err.message || String(err), 'err'); }
 }
-
-function teacherAuthData(extra={}) { return Object.assign({session: teacherSession}, extra); }
-
-async function loadRecords() {
+async function loadRecords(){
   setMsg('teacherMsg','読み込み中です...');
-  try {
-    const res=await api('list', teacherAuthData());
-    if(!res||res.result!=='success')throw new Error(res&&res.message?res.message:'取得失敗');
-    records=Array.isArray(res.records)?res.records:[];
-    setMsg('teacherMsg',''); renderTable();
-  } catch(err) { setMsg('teacherMsg','取得できませんでした：'+(err.message||err),'err'); }
+  try{
+    const res = await api('list', teacherAuthData());
+    if(!res || res.result !== 'success') throw new Error(res && res.message ? res.message : '取得失敗');
+    records = Array.isArray(res.records) ? res.records : [];
+    setMsg('teacherMsg','');
+    renderTeacher();
+  }catch(err){ setMsg('teacherMsg','取得できませんでした：' + (err.message || err), 'err'); }
 }
-
-function formatDateForCompare(v) { if(!v)return ''; return String(v).replaceAll('/','-').slice(0,10); }
-function renderRanking(rows) { const totals={}; rows.forEach(r=>{const name=r['名前']||'未入力'; totals[name]=(totals[name]||0)+(Number(r['自習分数'])||0);}); const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]).slice(0,5); $('ranking').innerHTML=sorted.length?sorted.map((x,i)=>`<div class="rankItem"><b>${i+1}位　${escapeHtml(x[0])}</b><span>${x[1]}分</span></div>`).join(''):'<div class="small">まだ記録がありません。</div>'; }
-
-function getFilteredRows(){
+function formatDateForCompare(v){ return String(v || '').replaceAll('/','-').slice(0,10); }
+function renderTeacher(){
   const q = $('search').value.trim().toLowerCase();
-  const fn = $('filterName') ? $('filterName').value.trim().toLowerCase() : '';
-  const fg = $('filterGrade') ? $('filterGrade').value : '';
-  const fsb = $('filterSubject') ? $('filterSubject').value : '';
-  const fd = $('filterDate') ? $('filterDate').value : '';
-  return records.filter(r => {
-    if(q && !JSON.stringify(r).toLowerCase().includes(q)) return false;
-    if(fn && !String(r['名前'] || '').toLowerCase().includes(fn)) return false;
-    if(fg && r['学年'] !== fg) return false;
-    if(fsb && r['科目'] !== fsb) return false;
-    if(fd && formatDateForCompare(r['日付']) !== fd) return false;
-    return true;
-  });
-}
-
-function renderInRoom(rows){
-  const active = rows.filter(r => r['入室時間'] && !r['退室時間']);
-  $('statInRoom').textContent = active.length;
-  $('inRoomList').innerHTML = active.length ? active.map(r => {
-    const elapsed = minutesFromRecordStart(r['日付'], r['入室時間']);
-    return `<div class="inRoomItem"><div><b>${escapeHtml(r['名前'])}</b><div class="small">${escapeHtml(r['学年'])}・${escapeHtml(r['科目'])}　入室 ${escapeHtml(r['入室時間'])}</div></div><span class="statusPill green">${elapsed}分</span></div>`;
-  }).join('') : '<div class="emptyBox">現在、自習中の生徒はいません。</div>';
-}
-
-function minutesFromRecordStart(dateStr, timeStr){
-  if(!timeStr) return 0;
-  const date = formatDateForCompare(dateStr) || todayISO();
-  const start = new Date(date + 'T' + timeStr + ':00');
-  if(isNaN(start.getTime())) return 0;
-  let m = Math.floor((Date.now() - start.getTime()) / 60000);
-  if(m < 0) m = 0;
-  return m;
-}
-
-function openStudentKarte(name){
-  const rows = records.filter(r => String(r['名前'] || '') === String(name));
+  const rows = records.filter(r => !q || JSON.stringify(r).toLowerCase().includes(q));
   const today = todayISO();
-  const todayMin = rows.filter(r=>formatDateForCompare(r['日付'])===today).reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
-  const weekMin = rows.filter(r=>isThisWeek(r['日付'])).reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
-  const monthMin = rows.filter(r=>isThisMonth(r['日付'])).reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
-  const totalMin = rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
-  const focusAvg = average(rows.map(r=>Number(r['集中度'])||0).filter(Boolean));
-  const achAvg = average(rows.map(r=>Number(r['達成度'])||0).filter(Boolean));
-  const subjectTotals = {};
-  rows.forEach(r => subjectTotals[r['科目'] || '未入力'] = (subjectTotals[r['科目'] || '未入力'] || 0) + (Number(r['自習分数']) || 0));
-  const subjectText = Object.entries(subjectTotals).sort((a,b)=>b[1]-a[1]).map(x=>`<span class="pill">${escapeHtml(x[0])} ${x[1]}分</span>`).join('');
-  const recent = rows.slice(-30).reverse().map(r=>`<div class="rankItem"><b>${escapeHtml(r['日付'])} ${escapeHtml(r['科目'])}</b><span>${escapeHtml(r['自習分数'])}分</span></div>`).join('') || '<div class="emptyBox">記録がありません。</div>';
-
-  $('modalRoot').innerHTML = `<div class="modalBg"><div class="modal">
-    <div class="karteHead">
-      <h3>${escapeHtml(name)} の生徒カルテ</h3>
-      <div class="pillList">${subjectText || '<span class="pill">科目データなし</span>'}</div>
-    </div>
-    <div class="four">
-      <div class="stat">今日<br><b>${fmtMin(todayMin)}</b></div>
-      <div class="stat">今週<br><b>${fmtMin(weekMin)}</b></div>
-      <div class="stat">今月<br><b>${fmtMin(monthMin)}</b></div>
-      <div class="stat">合計<br><b>${fmtMin(totalMin)}</b></div>
-    </div>
-    <div class="three">
-      <div class="stat">集中度平均<br><b>${focusAvg}</b></div>
-      <div class="stat">達成度平均<br><b>${achAvg}</b></div>
-      <div class="stat">記録数<br><b>${rows.length}</b></div>
-    </div>
-    <div class="card"><h3>最近30件</h3><div class="rankList">${recent}</div></div>
-    <button class="btn sub" id="closeKarteBtn" type="button">閉じる</button>
-  </div></div>`;
-  $('closeKarteBtn').addEventListener('click', closeModal);
-}
-
-function average(nums){
-  if(!nums.length) return '0';
-  return (nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1);
-}
-
-function renderTable() {
-  const rows = getFilteredRows();
-  const today = todayISO();
-
   $('statCount').textContent = rows.length;
   $('statMinutes').textContent = rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
   $('statToday').textContent = rows.filter(r=>formatDateForCompare(r['日付'])===today).length;
-  renderInRoom(rows);
-  renderRanking(rows);
-  renderGradeChart(rows);
-
-  $('tbody').innerHTML = rows.map(r => `
-    <tr>
-      <td>${escapeHtml(r['日付'])}</td>
-      <td><span class="nameLink" data-karte="${escapeHtml(r['名前'])}">${escapeHtml(r['名前'])}</span></td>
-      <td>${escapeHtml(r['学年'])}</td>
-      <td>${escapeHtml(r['科目'])}</td>
-      <td>${escapeHtml(r['入室時間'])}-${escapeHtml(r['退室時間'])}</td>
-      <td>${escapeHtml(r['自習分数'])}</td>
-      <td>${escapeHtml(r['集中度'])}</td>
-      <td>${escapeHtml(r['達成度'])}</td>
-      <td>${escapeHtml(r['学習内容'])}</td>
-      <td>${escapeHtml(r['コメント'])}</td>
-      <td><button type="button" data-edit="${escapeHtml(r['ID'])}">編集</button><button type="button" data-del="${escapeHtml(r['ID'])}">削除</button></td>
-    </tr>`).join('');
+  const active = rows.filter(r => r['入室時間'] && !r['退室時間']);
+  $('inRoomList').innerHTML = active.length ? active.map(r=>`<div class="inRoomItem"><b>${escapeHtml(r['名前'])}</b><span class="statusPill green">${escapeHtml(r['入室時間'])}〜</span></div>`).join('') : '<div class="small">現在自習中の生徒はいません。</div>';
+  $('tbody').innerHTML = rows.map(r=>`<tr><td>${escapeHtml(r['日付'])}</td><td>${escapeHtml(r['名前'])}</td><td>${escapeHtml(r['学年'])}</td><td>${escapeHtml(r['科目'])}</td><td>${escapeHtml(r['入室時間'])}-${escapeHtml(r['退室時間'])}</td><td>${escapeHtml(r['自習分数'])}</td><td>${escapeHtml(r['集中度'])}</td><td>${escapeHtml(r['達成度'])}</td><td>${escapeHtml(r['学習内容'])}</td><td>${escapeHtml(r['コメント'])}</td></tr>`).join('');
+}
+function downloadCSV(){
+  const headers = ['ID','送信日時','日付','名前','学年','科目','入室時間','退室時間','自習分数','集中度','達成度','学習内容','コメント'];
+  const csv = [headers.join(',')].concat(records.map(r => headers.map(h => '"' + String(r[h] ?? '').replace(/"/g,'""') + '"').join(','))).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = '自習室ログ.csv';
+  a.click();
 }
 
-function findRecord(id) { return records.find(r=>String(r['ID'])===String(id)); }
-function inputField(id,label,value) { return `<div><label>${label}<input id="${id}" value="${escapeHtml(value)}"></label></div>`; }
-function openEdit(id) {
-  const r=findRecord(id); if(!r)return;
-  $('modalRoot').innerHTML=`<div class="modalBg"><div class="modal"><h3>記録を編集</h3><div class="editGrid">${inputField('editDate','日付',r['日付'])}${inputField('editName','名前',r['名前'])}${inputField('editGrade','学年',r['学年'])}${inputField('editSubject','科目',r['科目'])}${inputField('editStart','入室時間',r['入室時間'])}${inputField('editEnd','退室時間',r['退室時間'])}${inputField('editFocus','集中度',r['集中度'])}${inputField('editAch','達成度',r['達成度'])}</div><label>学習内容<textarea id="editContent">${escapeHtml(r['学習内容'])}</textarea></label><label>コメント<textarea id="editComment">${escapeHtml(r['コメント'])}</textarea></label><div class="row"><button class="btn" id="saveEditBtn" type="button">更新</button><button class="btn sub" id="closeModalBtn" type="button">閉じる</button></div><div id="editMsg"></div></div></div>`;
-  $('saveEditBtn').addEventListener('click',()=>saveEdit(id));
-  $('closeModalBtn').addEventListener('click',closeModal);
+function init(){
+  loadState();
+  $('studentName').value = appState.name || '';
+  $('grade').value = appState.grade || '中1';
+  $('goalMinutes').value = appState.goalMinutes || '';
+  if(appState.startAt && !appState.endAt) goScreen('timerScreen');
+  else if(appState.endAt && appState.status === 'finished') goScreen('reviewScreen');
+  else goScreen(appState.screen || 'welcome');
+  startTicker();
+  $('search').addEventListener('input', renderTeacher);
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) renderTimer(); });
 }
-function closeModal() { $('modalRoot').innerHTML=''; }
-async function saveEdit(id) {
-  const data=teacherAuthData({id,date:$('editDate').value,name:$('editName').value.trim(),grade:$('editGrade').value,subject:$('editSubject').value,startTime:$('editStart').value,endTime:$('editEnd').value,minutes:calcMinutes($('editStart').value,$('editEnd').value),focus:$('editFocus').value,achievement:$('editAch').value,content:$('editContent').value.trim(),comment:$('editComment').value.trim()});
-  setMsg('editMsg','更新中です...');
-  try{const res=await api('update',data); if(!res||res.result!=='success')throw new Error(res&&res.message?res.message:'更新失敗'); closeModal(); await loadRecords();}
-  catch(err){setMsg('editMsg','更新できませんでした：'+(err.message||err),'err');}
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
-async function deleteRecord(id) {
-  if(!confirm('この記録を削除しますか？'))return;
-  try{const res=await api('delete',teacherAuthData({id})); if(!res||res.result!=='success')throw new Error(res&&res.message?res.message:'削除失敗'); await loadRecords();}
-  catch(err){alert('削除できませんでした：'+(err.message||err));}
-}
-function downloadCSV() {
-  const headers=['ID','送信日時','日付','名前','学年','科目','入室時間','退室時間','自習分数','集中度','達成度','学習内容','コメント'];
-  const csv=[headers.join(',')].concat(records.map(r=>headers.map(h=>'"'+String(r[h]??'').replace(/"/g,'""')+'"').join(','))).join('\n');
-  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download='自習室ログ.csv'; a.click();
-}
-function logoutTeacher() { teacherSession=''; sessionStorage.removeItem(TEACHER_SESSION_KEY); $('teacherPanel').classList.add('hide'); $('loginBox').classList.remove('hide'); records=[]; renderTable(); }
-
-
-function safeEl(id){ return document.getElementById(id); }
-
-function handleStartNow(){
-  const el = safeEl('startTime');
-  if(el) el.value = nowTime();
-  const end = safeEl('endTime');
-  if(end) end.value = '';
-  if(typeof updateCurrentMinutes === 'function') updateCurrentMinutes();
-  if(typeof startLiveTimer === 'function') startLiveTimer();
-  if(typeof setMsg === 'function') setMsg('studentMsg','入室時刻を入力しました。','ok');
-}
-
-function handleEndNow(){
-  const el = safeEl('endTime');
-  if(el) el.value = nowTime();
-  if(typeof stopLiveTimer === 'function') stopLiveTimer();
-  if(typeof updateCurrentMinutes === 'function') updateCurrentMinutes();
-  if(typeof setMsg === 'function') setMsg('studentMsg','退室時刻を入力しました。必要事項を確認して保存してください。','ok');
-}
-
-function init() {
-  $('date').value=todayISO(); loadProfile(); updateProfileStatus(); loadStudentDashboard();
-  if($('tabStudent')) $('tabStudent').addEventListener('click',()=>showTab('student'));
-  if($('tabTeacher')) $('tabTeacher').addEventListener('click',()=>showTab('teacher'));
-    if($('loginBtn')) $('loginBtn').addEventListener('click',teacherLogin);
-  if($('refreshBtn')) $('refreshBtn').addEventListener('click',loadRecords);
-  if($('csvBtn')) $('csvBtn').addEventListener('click',downloadCSV);
-  if($('logoutBtn')) $('logoutBtn').addEventListener('click',logoutTeacher);
-  if($('search')) $('search').addEventListener('input',renderTable);
-  if($('filterName')) $('filterName').addEventListener('input',renderTable);
-  if($('filterGrade')) $('filterGrade').addEventListener('change',renderTable);
-  if($('filterSubject')) $('filterSubject').addEventListener('change',renderTable);
-  if($('filterDate')) $('filterDate').addEventListener('change',renderTable);
-      if($('studentName')) $('studentName').addEventListener('input',updateProfileStatus);
-  if($('grade')) $('grade').addEventListener('change',saveProfile);
-    if($('tbody')) $('tbody').addEventListener('click',(e)=>{const editId=e.target.getAttribute('data-edit'); const delId=e.target.getAttribute('data-del'); if(editId)openEdit(editId); if(delId)deleteRecord(delId);});
-  const savedSession=sessionStorage.getItem(TEACHER_SESSION_KEY);
-  if(savedSession) teacherSession=savedSession;
-}
-document.addEventListener('DOMContentLoaded',init);
+document.addEventListener('DOMContentLoaded', init);
 </script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function () {});
-  });
-}
-</script>
-
 </body>
 </html>
