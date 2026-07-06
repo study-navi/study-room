@@ -1046,13 +1046,30 @@ body{
   }
 }
 
+
+/* log-check button label */
+.headerTeacherBtn{
+  min-width:58px !important;
+  text-align:center !important;
+  padding:5px 10px !important;
+  font-size:11px !important;
+}
+@media(max-width:720px){
+  .headerTeacherBtn{
+    right:7px !important;
+    top:7px !important;
+    padding:5px 8px !important;
+    font-size:11px !important;
+  }
+}
+
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="appHeader">
     <h1>Study Room</h1>
-    <button class="headerTeacherBtn" type="button" onclick="openTeacherFromWelcome()">先生</button>
+    <button class="headerTeacherBtn" type="button" onclick="openTeacherFromWelcome()">ログ確認</button>
   </header>
 <section id="welcome" class="card">
 <label>名前</label>
@@ -1151,13 +1168,13 @@ body{
   </section>
 
   <section id="teacher" class="card hide">
-    <div class="teacherHead"><h2>先生画面</h2><button class="teacherBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button></div>
+    <div class="teacherHead"><h2>ログ確認</h2><button class="teacherBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button></div>
     <div id="loginBox" class="card">
       <div class="grid2">
-        <div><label>先生ID</label><input id="teacherId" placeholder="先生ID"></div>
+        <div><label>確認ID</label><input id="teacherId" placeholder="確認ID"></div>
         <div><label>パスワード</label><input id="teacherPass" type="password" placeholder="パスワード"></div>
       </div>
-      <button class="btn" type="button" onclick="teacherLogin()">ログイン</button>
+      <button class="btn" type="button" onclick="teacherLogin()">ログ確認へ進む</button>
       <div id="loginMsg"></div>
     </div>
     <div id="teacherPanel" class="hide">
@@ -1505,7 +1522,7 @@ async function teacherLogin(){
       setMsg('loginMsg','');
       await loadRecords();
     }else{
-      setMsg('loginMsg','ログインできません：' + (res && res.message ? res.message : '認証失敗'), 'err');
+      setMsg('loginMsg','ログ確認へ進むできません：' + (res && res.message ? res.message : '認証失敗'), 'err');
     }
   }catch(err){ setMsg('loginMsg', err.message || String(err), 'err'); }
 }
