@@ -1743,7 +1743,7 @@ function api(action, data={}){
     params.set('_', String(Date.now()));
     script = document.createElement('script');
     script.src = GAS_URL + '?' + params.toString();
-    script.onerror = () => { cleanup(); reject(new Error('Apps Scriptに接続できませんでした。')); };
+    script.onerror = () => { cleanup(); reject(new Error('Apps Scriptとの通信でエラーが発生しました。送信は完了している可能性があります。少し待ってから記録を確認してください。。')); };
     document.body.appendChild(script);
   });
 }
