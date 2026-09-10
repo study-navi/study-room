@@ -1927,44 +1927,45 @@ function startApp(){
   goScreen('timerScreen');
   updateAccurateStatsFromSheet();
 }
-async function enterRoom(){
-  appState.status = 'studying';
-  appState.startAt = nowISO();
-  appState.endAt = null;
-  appState.breakStartAt = null;
-  appState.breakTotalMs = 0;
-  appState.activeRecordId = null;
-  saveState();
-  setMsg('timerMsg','入室中として記録しています...');
-
-  // 入室時点でスプレッドシートへ仮保存することで、ログ確認の「現在自習中」に反映します。
-  try{
-    const res = await api('addActive', {
-      date: todayISO(),
-      name: appState.name || '',
-      grade: appState.grade || '',
-      subject: '入室中',
-      startTime: timeText(appState.startAt),
-      endTime: '',
-      minutes: '',
-      focus: '',
-      achievement: '',
-      content: '入室中',
-      comment: '現在自習中'
-    });
-    if(res && res.result === 'success'){
-      appState.activeRecordId = res.id || null;
+let pendingCheckinPromise = null;
+  async function enterRoom(){
+      appState.status = 'studying';
+      appState.startAt = nowISO();
+      appState.endAt = null;
+      appState.breakStartAt = null;
+      appState.breakTotalMs = 0;
+      appState.activeRecordId = null;
       saveState();
-      setMsg('timerMsg','入室しました。ログ確認にも反映されます。','ok');
-    }else{
-      setMsg('timerMsg','入室しました。ただしログ確認への仮反映に失敗しました。退室後の送信はできます。','err');
-    }
-  }catch(err){
-    setMsg('timerMsg','入室しました。ただし通信できないため、ログ確認への仮反映はできませんでした。','err');
-  }
+      setMsg('timerMsg','入室中として記録しています...');
 
-  startTicker();
-}
+      // 入室時点でスプレッドシートへ仮保存することで、ログ確認の「現在自習中」に反映します。
+      pendingCheckinPromise = api('addActive', {
+            date: todayISO(),
+            name: appState.name || '',
+            grade: appState.grade || '',
+            subject: '入室中',
+            startTime: timeText(appState.startAt),
+            endTime: '',
+            minutes: '',
+            focus: '',
+            achievement: '',
+            content: '入室中',
+            comment: '現在自習中'
+      }).then(res => {
+            if(res && res.result === 'success'){
+                    appState.activeRecordId = res.id || null;
+                    saveState();
+                    setMsg('timerMsg','入室しました。ログ確認にも反映されます。','ok');
+            }else{
+                    setMsg('timerMsg','入室しました。ただしログ確認への仮反映に失敗しました。退室後の送信はできます。','err');
+            }
+      }).catch(err => {
+            setMsg('timerMsg','入室しました。ただし通信できないため、ログ確認への仮反映はできませんでした。','err');
+      });
+      try{ await pendingCheckinPromise; }catch(e){}
+
+      startTicker();
+  }
 function toggleBreak(){
   if(!appState.startAt){ setMsg('timerMsg','先に入室してください。','err'); return; }
   if(appState.endAt){ setMsg('timerMsg','退室後は休憩できません。','err'); return; }
@@ -2082,6 +2083,7 @@ async function submitToTeacher(){
   const minutes = Math.floor(elapsedMs()/60000);
   if(!appState.name){ setMsg('reviewMsg','名前がありません。','err'); return; }
   if(!appState.startAt || !appState.endAt){ setMsg('reviewMsg','入室・退室時刻がありません。','err'); return; }
+  if(pendingCheckinPromise){ try{ await pendingCheckinPromise; }catch(e){} }
   const breakMinutes = Math.floor(breakMs()/60000);
   const data = {
     date:$('date').value || todayISO(),
