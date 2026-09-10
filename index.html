@@ -1927,19 +1927,30 @@ function startApp(){
   goScreen('timerScreen');
   updateAccurateStatsFromSheet();
 }
-let pendingCheckinPromise = null;
+function genClientId(){
+    if(window.crypto && typeof crypto.randomUUID === 'function'){
+          return crypto.randomUUID();
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random()*16|0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+    });
+}
+  let pendingCheckinPromise = null;
   async function enterRoom(){
       appState.status = 'studying';
       appState.startAt = nowISO();
       appState.endAt = null;
       appState.breakStartAt = null;
       appState.breakTotalMs = 0;
-      appState.activeRecordId = null;
+      appState.activeRecordId = genClientId();
       saveState();
       setMsg('timerMsg','入室中として記録しています...');
 
-      // 入室時点でスプレッドシートへ仮保存することで、ログ確認の「現在自習中」に反映します。
+      // IDを先にこちらで決めておくことで、通信が不安定でも送信時に同じ記録を正しく更新できます。
       pendingCheckinPromise = api('addActive', {
+            id: appState.activeRecordId,
             date: todayISO(),
             name: appState.name || '',
             grade: appState.grade || '',
@@ -1953,8 +1964,6 @@ let pendingCheckinPromise = null;
             comment: '現在自習中'
       }).then(res => {
             if(res && res.result === 'success'){
-                    appState.activeRecordId = res.id || null;
-                    saveState();
                     setMsg('timerMsg','入室しました。ログ確認にも反映されます。','ok');
             }else{
                     setMsg('timerMsg','入室しました。ただしログ確認への仮反映に失敗しました。退室後の送信はできます。','err');
@@ -1962,7 +1971,6 @@ let pendingCheckinPromise = null;
       }).catch(err => {
             setMsg('timerMsg','入室しました。ただし通信できないため、ログ確認への仮反映はできませんでした。','err');
       });
-      try{ await pendingCheckinPromise; }catch(e){}
 
       startTicker();
   }
@@ -2083,7 +2091,6 @@ async function submitToTeacher(){
   const minutes = Math.floor(elapsedMs()/60000);
   if(!appState.name){ setMsg('reviewMsg','名前がありません。','err'); return; }
   if(!appState.startAt || !appState.endAt){ setMsg('reviewMsg','入室・退室時刻がありません。','err'); return; }
-  if(pendingCheckinPromise){ try{ await pendingCheckinPromise; }catch(e){} }
   const breakMinutes = Math.floor(breakMs()/60000);
   const data = {
     date:$('date').value || todayISO(),
