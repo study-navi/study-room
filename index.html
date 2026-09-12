@@ -734,6 +734,15 @@ align-items:center !important;
 justify-content:space-between !important;
 gap:12px !important;
 }
+.headerBtnGroup{
+display:flex !important;
+align-items:center;
+gap:8px;
+flex-wrap:wrap;
+justify-content:flex-end;
+position:relative;
+z-index:2;
+}
 .headerTeacherBtn{
 border:1px solid rgba(255,255,255,.35);
 background:rgba(255,255,255,.16);
@@ -745,6 +754,7 @@ font-weight:900;
 cursor:pointer;
 position:relative;
 z-index:2;
+white-space:nowrap;
 }
 .headerTeacherBtn:active{transform:scale(.97)}
 .appHeader p,
@@ -1550,7 +1560,10 @@ text-align:right;
 <div class="wrap">
 <header class="appHeader">
 <h1 id="appTitle">Study Room</h1>
+<div class="headerBtnGroup">
+<button id="headerModeBtn" class="headerTeacherBtn" type="button" onclick="toggleClassroomMode()">教室モード</button>
 <button class="headerTeacherBtn" type="button" onclick="openTeacherFromWelcome()">ログ確認</button>
+</div>
 </header>
 <section id="welcome" class="card">
 <label>名前</label>
@@ -2655,6 +2668,7 @@ function renderDetailPanel(){
   $('subjectRanking').innerHTML = subject.length ? subject.map((x,i)=>`<div class="rankItem"><b>${escapeHtml(x[0])}</b><span>${minutesToText(x[1])}</span></div>`).join('') : '<div class="small">対象期間の記録がありません。</div>';
 }
 function init(){
+  updateModeButton();
   loadState();
   cleanFinishedStateOnLoad();
   $('studentName').value = appState.name || '';
@@ -2696,6 +2710,27 @@ let crAchievement = 3;
 function isClassroomMode(){
   try{ return new URLSearchParams(window.location.search).get('mode') === 'classroom'; }
   catch(e){ return false; }
+}
+
+// ヘッダー右上の「教室モード」⇔「個人モードに戻る」切り替えボタンの表示・動作を設定する
+function updateModeButton(){
+  const btn = $('headerModeBtn');
+  if(!btn) return;
+  if(isClassroomMode()){
+    btn.textContent = '個人モードに戻る';
+  } else {
+    btn.textContent = '教室モード';
+  }
+}
+
+function toggleClassroomMode(){
+  const url = new URL(window.location.href);
+  if(isClassroomMode()){
+    url.searchParams.delete('mode');
+  } else {
+    url.searchParams.set('mode', 'classroom');
+  }
+  window.location.href = url.toString();
 }
 
 function crScreenIds(){ return ['crHome','crCheckin','crCheckout','crReview','crComplete']; }
@@ -2895,6 +2930,7 @@ function crInit(){
   ['welcome','timerScreen','reviewScreen','completeScreen','teacher'].forEach(x=>{ const el = $(x); if(el) el.classList.add('hide'); });
   const titleEl = $('appTitle');
   if(titleEl) titleEl.textContent = 'Study Room（教室モード）';
+  updateModeButton();
   crGoScreen('crHome');
 }
 
