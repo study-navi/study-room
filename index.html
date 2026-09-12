@@ -1549,6 +1549,31 @@ text-align:right;
 .crStudentRow{padding:15px;font-size:16px}
 .crTitle{font-size:23px}
 }
+
+/* 教室モード切替ボタン追加に伴う最終調整：
+   これまでの各ブレークポイントで .headerTeacherBtn 自体を absolute 配置していたが、
+   ボタンが2つに増えたため、絶対配置は親の .headerBtnGroup にまとめ、
+   ボタン自体は group 内で横並び（相対配置）にする。 */
+.headerTeacherBtn{
+position:relative !important;
+top:auto !important;
+right:auto !important;
+}
+.headerBtnGroup{
+position:absolute !important;
+top:8px !important;
+right:8px !important;
+display:flex !important;
+align-items:center !important;
+gap:6px !important;
+z-index:5 !important;
+}
+@media(max-width:720px){
+.headerBtnGroup{
+top:7px !important;
+right:8px !important;
+}
+}
 </style>
 
 <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
