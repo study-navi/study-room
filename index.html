@@ -2300,6 +2300,8 @@ async function submitToTeacher(){
   const minutes = Math.floor(elapsedMs()/60000);
   if(!appState.name){ setMsg('reviewMsg','名前がありません。','err'); return; }
   if(!appState.startAt || !appState.endAt){ setMsg('reviewMsg','入室・退室時刻がありません。','err'); return; }
+  const content = $('content').value.trim();
+  if(!content){ setMsg('reviewMsg','学習内容を入力してください。','err'); return; }
   const breakMinutes = Math.floor(breakMs()/60000);
   const data = {
     date:$('date').value || todayISO(),
@@ -2311,7 +2313,7 @@ async function submitToTeacher(){
     minutes:String(minutes),
     focus:String(appState.focus || 3),
     achievement:String(appState.achievement || 3),
-    content:$('content').value.trim(),
+    content:content,
     comment:($('comment').value.trim() + (breakMinutes ? '\n休憩：' + breakMinutes + '分' : '')).trim()
   };
   btn.disabled = true;
