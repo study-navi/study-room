@@ -1,0 +1,13 @@
+{
+  "name": "study-room-multi-classroom",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "python3 tools/build.py",
+    "vendor": "node tools/vendor_hash.cjs",
+    "test": "cd .. && node --test multi-classroom/tests/backend.test.cjs",
+    "test:browser": "cd .. && node multi-classroom/tests/browser.cjs"
+  },
+  "engines": {"node": ">=22"},
+  "devDependencies": {"hash.js": "1.1.7", "playwright": "1.62.1"}
+}
