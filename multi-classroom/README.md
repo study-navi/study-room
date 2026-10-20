@@ -9,7 +9,7 @@
 ```sh
 npm ci --prefix multi-classroom
 python3 multi-classroom/tools/build.py
-node --test multi-classroom/tests/backend.test.cjs
+node --test multi-classroom/tests/*.test.cjs
 npm exec --prefix multi-classroom -- playwright install chromium
 node multi-classroom/tests/browser.cjs
 ```
@@ -32,7 +32,7 @@ node multi-classroom/tests/browser.cjs
 
 初期のマニフェストはスプレッドシート権限だけを要求します。Googleのこの権限は接続先1ファイルへの限定権限ではありません。検証段階ではWebアプリのアクセス範囲を「自分のみ」にし、匿名利用の受入試験前に公開範囲の変更を説明・承認してください。
 
-2026-10-20に本番と別のGAS・非公開スプレッドシートを作成し、所有者限定のWebアプリを配置しました。実GASで入室、休憩、退室、振り返り送信、本人履歴、再読み込み後の教室・プロフィール復元が成功しました。管理者ログインは利用者のChromeから成功報告を受けています。2教室・2権限での管理機能の実GAS確認、匿名アクセス、Safari、PWAは引き続き未完了です。
+2026-10-20に本番と別のGAS・非公開スプレッドシートを作成し、所有者限定のWebアプリを配置しました。実GASで入室、休憩、退室、振り返り送信、本人履歴、再読み込み後の教室・プロフィール復元が成功しました。管理者ログインと全体ダッシュボードは利用者のChromeで確認しています。追加された共和校でも同姓同名の架空生徒を別IDとして入退室・保存し、本人履歴に大府柊山校の記録が混ざらないことを実GASで確認しました。利用者切替時の旧応答の破棄を含む自動テスト15件が成功しています。2教室・2権限での管理機能の実GAS確認、匿名アクセス、Safari、PWAは引き続き未完了です。
 
 ## 承認後の移行
 

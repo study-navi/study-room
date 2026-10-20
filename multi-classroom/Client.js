@@ -12,7 +12,8 @@ function mcResetLocal(){
   if(appState.startAt){alert('進行中の自習を送信してから切り替えてください。');return false;}
   [STATE_KEY,PROFILE_KEY,LOCAL_TOTAL_KEY,'sr10Summary'].forEach(k=>localStorage.removeItem(k));
   mcIdentity=null;localStorage.removeItem('sr10Identity');appState={screen:'welcome',name:'',grade:'中1',status:'idle',breakTotalMs:0};
-  $('studentName').value='';$('grade').value='中1';$('goalMinutes').value='';$('mcHistory').innerHTML='';return true;
+  $('studentName').value='';$('grade').value='中1';$('goalMinutes').value='';$('mcHistory').innerHTML='';
+  ['todayUserCount','welcomeTodayUserCount','streakDays','welcomeStreakDays'].forEach(id=>$(id).textContent='0');return true;
 }
 function mcSwitchUser(){if(confirm('この端末のプロフィールと履歴キーを解除します。元の履歴へ戻すには先生の確認が必要です。切り替えますか？')){if(mcResetLocal()){mcStorageKeys();goScreen('welcome');mcBusy('新しい利用者の名前と学年を入力してください。');}}}
 function mcStorageKeys(){const id=mcIdentity?mcIdentity.id:'new';STATE_KEY='sr10State:'+id;PROFILE_KEY='sr10Profile:'+id;LOCAL_TOTAL_KEY='sr10Totals:'+id;}
@@ -69,9 +70,10 @@ enterRoom=async function(){
   await mcOldEnter();
 };
 updateTodayUserCountFromSheet=async function(){await updateAccurateStatsFromSheet();};
-updateAccurateStatsFromSheet=async function(){if(!mcIdentity)return;try{const r=mcRequire(await api('stats'));['todayUserCount','welcomeTodayUserCount'].forEach(id=>$(id).textContent=r.todayUserCount);['streakDays','welcomeStreakDays'].forEach(id=>$(id).textContent=r.streakDays);}catch(e){mcBusy(e.message);}};
+updateAccurateStatsFromSheet=async function(){const identity=mcIdentity;if(!identity)return;try{const r=mcRequire(await api('stats'));if(mcIdentity!==identity)return;['todayUserCount','welcomeTodayUserCount'].forEach(id=>$(id).textContent=r.todayUserCount);['streakDays','welcomeStreakDays'].forEach(id=>$(id).textContent=r.streakDays);}catch(e){if(mcIdentity===identity)mcBusy(e.message);}};
 async function mcHistory(){
-  try{if(!mcIdentity)throw new Error('名前を登録してから履歴を確認してください。');const r=mcRequire(await api('history'));$('mcHistory').innerHTML='<h3>自分の学習履歴</h3>'+r.records.map(x=>`<div class="mcItem"><b>${escapeHtml(x['日付'])} ${escapeHtml(x['科目'])} ${escapeHtml(x['自習分数'])}分</b><p>${escapeHtml(x['学習内容'])}</p><p>${escapeHtml(x['コメント'])}</p></div>`).join('');if(!r.records.length)$('mcHistory').innerHTML+='<p>記録はまだありません。</p>';}catch(e){mcBusy(e.message);}
+  const identity=mcIdentity;
+  try{if(!identity)throw new Error('名前を登録してから履歴を確認してください。');const r=mcRequire(await api('history'));if(mcIdentity!==identity)return;$('mcHistory').innerHTML='<h3>自分の学習履歴</h3>'+r.records.map(x=>`<div class="mcItem"><b>${escapeHtml(x['日付'])} ${escapeHtml(x['科目'])} ${escapeHtml(x['自習分数'])}分</b><p>${escapeHtml(x['学習内容'])}</p><p>${escapeHtml(x['コメント'])}</p></div>`).join('');if(!r.records.length)$('mcHistory').innerHTML+='<p>記録はまだありません。</p>';}catch(e){if(mcIdentity===identity)mcBusy(e.message);}
 }
 function mcClearAdmin(){teacherSession='';mcAdmin=null;records=[];mcRoster=[];crActiveRecords=[];crSelected=null;mcClassroom=false;stopTeacherAutoRefresh();sessionStorage.removeItem(TEACHER_SESSION_KEY);$('teacherPanel').classList.add('hide');$('loginBox').classList.remove('hide');$('tbody').innerHTML='';$('mcDashboard').innerHTML='';$('mcAdminEditor').innerHTML='';$('mcSchoolEditor').innerHTML='';$('mcStudentEditor').innerHTML='';$('crActiveList').innerHTML='';$('mcRoster').innerHTML='';$('mcAdminSchool').innerHTML='';$('crRecentNames').innerHTML='';['inRoomList','pendingReflectionList','detailRanking','subjectRanking'].forEach(id=>$(id).innerHTML='');window.mcAdmins=[];mcAdminSchools=[];$('appTitle').textContent='Study Room';updateModeButton();document.body.classList.remove('classroomMode');crScreenIds().forEach(id=>$(id).classList.add('hide'));}
 async function mcLogout(){try{mcRequire(await api('logout',{session:teacherSession}));}catch(e){mcBusy(e.message);}finally{mcClearAdmin();goScreen('teacher');}}
