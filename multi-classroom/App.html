@@ -1,0 +1,3298 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Room</title>
+<link rel="manifest" href="https://study-navi.github.io/study-room/manifest.webmanifest">
+<link rel="apple-touch-icon" href="https://study-navi.github.io/study-room/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#143b73">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Study Room">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{
+--navy:#143b73;
+--blue:#2563eb;
+--gold:#f6b73c;
+--green:#16a34a;
+--red:#dc2626;
+--gray:#64748b;
+--text:#152033;
+--muted:#64748b;
+--line:#dbe5f5;
+--bg:#f3f7ff;
+--card:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+background:linear-gradient(135deg,#edf5ff,#ffffff 52%,#f8fbff);
+color:var(--text);
+}
+button,input,select,textarea{font:inherit}
+.wrap{max-width:980px;margin:auto;padding:14px;min-height:100vh}
+.appHeader{
+background:linear-gradient(135deg,var(--navy),var(--blue));
+color:#fff;border-radius:24px;padding:22px;
+box-shadow:0 14px 30px rgba(20,59,115,.20);
+position:relative;overflow:hidden;margin-bottom:14px;
+}
+.appHeader:after{content:"";position:absolute;right:-55px;top:-55px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.16)}
+.appHeader h1{margin:0;font-size:26px;position:relative;z-index:1}
+.appHeader p{margin:8px 0 0;opacity:.94;position:relative;z-index:1;line-height:1.55}
+.badge{display:inline-block;margin-top:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:7px 12px;font-weight:900;font-size:13px;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin:14px 0;box-shadow:0 8px 22px rgba(20,59,115,.08)}
+.center{text-align:center}
+.hide{display:none!important}
+h2{margin:0 0 14px;font-size:24px}
+h3{margin:0 0 10px}
+label{display:block;font-weight:900;font-size:14px;margin:12px 0 6px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:15px;padding:13px 14px;background:#fff;font-size:16px}
+textarea{min-height:110px;resize:vertical}
+.btn{border:0;border-radius:16px;background:var(--blue);color:#fff;font-weight:1000;padding:14px 18px;cursor:pointer;box-shadow:0 8px 18px rgba(37,99,235,.18)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.big{width:100%;font-size:18px;padding:17px 20px}
+.btn.gold{background:var(--gold);color:#142033}
+.btn.green{background:var(--green)}
+.btn.gray{background:var(--gray)}
+.btn.red{background:var(--red)}
+.btn.light{background:#fff;color:var(--blue);border:1px solid var(--line);box-shadow:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.small{font-size:13px;color:var(--muted);line-height:1.55}
+.msg{padding:12px;border-radius:15px;margin-top:12px;background:#eff6ff;border:1px solid #bfdbfe;white-space:pre-wrap}
+.msg.ok{background:#f0fdf4;border-color:#bbf7d0}
+.msg.err{background:#fff1f2;border-color:#fecdd3}
+.stepPill{display:inline-block;background:#eef2ff;color:#1d4ed8;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:1000;margin-bottom:12px}
+.heroIcon{width:118px;height:118px;margin:18px auto;border-radius:30px;background:linear-gradient(135deg,#eff6ff,#ffffff);display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.heroIcon svg{width:74px;height:74px}
+.timerPanel{background:linear-gradient(135deg,#ecfdf5,#eff6ff);border:1px solid #bbf7d0;border-radius:26px;padding:18px;text-align:center;margin:12px 0}
+.state{display:inline-block;background:#dcfce7;color:#166534;border-radius:999px;padding:7px 14px;font-weight:1000}
+.clock{font-size:50px;font-weight:1000;color:var(--navy);letter-spacing:.03em;line-height:1.1;margin:10px 0}
+.timeNote{font-size:13px;color:#475569;font-weight:800}
+.actionGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.actionGrid .btn{min-height:76px;font-size:16px;line-height:1.3}
+.statGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#f8fbff;border:1px solid var(--line);border-radius:18px;padding:13px;text-align:center}
+.stat b{display:block;font-size:24px;color:var(--blue);margin-top:4px}
+.progressOuter{height:13px;border-radius:999px;background:#e5e7eb;overflow:hidden;margin:9px 0}
+.progressInner{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--gold));transition:.25s}
+.starRow{display:flex;gap:8px;flex-wrap:wrap}
+.star{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;font-size:22px;cursor:pointer;color:#cbd5e1}
+.star.active{background:#fff7ed;color:#f59e0b;border-color:#fdba74}
+.topNav{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap}
+.topNav .btn{box-shadow:none;padding:10px 14px;border-radius:999px}
+.tableWrap{overflow:auto;border:1px solid var(--line);border-radius:16px}
+table{width:100%;min-width:930px;border-collapse:collapse}
+th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;font-size:14px;vertical-align:top}
+th{background:#f8fbff}
+.nameLink{font-weight:900;color:var(--blue);text-decoration:underline;cursor:pointer}
+.rankList{display:grid;gap:8px}
+.rankItem{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px}
+.inRoomItem{display:flex;justify-content:space-between;gap:10px;align-items:center;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:10px}
+.statusPill{display:inline-block;padding:7px 11px;border-radius:999px;font-weight:900;font-size:13px;background:#eef2ff;color:#1d4ed8}
+.statusPill.green{background:#dcfce7;color:#166534}
+.statusPill.amber{background:#fef3c7;color:#92400e}
+.modalBg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal{background:#fff;border-radius:22px;max-width:760px;width:100%;max-height:92vh;overflow:auto;padding:18px}
+.installHint{background:#fff7ed;border:1px solid #fed7aa;border-radius:18px;padding:12px;margin-top:12px}
+@media(max-width:720px){
+.wrap{padding:12px}
+.appHeader{padding:18px;border-radius:22px}
+.appHeader h1{font-size:23px}
+.clock{font-size:43px}
+.grid2,.grid3,.statGrid{grid-template-columns:1fr}
+.actionGrid{grid-template-columns:1fr 1fr}
+.actionGrid .breakBtn{grid-column:1/3;min-height:62px}
+.actionGrid .btn{min-height:72px}
+.card{padding:16px;border-radius:21px}
+.heroIcon{width:104px;height:104px}
+}
+
+/* v10 premium mobile app polish */
+body{
+background:
+radial-gradient(circle at 20% 0%, rgba(37,99,235,.14), transparent 34%),
+radial-gradient(circle at 95% 12%, rgba(246,183,60,.18), transparent 32%),
+linear-gradient(135deg,#f4f8ff,#ffffff 52%,#eef5ff);
+}
+.wrap{max-width:780px;padding:12px}
+.appHeader{
+border-radius:30px;
+padding:24px 22px;
+min-height:142px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+}
+.appHeader h1{font-size:32px;letter-spacing:.01em}
+.appHeader p{font-size:14px}
+.badge{
+background:rgba(255,255,255,.18);
+backdrop-filter:blur(10px);
+width:max-content;
+}
+.topNav{
+position:sticky;
+top:8px;
+z-index:9;
+background:rgba(255,255,255,.72);
+backdrop-filter:blur(14px);
+border:1px solid rgba(219,229,245,.75);
+border-radius:999px;
+padding:8px;
+box-shadow:0 10px 24px rgba(20,59,115,.08);
+}
+.topNav .btn{
+flex:1;
+min-width:84px;
+background:transparent;
+border:0;
+color:#143b73;
+font-size:13px;
+}
+.topNav .btn:hover{background:#eff6ff}
+.card{
+border-radius:30px;
+padding:22px;
+box-shadow:0 18px 38px rgba(20,59,115,.10);
+border:1px solid rgba(219,229,245,.92);
+}
+.stepPill{
+background:linear-gradient(135deg,#eef2ff,#eff6ff);
+color:#143b73;
+border:1px solid #dbeafe;
+}
+.heroIcon{
+background:linear-gradient(135deg,#ffffff,#eff6ff);
+box-shadow:inset 0 0 0 1px rgba(219,229,245,.9), 0 16px 28px rgba(20,59,115,.10);
+}
+input,select,textarea{
+border-radius:18px;
+background:#fbfdff;
+border-color:#d9e6f8;
+}
+input:focus,select:focus,textarea:focus{
+outline:none;
+border-color:#93c5fd;
+box-shadow:0 0 0 4px rgba(147,197,253,.22);
+}
+.btn{
+border-radius:18px;
+box-shadow:0 12px 24px rgba(37,99,235,.18);
+transform:translateY(0);
+transition:.15s ease;
+}
+.btn:active{transform:scale(.98)}
+.timerPanel{
+border-radius:34px;
+padding:22px;
+background:
+radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),
+linear-gradient(135deg,#e8fff2,#edf5ff);
+box-shadow:inset 0 0 0 1px rgba(255,255,255,.65), 0 18px 34px rgba(22,163,74,.12);
+}
+.state{
+font-size:14px;
+padding:8px 16px;
+}
+.clock{
+font-size:58px;
+letter-spacing:.04em;
+text-shadow:0 6px 18px rgba(20,59,115,.12);
+}
+.actionGrid .btn{
+min-height:88px;
+border-radius:24px;
+font-size:17px;
+}
+.actionGrid .btn.gold{
+background:linear-gradient(135deg,#f6b73c,#ffd977);
+}
+.actionGrid .btn.green{
+background:linear-gradient(135deg,#16a34a,#4ade80);
+}
+.actionGrid .btn.gray{
+background:linear-gradient(135deg,#64748b,#94a3b8);
+}
+.stat{
+border-radius:22px;
+background:rgba(255,255,255,.86);
+box-shadow:0 8px 18px rgba(20,59,115,.06);
+}
+.stat b{font-size:27px}
+.progressOuter{height:16px;background:#e8eef7}
+.progressInner{background:linear-gradient(90deg,#22c55e,#2563eb,#f6b73c)}
+.star{
+flex:1;
+text-align:center;
+border-radius:18px;
+padding:12px 4px;
+box-shadow:0 8px 16px rgba(20,59,115,.06);
+}
+.completeGlow{
+animation:popIn .35s ease both;
+}
+@keyframes popIn{
+from{opacity:0;transform:scale(.96) translateY(8px)}
+to{opacity:1;transform:scale(1) translateY(0)}
+}
+.screenTitle{
+font-size:28px;
+letter-spacing:.01em;
+}
+@media(max-width:720px){
+.wrap{padding:10px}
+.appHeader{border-radius:26px;min-height:128px}
+.appHeader h1{font-size:30px}
+.card{padding:18px;border-radius:28px}
+.clock{font-size:52px}
+.actionGrid{gap:9px}
+.actionGrid .btn{min-height:82px}
+}
+@media(max-width:390px){
+.clock{font-size:46px}
+.actionGrid .btn{font-size:15px}
+}
+
+/* v11 final polish */
+body{
+min-height:100vh;
+background:
+radial-gradient(circle at 12% 4%, rgba(37,99,235,.16), transparent 28%),
+radial-gradient(circle at 88% 8%, rgba(246,183,60,.18), transparent 26%),
+radial-gradient(circle at 50% 100%, rgba(22,163,74,.08), transparent 35%),
+linear-gradient(145deg,#f5f9ff,#ffffff 55%,#edf5ff);
+}
+.wrap{max-width:760px}
+.appHeader{
+min-height:156px;
+border-radius:34px;
+background:
+radial-gradient(circle at 82% 12%, rgba(246,183,60,.34), transparent 27%),
+linear-gradient(135deg,#0f2f5f,#2563eb);
+}
+.appHeader h1{font-size:36px;letter-spacing:.02em}
+.appHeader p{font-size:14px;max-width:520px}
+.card{
+background:rgba(255,255,255,.82);
+backdrop-filter:blur(16px);
+border:1px solid rgba(219,229,245,.95);
+}
+#welcome,#timerScreen,#reviewScreen,#completeScreen,#teacher{
+animation:screenEnter .26s ease both;
+}
+@keyframes screenEnter{
+from{opacity:0;transform:translateY(10px) scale(.985)}
+to{opacity:1;transform:translateY(0) scale(1)}
+}
+.topNav{
+justify-content:center;
+margin-top:-2px;
+}
+.topNav .btn{
+border-radius:999px;
+font-weight:1000;
+}
+.heroIcon{
+transform:translateZ(0);
+animation:floatIcon 3.2s ease-in-out infinite;
+}
+@keyframes floatIcon{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-5px)}
+}
+.clock{
+font-variant-numeric:tabular-nums;
+}
+.timerPanel{
+position:relative;
+overflow:hidden;
+}
+.timerPanel:after{
+content:"";
+position:absolute;
+width:150px;
+height:150px;
+right:-70px;
+top:-70px;
+border-radius:50%;
+background:rgba(255,255,255,.35);
+}
+.actionGrid .btn{
+position:relative;
+overflow:hidden;
+}
+.actionGrid .btn:after{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+transform:translateX(-120%);
+}
+.actionGrid .btn:active:after{
+transform:translateX(120%);
+transition:.35s;
+}
+.star{
+transition:.15s ease;
+}
+.star.active{
+transform:translateY(-2px);
+box-shadow:0 10px 18px rgba(245,158,11,.18);
+}
+.msg.ok{
+animation:toastIn .22s ease both;
+}
+@keyframes toastIn{
+from{opacity:0;transform:translateY(5px)}
+to{opacity:1;transform:translateY(0)}
+}
+.statGrid .stat{
+min-height:78px;
+}
+.completeGlow .heroIcon{
+animation:successPop .7s ease both;
+}
+@keyframes successPop{
+0%{transform:scale(.82);opacity:.4}
+60%{transform:scale(1.08);opacity:1}
+100%{transform:scale(1)}
+}
+@media(max-width:720px){
+.appHeader{min-height:132px}
+.appHeader h1{font-size:32px}
+.topNav{position:sticky;top:8px}
+.card{box-shadow:0 14px 30px rgba(20,59,115,.09)}
+.actionGrid .btn{font-size:16px}
+}
+
+/* compact final adjustment */
+#welcome{padding-top:24px}
+#welcome .center{margin-bottom:8px}
+.compactTitle{font-size:34px;margin-top:2px;margin-bottom:4px}
+#welcome .stepPill{display:none}
+#welcome label{margin-top:16px}
+#welcome .installHint{font-size:12px;opacity:.82}
+.timerPanel{margin-top:6px}
+.timerPanel .clock{font-size:62px}
+.timerPanel .state{font-size:15px}
+.timerPanel.studyingMode{
+background:radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),linear-gradient(135deg,#e8fff2,#eff6ff);
+}
+.timerPanel.breakMode{
+background:radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),linear-gradient(135deg,#fff7ed,#eff6ff);
+}
+.timerPanel.finishedMode{
+background:radial-gradient(circle at 20% 15%, rgba(255,255,255,.95), transparent 32%),linear-gradient(135deg,#eff6ff,#ffffff);
+}
+#timerScreen h2{display:none}
+#timerScreen .stepPill{display:none}
+#timerScreen > .center{margin:0}
+@media(max-width:720px){
+#welcome{padding-top:18px}
+.compactTitle{font-size:32px}
+#welcome .heroIcon{display:none}
+.timerPanel .clock{font-size:56px}
+.timerPanel{padding:20px 16px}
+}
+@media(max-width:390px){
+.timerPanel .clock{font-size:49px}
+.compactTitle{font-size:30px}
+}
+
+/* remove unnecessary save button / final timer compact */
+#timerScreen .row{
+justify-content:center;
+}
+#timerScreen .row .btn.light{
+width:auto;
+min-width:140px;
+}
+.timerPanel{
+padding-top:18px;
+padding-bottom:18px;
+}
+.timerPanel .clock{
+margin:6px 0;
+}
+.actionGrid{
+margin-top:10px;
+}
+.statGrid{
+margin-top:10px;
+}
+@media(max-width:720px){
+#timerScreen .row{
+display:none;
+}
+.timerPanel{
+margin-bottom:10px;
+}
+.statGrid .stat{
+padding:11px;
+min-height:auto;
+}
+.stat b{
+font-size:22px;
+}
+}
+
+/* final navigation simplification */
+#welcome .btn.big{
+margin-top:10px;
+}
+#completeScreen .btn.big{
+margin-top:10px;
+}
+#welcome .installHint{
+margin-top:14px;
+}
+
+/* welcome teacher mini button */
+#welcome{
+position:relative;
+}
+.teacherMiniBtn{
+position:absolute;
+top:14px;
+right:14px;
+border:1px solid var(--line);
+background:rgba(255,255,255,.82);
+color:#64748b;
+border-radius:999px;
+padding:7px 11px;
+font-size:12px;
+font-weight:900;
+box-shadow:0 6px 14px rgba(20,59,115,.08);
+}
+.teacherMiniBtn:active{
+transform:scale(.97);
+}
+#welcome .btn.big{
+margin-top:16px;
+}
+
+/* mobile timer redesign */
+@media(max-width:720px){
+.wrap{
+padding:8px;
+}
+
+.appHeader{
+min-height:72px !important;
+padding:14px 16px !important;
+border-radius:0 0 22px 22px !important;
+margin:-8px -8px 10px !important;
+box-shadow:0 8px 20px rgba(20,59,115,.14) !important;
+}
+
+.appHeader h1{
+font-size:25px !important;
+line-height:1.1 !important;
+}
+
+.appHeader p,
+.appHeader .badge{
+display:none !important;
+}
+
+.card{
+padding:14px !important;
+border-radius:22px !important;
+margin:10px 0 !important;
+}
+
+/* タイマー画面だけ専用レイアウト */
+#timerScreen{
+padding:12px !important;
+background:rgba(255,255,255,.88) !important;
+}
+
+#timerScreen .center,
+#timerScreen h2,
+#timerScreen .stepPill{
+display:none !important;
+}
+
+.timerPanel{
+margin:0 !important;
+padding:16px 14px 14px !important;
+border-radius:26px !important;
+min-height:auto !important;
+background:
+radial-gradient(circle at 85% 0%, rgba(37,99,235,.16), transparent 28%),
+linear-gradient(180deg,#f8fbff,#ffffff) !important;
+border:1px solid #dbeafe !important;
+box-shadow:0 12px 26px rgba(20,59,115,.10) !important;
+}
+
+.timerPanel:after{
+display:none !important;
+}
+
+.state{
+padding:5px 13px !important;
+font-size:13px !important;
+border-radius:999px !important;
+margin-bottom:4px !important;
+}
+
+.clock{
+font-size:48px !important;
+line-height:1 !important;
+margin:8px 0 4px !important;
+letter-spacing:.02em !important;
+}
+
+.timeNote{
+font-size:12px !important;
+margin-bottom:8px !important;
+}
+
+/* ボタンを横3つにする */
+.actionGrid{
+display:grid !important;
+grid-template-columns:repeat(3,1fr) !important;
+gap:7px !important;
+margin-top:12px !important;
+}
+
+.actionGrid .btn,
+.actionGrid .breakBtn{
+min-height:54px !important;
+height:54px !important;
+padding:8px 4px !important;
+border-radius:17px !important;
+font-size:14px !important;
+line-height:1.22 !important;
+grid-column:auto !important;
+width:100% !important;
+box-shadow:0 8px 16px rgba(20,59,115,.12) !important;
+}
+
+.actionGrid .btn.gold{
+background:linear-gradient(135deg,#f6b73c,#ffd76f) !important;
+}
+
+.actionGrid .btn.gray{
+background:linear-gradient(135deg,#64748b,#94a3b8) !important;
+}
+
+.actionGrid .btn.green{
+background:linear-gradient(135deg,#16a34a,#4ade80) !important;
+}
+
+/* 学習時間カードを2列で短く */
+#timerScreen .statGrid{
+display:grid !important;
+grid-template-columns:repeat(3,1fr) !important;
+gap:7px !important;
+margin-top:10px !important;
+}
+
+#timerScreen .stat{
+min-height:62px !important;
+padding:9px 5px !important;
+border-radius:17px !important;
+font-size:12px !important;
+background:#ffffff !important;
+}
+
+#timerScreen .stat b{
+font-size:20px !important;
+margin-top:2px !important;
+}
+
+/* 目標カードをコンパクトに */
+#timerScreen > .card{
+padding:11px 12px !important;
+border-radius:18px !important;
+margin-top:9px !important;
+}
+
+#timerScreen > .card b{
+font-size:13px !important;
+}
+
+#timerScreen .progressOuter{
+height:10px !important;
+margin:7px 0 3px !important;
+}
+
+#timerScreen .small{
+font-size:11px !important;
+}
+
+/* タイマー画面の戻る・名前変更系は邪魔なので非表示 */
+#timerScreen .row{
+display:none !important;
+}
+}
+
+@media(max-width:390px){
+.clock{
+font-size:42px !important;
+}
+.actionGrid .btn,
+.actionGrid .breakBtn{
+font-size:13px !important;
+height:50px !important;
+min-height:50px !important;
+}
+#timerScreen .stat b{
+font-size:18px !important;
+}
+}
+
+/* final header-only app name + today total label */
+#welcome{
+position:relative;
+}
+.teacherMiniBtn{
+position:absolute;
+top:14px;
+right:14px;
+border:1px solid var(--line);
+background:rgba(255,255,255,.84);
+color:#64748b;
+border-radius:999px;
+padding:7px 11px;
+font-size:12px;
+font-weight:900;
+box-shadow:0 6px 14px rgba(20,59,115,.08);
+}
+.teacherMiniBtn:active{transform:scale(.97)}
+#welcome .center{
+display:none;
+}
+#welcome label:first-of-type{
+margin-top:10px;
+}
+#welcome .btn.big{
+margin-top:16px;
+}
+@media(max-width:720px){
+.appHeader{
+min-height:66px !important;
+padding:14px 16px !important;
+border-radius:0 0 22px 22px !important;
+margin:-8px -8px 10px !important;
+}
+.appHeader h1{
+font-size:25px !important;
+}
+.appHeader p,
+.appHeader .badge{
+display:none !important;
+}
+#welcome{
+padding-top:28px !important;
+}
+#timerScreen .statGrid{
+grid-template-columns:repeat(3,1fr) !important;
+}
+#timerScreen .stat{
+font-size:12px !important;
+}
+}
+
+/* remove duplicate title in welcome card */
+#welcome .center{
+display:none !important;
+}
+#welcome{
+padding-top:34px !important;
+}
+#welcome label:first-of-type{
+margin-top:0 !important;
+}
+#welcome .teacherMiniBtn{
+top:12px;
+right:12px;
+}
+@media(max-width:720px){
+#welcome{
+padding-top:32px !important;
+}
+.appHeader{
+min-height:60px !important;
+padding:12px 16px !important;
+}
+.appHeader h1{
+font-size:24px !important;
+}
+}
+
+/* clean rebuild from uploaded index: header-only title + balanced mobile */
+.appHeader{
+display:flex !important;
+align-items:center !important;
+justify-content:space-between !important;
+gap:12px !important;
+}
+.headerBtnGroup{
+display:flex !important;
+align-items:center;
+gap:8px;
+flex-wrap:wrap;
+justify-content:flex-end;
+position:relative;
+z-index:2;
+}
+.headerTeacherBtn{
+border:1px solid rgba(255,255,255,.35);
+background:rgba(255,255,255,.16);
+color:#fff;
+border-radius:999px;
+padding:7px 12px;
+font-size:12px;
+font-weight:900;
+cursor:pointer;
+position:relative;
+z-index:2;
+white-space:nowrap;
+}
+.headerTeacherBtn:active{transform:scale(.97)}
+.appHeader p,
+.appHeader .badge{
+display:none !important;
+}
+#welcome .center,
+#welcome .screenTitle,
+#welcome .stepPill,
+#welcome h2{
+display:none !important;
+}
+#welcome{
+position:relative;
+}
+#welcome label:first-of-type{
+margin-top:0 !important;
+}
+#welcome .teacherMiniBtn{
+display:none !important;
+}
+#welcome .installHint{
+background:#f8fbff !important;
+border-color:#dbe5f5 !important;
+color:#64748b !important;
+}
+
+/* PCは今の良さを残しつつ少し整理 */
+@media(min-width:721px){
+.appHeader{
+min-height:86px !important;
+padding:22px 24px !important;
+}
+.appHeader h1{
+font-size:32px !important;
+}
+#welcome{
+padding-top:26px !important;
+}
+}
+
+/* スマホ専用：縦長感・重複感を解消 */
+@media(max-width:720px){
+body{
+background:linear-gradient(180deg,#f6f9ff,#ffffff) !important;
+}
+.wrap{
+padding:0 14px 14px !important;
+max-width:480px !important;
+}
+.appHeader{
+height:58px !important;
+min-height:58px !important;
+padding:0 16px !important;
+margin:0 -14px 14px !important;
+border-radius:0 0 18px 18px !important;
+box-shadow:0 8px 18px rgba(20,59,115,.12) !important;
+background:linear-gradient(135deg,#143b73,#2563eb) !important;
+}
+.appHeader:before,
+.appHeader:after{
+display:none !important;
+}
+.appHeader h1{
+font-size:23px !important;
+line-height:1 !important;
+margin:0 !important;
+}
+.headerTeacherBtn{
+padding:6px 11px !important;
+font-size:12px !important;
+}
+.card{
+padding:18px !important;
+border-radius:24px !important;
+margin:10px 0 !important;
+box-shadow:0 10px 24px rgba(20,59,115,.08) !important;
+background:rgba(255,255,255,.94) !important;
+}
+#welcome{
+padding-top:22px !important;
+}
+#welcome label{
+font-size:14px !important;
+margin:14px 0 6px !important;
+}
+#welcome label:first-of-type{
+margin-top:0 !important;
+}
+#welcome .grid2{
+display:block !important;
+}
+#welcome input,
+#welcome select{
+height:52px !important;
+border-radius:16px !important;
+font-size:17px !important;
+background:#fff !important;
+}
+#welcome .btn.big{
+margin-top:22px !important;
+height:58px !important;
+border-radius:18px !important;
+font-size:18px !important;
+}
+#welcome .installHint{
+margin-top:14px !important;
+padding:11px 13px !important;
+border-radius:15px !important;
+font-size:12px !important;
+line-height:1.5 !important;
+}
+/* タイマー画面も1画面に収まりやすく */
+#timerScreen{
+padding:12px !important;
+}
+#timerScreen .center,
+#timerScreen h2,
+#timerScreen .stepPill{
+display:none !important;
+}
+.timerPanel{
+margin:0 !important;
+padding:16px 14px 14px !important;
+border-radius:26px !important;
+background:linear-gradient(180deg,#f8fbff,#ffffff) !important;
+border:1px solid #dbeafe !important;
+box-shadow:0 12px 26px rgba(20,59,115,.10) !important;
+}
+.timerPanel:after{
+display:none !important;
+}
+.state{
+padding:5px 13px !important;
+font-size:13px !important;
+margin-bottom:4px !important;
+}
+.clock{
+font-size:46px !important;
+line-height:1 !important;
+margin:8px 0 4px !important;
+}
+.timeNote{
+font-size:12px !important;
+margin-bottom:8px !important;
+}
+.actionGrid{
+grid-template-columns:repeat(3,1fr) !important;
+gap:7px !important;
+margin-top:12px !important;
+}
+.actionGrid .btn,
+.actionGrid .breakBtn{
+grid-column:auto !important;
+height:52px !important;
+min-height:52px !important;
+padding:8px 4px !important;
+border-radius:17px !important;
+font-size:14px !important;
+line-height:1.2 !important;
+}
+#timerScreen .statGrid{
+grid-template-columns:repeat(3,1fr) !important;
+gap:7px !important;
+margin-top:10px !important;
+}
+#timerScreen .stat{
+min-height:60px !important;
+padding:9px 5px !important;
+border-radius:17px !important;
+font-size:12px !important;
+}
+#timerScreen .stat b{
+font-size:18px !important;
+margin-top:2px !important;
+}
+#timerScreen > .card{
+padding:11px 12px !important;
+border-radius:18px !important;
+margin-top:9px !important;
+}
+#timerScreen .row{
+display:none !important;
+}
+}
+@media(max-width:390px){
+.clock{font-size:41px !important}
+}
+
+/* teacher button corner placement + teacher back button */
+.appHeader{
+position:relative !important;
+}
+.headerTeacherBtn{
+position:absolute !important;
+top:8px !important;
+right:8px !important;
+z-index:5 !important;
+border:1px solid rgba(255,255,255,.42) !important;
+background:rgba(255,255,255,.18) !important;
+color:#fff !important;
+border-radius:999px !important;
+padding:5px 9px !important;
+font-size:11px !important;
+font-weight:900 !important;
+box-shadow:none !important;
+}
+.headerTeacherBtn:active{
+transform:scale(.96);
+}
+.teacherHead{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+margin-bottom:12px;
+}
+.teacherHead h2{
+margin:0;
+}
+.teacherBackBtn{
+border:1px solid var(--line);
+background:#fff;
+color:#64748b;
+border-radius:999px;
+padding:8px 12px;
+font-size:13px;
+font-weight:900;
+box-shadow:none;
+}
+@media(max-width:720px){
+.headerTeacherBtn{
+top:7px !important;
+right:8px !important;
+font-size:11px !important;
+padding:5px 8px !important;
+}
+}
+
+/* final finishing touches */
+.completeSummary{
+margin:14px 0 4px;
+}
+.completeStats{
+grid-template-columns:repeat(2,1fr) !important;
+}
+@media(max-width:720px){
+/* timer final compact */
+#timerScreen .clock{
+font-size:43px !important;
+}
+#timerScreen .timerPanel{
+padding:14px 12px 12px !important;
+}
+#timerScreen .actionGrid .btn,
+#timerScreen .actionGrid .breakBtn{
+height:48px !important;
+min-height:48px !important;
+font-size:13px !important;
+}
+#timerScreen .stat{
+min-height:54px !important;
+padding:8px 4px !important;
+}
+#timerScreen .stat b{
+font-size:17px !important;
+}
+#timerScreen > .card{
+padding:9px 10px !important;
+}
+#timerScreen .progressOuter{
+height:8px !important;
+}
+/* welcome labels easier */
+
+#welcome .installHint{
+display:none !important;
+}
+/* review and complete cleaner */
+#completeScreen .heroIcon{
+width:88px !important;
+height:88px !important;
+margin:10px auto !important;
+}
+#completeScreen h2{
+font-size:24px !important;
+}
+}
+
+/* log-check button label */
+.headerTeacherBtn{
+min-width:58px !important;
+text-align:center !important;
+padding:5px 10px !important;
+font-size:11px !important;
+}
+@media(max-width:720px){
+.headerTeacherBtn{
+right:7px !important;
+top:7px !important;
+padding:5px 8px !important;
+font-size:11px !important;
+}
+}
+
+/* log detail panel */
+.detailOpenBtn{
+margin:12px 0 4px;
+}
+.detailHead{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+margin-bottom:12px;
+}
+.detailHead h3{
+margin:0;
+}
+.detailFilters{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin:10px 0 12px;
+}
+.periodBtn{
+border:1px solid var(--line);
+background:#fff;
+color:#143b73;
+border-radius:999px;
+padding:8px 12px;
+font-size:13px;
+font-weight:900;
+cursor:pointer;
+}
+.periodBtn.active{
+background:var(--blue);
+color:#fff;
+border-color:var(--blue);
+}
+.detailSelects{
+margin-bottom:10px;
+}
+.innerCard{
+margin:10px 0 0;
+box-shadow:none;
+}
+@media(max-width:720px){
+.detailOpenBtn{
+height:50px !important;
+font-size:16px !important;
+}
+.detailFilters{
+gap:6px;
+}
+.periodBtn{
+flex:1;
+min-width:64px;
+padding:8px 6px;
+font-size:12px;
+}
+.detailStats{
+grid-template-columns:repeat(3,1fr) !important;
+}
+.detailStats .stat{
+font-size:11px !important;
+}
+.detailStats .stat b{
+font-size:16px !important;
+}
+}
+
+/* mobile color/header/time readability fix */
+@media(max-width:720px){
+.appHeader{
+height:56px !important;
+min-height:56px !important;
+padding:0 14px !important;
+display:flex !important;
+align-items:center !important;
+justify-content:flex-start !important;
+}
+.appHeader h1{
+font-size:22px !important;
+font-weight:1000 !important;
+margin:0 !important;
+text-align:left !important;
+line-height:1 !important;
+letter-spacing:.01em !important;
+}
+.headerTeacherBtn{
+position:absolute !important;
+top:8px !important;
+right:8px !important;
+padding:5px 8px !important;
+min-width:auto !important;
+font-size:10.5px !important;
+border-radius:999px !important;
+background:rgba(255,255,255,.16) !important;
+color:#fff !important;
+}
+#welcome label,
+#reviewScreen label,
+#teacher label{
+color:#334155 !important;
+}
+#welcome input,
+#welcome select,
+#reviewScreen input,
+#reviewScreen select,
+#reviewScreen textarea{
+color:#111827 !important;
+}
+#welcome input::placeholder,
+#reviewScreen textarea::placeholder{
+color:#9ca3af !important;
+}
+#welcome{
+margin-top:10px !important;
+}
+}
+.timeReadable{
+font-variant-numeric:tabular-nums;
+white-space:nowrap;
+}
+
+/* edit/delete controls */
+.actionCell{
+white-space:nowrap;
+}
+.miniActionBtn{
+border:1px solid var(--line);
+background:#fff;
+color:#2563eb;
+border-radius:999px;
+padding:6px 9px;
+font-size:12px;
+font-weight:900;
+margin:2px;
+cursor:pointer;
+}
+.miniActionBtn.delete{
+color:#dc2626;
+}
+@media(max-width:720px){
+.miniActionBtn{
+padding:6px 8px;
+font-size:11px;
+}
+.modal{
+padding:14px;
+}
+}
+
+/* final mobile header adjustment */
+@media(max-width:720px){
+.appHeader{
+height:52px !important;
+min-height:52px !important;
+padding:0 14px !important;
+margin:0 -14px 12px !important;
+border-radius:0 0 16px 16px !important;
+display:flex !important;
+align-items:center !important;
+justify-content:flex-start !important;
+background:linear-gradient(135deg,#143b73,#2563eb) !important;
+box-shadow:0 7px 16px rgba(20,59,115,.12) !important;
+}
+.appHeader h1{
+font-size:21px !important;
+line-height:1 !important;
+margin:0 !important;
+letter-spacing:.01em !important;
+}
+.appHeader p,
+.appHeader .badge,
+.appHeader:before,
+.appHeader:after{
+display:none !important;
+}
+.headerTeacherBtn{
+position:absolute !important;
+top:7px !important;
+right:8px !important;
+padding:5px 8px !important;
+font-size:10.5px !important;
+line-height:1 !important;
+min-width:auto !important;
+border-radius:999px !important;
+background:rgba(255,255,255,.16) !important;
+border:1px solid rgba(255,255,255,.34) !important;
+color:#fff !important;
+box-shadow:none !important;
+}
+#welcome{
+margin-top:8px !important;
+}
+}
+
+/* active in-room provisional record */
+.inRoomItem{
+background:#f0fdf4 !important;
+}
+.inRoomItem .statusPill.green{
+font-variant-numeric:tabular-nums;
+}
+
+/* mobile header vertical balance fix */
+@media(max-width:720px){
+.appHeader{
+height:64px !important;
+min-height:64px !important;
+padding:10px 14px 0 !important;
+margin:0 -14px 14px !important;
+border-radius:0 0 18px 18px !important;
+display:flex !important;
+align-items:center !important;
+justify-content:center !important;
+position:relative !important;
+}
+
+.appHeader h1{
+position:relative !important;
+top:4px !important;
+font-size:22px !important;
+line-height:1 !important;
+margin:0 !important;
+text-align:center !important;
+letter-spacing:.01em !important;
+}
+
+.headerTeacherBtn{
+position:absolute !important;
+top:17px !important;
+right:8px !important;
+padding:5px 8px !important;
+font-size:10.5px !important;
+line-height:1 !important;
+border-radius:999px !important;
+}
+
+#welcome,
+#teacher,
+#timerScreen,
+#reviewScreen,
+#completeScreen{
+margin-top:12px !important;
+}
+}
+
+/* Study Room v1.1 safe additions */
+#timerScreen{position:relative}
+.timerBackBtn{
+position:absolute;
+top:10px;
+left:12px;
+border:1px solid var(--line);
+background:#fff;
+color:#64748b;
+border-radius:999px;
+padding:7px 12px;
+font-size:13px;
+font-weight:1000;
+box-shadow:none;
+z-index:3;
+}
+.homeInfoGrid{
+display:grid;
+gap:10px;
+margin:14px 0 4px;
+}
+.homeInfoCard{
+display:flex;
+align-items:center;
+gap:12px;
+background:#fff;
+border:1px solid var(--line);
+border-radius:22px;
+padding:13px 14px;
+box-shadow:0 10px 24px rgba(20,59,115,.07);
+}
+.homeInfoIcon{
+width:46px;
+height:46px;
+border-radius:999px;
+display:flex;
+align-items:center;
+justify-content:center;
+flex:0 0 auto;
+font-size:23px;
+font-weight:1000;
+background:#eff6ff;
+color:#2563eb;
+}
+.usersCard .homeInfoIcon{background:#eff6ff;color:#2563eb}
+.streakCard .homeInfoIcon{background:#ecfdf5;color:#16a34a}
+.quoteCard .homeInfoIcon{background:#f5f3ff;color:#7c3aed;font-size:34px;line-height:1}
+.homeInfoTitle{
+font-weight:1000;
+color:#152033;
+font-size:16px;
+}
+.homeInfoSub{
+color:#64748b;
+font-size:12px;
+margin-top:2px;
+}
+.homeInfoValue{
+margin-left:auto;
+font-size:28px;
+font-weight:1000;
+color:#2563eb;
+white-space:nowrap;
+}
+.streakCard .homeInfoValue{color:#16a34a}
+.homeInfoValue small{
+font-size:14px;
+margin-left:2px;
+}
+.quoteCard{
+align-items:flex-start;
+}
+.quoteTextWrap{
+flex:1;
+min-width:0;
+}
+.quoteText{
+margin-top:6px;
+line-height:1.65;
+color:#152033;
+font-size:14px;
+font-weight:800;
+white-space:pre-wrap;
+}
+.quoteBtn{
+border:1px solid #bfdbfe;
+background:#fff;
+color:#2563eb;
+border-radius:999px;
+padding:7px 10px;
+font-size:12px;
+font-weight:1000;
+cursor:pointer;
+white-space:nowrap;
+}
+@media(max-width:720px){
+.timerBackBtn{
+top:8px !important;
+left:10px !important;
+padding:6px 10px !important;
+font-size:12px !important;
+}
+#timerScreen{
+padding-top:42px !important;
+}
+.homeInfoGrid{
+margin-top:12px !important;
+gap:9px !important;
+}
+.homeInfoCard{
+border-radius:19px !important;
+padding:11px 12px !important;
+gap:10px !important;
+}
+.homeInfoIcon{
+width:40px !important;
+height:40px !important;
+font-size:20px !important;
+}
+.quoteCard .homeInfoIcon{
+font-size:30px !important;
+}
+.homeInfoTitle{
+font-size:14px !important;
+}
+.homeInfoSub{
+font-size:11px !important;
+}
+.homeInfoValue{
+font-size:25px !important;
+}
+.quoteText{
+font-size:13px !important;
+line-height:1.55 !important;
+}
+.quoteBtn{
+padding:6px 8px !important;
+font-size:11px !important;
+}
+}
+
+/* Study Room v1.2 教室モード (classroom mode) */
+body.classroomMode #welcome,
+body.classroomMode #timerScreen,
+body.classroomMode #reviewScreen,
+body.classroomMode #completeScreen{
+display:none !important;
+}
+.crTitle{
+font-size:26px;
+font-weight:1000;
+text-align:center;
+margin:4px 0 0;
+color:var(--navy);
+}
+.crSubtitle{
+text-align:center;
+color:var(--muted);
+font-size:14px;
+margin-top:6px;
+}
+.crBigButtons{
+display:grid;
+grid-template-columns:1fr;
+gap:18px;
+margin-top:26px;
+}
+.crBigBtn{
+min-height:150px;
+font-size:30px;
+border-radius:28px;
+}
+.crBigBtn.crEnterBtn{background:linear-gradient(135deg,#16a34a,#4ade80)}
+.crBigBtn.crExitBtn{background:linear-gradient(135deg,#dc2626,#f87171)}
+.crScreenTitle{
+font-size:22px;
+margin:8px 0 14px;
+text-align:center;
+}
+.crChipRow{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin:10px 0 4px;
+}
+.crChip{
+border:1px solid var(--line);
+background:#fff;
+border-radius:999px;
+padding:9px 15px;
+font-size:14px;
+font-weight:900;
+color:#143b73;
+cursor:pointer;
+}
+.crActiveList{
+display:grid;
+gap:10px;
+margin-top:6px;
+}
+.crStudentRow{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+border:1px solid var(--line);
+background:#fff;
+border-radius:18px;
+padding:18px;
+font-size:18px;
+font-weight:900;
+color:var(--text);
+cursor:pointer;
+text-align:left;
+width:100%;
+}
+.crStudentRow.pending{
+background:#fffbeb;
+border-color:#fde68a;
+}
+.crStudentRow:active{transform:scale(.98)}
+.crStudentMain{
+display:flex;
+flex-direction:column;
+gap:3px;
+}
+.crStudentGrade{
+font-size:12px;
+color:var(--muted);
+font-weight:800;
+}
+.crStudentTime{
+font-size:13px;
+color:#2563eb;
+font-weight:900;
+white-space:nowrap;
+text-align:right;
+}
+.crStudentRow.pending .crStudentTime{color:#b45309}
+@media(max-width:720px){
+.crBigBtn{min-height:126px;font-size:24px}
+.crStudentRow{padding:15px;font-size:16px}
+.crTitle{font-size:23px}
+}
+
+/* 教室モード切替ボタン追加に伴う最終調整：
+   これまでの各ブレークポイントで .headerTeacherBtn 自体を absolute 配置していたが、
+   ボタンが2つに増えたため、絶対配置は親の .headerBtnGroup にまとめ、
+   ボタン自体は group 内で横並び（相対配置）にする。 */
+.headerTeacherBtn{
+position:relative !important;
+top:auto !important;
+right:auto !important;
+}
+.headerBtnGroup{
+position:absolute !important;
+top:8px !important;
+right:8px !important;
+display:flex !important;
+align-items:center !important;
+gap:6px !important;
+z-index:5 !important;
+}
+@media(max-width:720px){
+.headerBtnGroup{
+top:7px !important;
+right:8px !important;
+}
+}
+</style>
+
+<link rel="icon" type="image/png" sizes="32x32" href="https://study-navi.github.io/study-room/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://study-navi.github.io/study-room/icons/favicon-16.png">
+<link rel="shortcut icon" href="https://study-navi.github.io/study-room/icons/favicon.ico">
+
+<style>
+body:has(#teacher:not(.hide)) .wrap{max-width:1240px!important}#teacher table{min-width:1000px} .mcContext{margin:12px 0;padding:14px!important}.mcContext strong{display:block;font-size:20px}.mcContext p:empty{display:none}.mcItem{padding:12px;border-bottom:1px solid #dbe3ef;overflow-wrap:anywhere}.mcItem p{margin:6px 0}.mcCheck{display:flex;align-items:center;gap:8px}.mcCheck input{width:22px;min-height:22px}#mcDashboard h3{margin-top:24px}#mcDashboard .statGrid{grid-template-columns:repeat(4,minmax(0,1fr))}#mcSchoolEditor,#mcAdminEditor{margin:20px 0}.btn{min-height:44px}#mcNetwork{font-size:13px}#mcNotice{color:#9b3410}#mcHistory{max-height:55vh;overflow:auto}.statGrid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+@media(max-width:720px){#mcDashboard .statGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.statGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat b{font-size:21px!important;overflow-wrap:anywhere}.row .btn{flex:1}#mcSchoolLabel{font-size:19px}}
+</style></head>
+<body>
+<div class="wrap">
+<header class="appHeader">
+<h1 id="appTitle">Study Room</h1>
+<div class="headerBtnGroup">
+<button id="headerModeBtn" class="headerTeacherBtn" type="button" onclick="toggleClassroomMode()">教室モード</button>
+<button class="headerTeacherBtn" type="button" onclick="openTeacherFromWelcome()">ログ確認</button>
+</div>
+</header>
+<div class="card mcContext"><strong id="mcSchoolLabel">教室を選択してください</strong><span id="mcNetwork" role="status" aria-live="polite"></span><p id="mcNotice" role="status" aria-live="polite"></p></div>
+<section id="welcome" class="card">
+<label for="mcSchool">所属教室</label><select id="mcSchool"><option value="">読み込み中…</option></select>
+<div class="row"><button class="btn light" onclick="mcSwitchUser()">利用者を切り替える</button><button class="btn light" onclick="mcHistory()">自分の学習履歴</button></div>
+<p class="small">プロフィールと履歴キーをこの端末に保存します。共用端末では利用後に「利用者を切り替える」を押してください。同じ端末を操作できる人には履歴が見えるため、私物端末での利用をおすすめします。</p><div id="mcHistory"></div><details><summary>先生に確認した履歴を引き継ぐ</summary><label>引継ぎコード<input id="mcLinkCode" autocomplete="off"></label><button class="btn light" onclick="mcRedeemLink()">この端末に引き継ぐ</button></details>
+<label>名前</label>
+<input id="studentName" placeholder="例：山田太郎" autocomplete="name">
+<div class="grid2">
+<div><label>学年</label><select id="grade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select></div>
+<div><label>今日の目標</label><input id="goalMinutes" type="number" min="0" step="10" placeholder="例：120"></div>
+</div>
+<button class="btn big" type="button" id="mcStart" onclick="startApp()">スタート</button>
+
+<div class="homeInfoGrid welcomeHomeInfo" id="welcomeHomeInfo">
+<div class="homeInfoCard usersCard">
+<div class="homeInfoIcon">👥</div>
+<div>
+<div class="homeInfoTitle">今日の利用人数</div>
+<div class="homeInfoSub">記録を送信した人数</div>
+</div>
+<div class="homeInfoValue"><span id="welcomeTodayUserCount">0</span><small>人</small></div>
+</div>
+
+<div class="homeInfoCard streakCard">
+<div class="homeInfoIcon">🔥</div>
+<div>
+<div class="homeInfoTitle">連続記録</div>
+<div class="homeInfoSub">続けるほど力になる</div>
+</div>
+<div class="homeInfoValue"><span id="welcomeStreakDays">0</span><small>日</small></div>
+</div>
+
+<div class="homeInfoCard quoteCard">
+<div class="homeInfoIcon">“</div>
+<div class="quoteTextWrap">
+<div class="homeInfoTitle">今日の名言</div>
+<div class="quoteText" id="welcomeDailyQuote">学問に近道なし。</div>
+</div>
+<button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
+</div>
+</div>
+
+<div class="installHint small">入力内容とタイマー状態は自動保存されます。</div>
+<div id="welcomeMsg"></div>
+</section>
+
+<section id="timerScreen" class="card hide">
+<button class="timerBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button>
+<div class="center">
+<span class="stepPill">② 自習中</span>
+<h2>タイマー</h2>
+</div>
+<div class="timerPanel">
+<div class="state" id="stateText">まだ入室していません</div>
+<div class="clock" id="mainClock">00:00:00</div>
+<div class="timeNote" id="clockNote">現在時刻で入室を押すと計測します</div>
+<div class="actionGrid">
+<button class="btn gold" type="button" onclick="enterRoom()">入室</button>
+<button class="btn gray breakBtn" id="breakBtn" type="button" onclick="toggleBreak()">休憩</button>
+<button class="btn green" type="button" onclick="exitRoom()">退室</button>
+</div>
+</div>
+<div class="statGrid">
+<div class="stat">今回<b id="sessionTimeText">0分</b></div>
+<div class="stat">休憩<b id="breakTimeText">0分</b></div>
+<div class="stat">今日の合計<b id="localTodayText">0分</b></div>
+</div>
+<div class="card">
+<div class="row" style="justify-content:space-between">
+<b>今日の目標</b><span id="goalPercent">0%</span>
+</div>
+<div class="progressOuter"><div class="progressInner" id="goalBar"></div></div>
+<div class="small" id="goalDetail">0 / 0分</div>
+</div>
+
+<div class="homeInfoGrid timerHomeInfo" id="timerHomeInfo">
+<div class="homeInfoCard usersCard">
+<div class="homeInfoIcon">👥</div>
+<div>
+<div class="homeInfoTitle">今日の利用人数</div>
+<div class="homeInfoSub">記録を送信した人数</div>
+</div>
+<div class="homeInfoValue"><span id="todayUserCount">0</span><small>人</small></div>
+</div>
+
+<div class="homeInfoCard streakCard">
+<div class="homeInfoIcon">🔥</div>
+<div>
+<div class="homeInfoTitle">連続記録</div>
+<div class="homeInfoSub">続けるほど力になる</div>
+</div>
+<div class="homeInfoValue"><span id="streakDays">0</span><small>日</small></div>
+</div>
+
+<div class="homeInfoCard quoteCard">
+<div class="homeInfoIcon">“</div>
+<div class="quoteTextWrap">
+<div class="homeInfoTitle">今日の名言</div>
+<div class="quoteText" id="dailyQuote">学問に近道なし。</div>
+</div>
+<button class="quoteBtn" type="button" onclick="nextQuote()">次の名言</button>
+</div>
+</div>
+
+<div class="row">
+<button class="btn light" type="button" onclick="goScreen('welcome')">名前を変更</button>
+</div>
+<div id="timerMsg"></div>
+</section>
+
+<section id="reviewScreen" class="card hide">
+<div class="center">
+<span class="stepPill">③ 退室後の振り返り</span>
+<h2>振り返り入力</h2>
+<p class="small">退室しました。今日の学習をまとめて先生へ送信しましょう。</p>
+</div>
+<div class="statGrid">
+<div class="stat">入室<b id="reviewStart">--:--</b></div>
+<div class="stat">退室<b id="reviewEnd">--:--</b></div>
+<div class="stat">自習時間<b id="reviewMinutes">0分</b></div>
+</div>
+<div class="grid2">
+<div><label>科目</label><select id="subject"><option>英語</option><option>数学</option><option>国語</option><option>理科</option><option>社会</option><option>物理</option><option>化学</option><option>生物</option><option>日本史</option><option>世界史</option><option>その他</option></select></div>
+<div><label>日付</label><input id="date" type="date"></div>
+</div>
+
+<label>集中度</label>
+<div class="starRow" id="focusStars"></div>
+<div class="small" id="focusLabel">3：ふつう</div>
+
+<label>達成度</label>
+<div class="starRow" id="achievementStars"></div>
+<div class="small" id="achievementLabel">3：ふつう</div>
+
+<label>学習内容</label>
+<textarea id="content" placeholder="例：数学ワーク p.20〜35、英単語50個テスト勉強"></textarea>
+
+<label>先生へのコメント（任意）</label>
+<textarea id="comment" placeholder="例：図形の問題が難しかったです。次回質問したいです。"></textarea>
+
+<button class="btn big" id="sendBtn" type="button" onclick="submitToTeacher()">先生へ送信</button>
+<button class="btn light big" type="button" onclick="goScreen('timerScreen')">タイマーに戻る</button>
+<div id="reviewMsg"></div>
+</section>
+
+<section id="completeScreen" class="card hide completeGlow">
+<div class="center">
+<span class="stepPill">送信完了</span>
+<div class="heroIcon">
+<svg viewBox="0 0 64 64" fill="none">
+<circle cx="32" cy="32" r="24" fill="#16a34a"/>
+<path d="M21 32l7 7 16-17" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</div>
+<h2>お疲れさまでした！</h2>
+<p class="small">記録が保存されました。</p><div id="completeSummary" class="completeSummary"></div>
+<button class="btn big" type="button" onclick="useStudyRoomAgain()">自習室を利用する</button>
+<button class="btn light big" type="button" onclick="finishAndExit()">終了する</button>
+</div>
+</section>
+
+<section id="teacher" class="card hide">
+<div class="teacherHead"><h2>管理画面</h2><button class="teacherBackBtn" type="button" onclick="goScreen('welcome')">← 戻る</button></div>
+<div id="loginBox" class="card">
+<div class="grid2">
+<div><label>管理者ID</label><input id="teacherId" placeholder="管理者ID"></div>
+<div><label>パスワード</label><input id="teacherPass" type="password" placeholder="パスワード"></div>
+</div>
+<button class="btn" type="button" id="mcLogin" onclick="teacherLogin()">管理者ログイン</button>
+<div id="loginMsg"></div>
+</div>
+<div id="teacherPanel" class="hide">
+<div class="row"><b id="mcRole"></b><button class="btn light" onclick="mcLogout()">ログアウト</button></div>
+<div class="grid2"><div><label>対象教室<select id="mcAdminSchool"></select></label></div><div><label>期間の開始<input id="mcFrom" type="date"></label><label>期間の終了<input id="mcTo" type="date"></label></div></div>
+<div id="mcDashboard"></div><button class="btn light" onclick="mcManageStudents()">生徒の履歴引継ぎ・重複確認</button><div id="mcStudentEditor"></div>
+<div id="mcGlobal" class="hide"><div class="row"><button class="btn light" onclick="mcEditSchools()">教室の追加・編集</button><button class="btn light" onclick="mcEditAdmins()">管理者の登録・権限設定</button></div><div id="mcSchoolEditor"></div><div id="mcAdminEditor"></div></div>
+<div class="statGrid">
+<div class="stat">記録数<b id="statCount">0</b></div>
+<div class="stat">合計時間<b id="statMinutes">0</b></div>
+<div class="stat">今日の人数<b id="statToday">0</b></div>
+</div>
+<button class="btn big detailOpenBtn" id="detailBtn" type="button" onclick="showDetailPanel()">詳しく見る</button>
+
+<div id="detailPanel" class="card hide">
+<div class="detailHead">
+<h3>詳細・ランキング</h3>
+<button class="teacherBackBtn" type="button" onclick="hideDetailPanel()">閉じる</button>
+</div>
+
+<div class="detailFilters">
+<button class="periodBtn active" type="button" data-period="today" onclick="setDetailPeriod('today')">今日</button>
+<button class="periodBtn" type="button" data-period="month" onclick="setDetailPeriod('month')">今月</button>
+<button class="periodBtn" type="button" data-period="year" onclick="setDetailPeriod('year')">今年</button>
+<button class="periodBtn" type="button" data-period="all" onclick="setDetailPeriod('all')">全期間</button>
+</div>
+
+<div class="grid2 detailSelects">
+<div><label>月別</label><input id="detailMonth" type="month" onchange="setDetailPeriod('customMonth')"></div>
+<div><label>年別</label><input id="detailYear" type="number" min="2020" max="2100" placeholder="例：2026" onchange="setDetailPeriod('customYear')"></div>
+</div>
+
+<div class="statGrid detailStats">
+<div class="stat">対象記録<b id="detailCount">0</b></div>
+<div class="stat">合計時間<b id="detailMinutes">0分</b></div>
+<div class="stat">平均時間<b id="detailAvg">0分</b></div>
+</div>
+
+<div class="grid2">
+<div class="card innerCard">
+<h3>学習時間ランキング</h3>
+<div id="detailRanking" class="rankList"></div>
+</div>
+<div class="card innerCard">
+<h3>科目別 合計</h3>
+<div id="subjectRanking" class="rankList"></div>
+</div>
+</div>
+</div>
+<div class="card">
+<h3>現在自習中の生徒</h3>
+<div id="inRoomList" class="rankList"></div>
+<h3 style="margin-top:16px">振り返り待ちの生徒</h3>
+<div id="pendingReflectionList" class="rankList"></div>
+</div>
+<div class="row">
+<input id="search" placeholder="名前・科目・内容で検索" style="flex:1;min-width:220px">
+<button class="btn light" type="button" onclick="loadRecords()">更新</button>
+<button class="btn green" type="button" onclick="downloadCSV()">CSV</button>
+</div>
+<div id="teacherMsg"></div>
+<div class="tableWrap">
+<table>
+<thead><tr><th>日付</th><th>名前</th><th>学年</th><th>科目</th><th>時間</th><th>分数</th><th>集中</th><th>達成</th><th>状態</th><th>内容</th><th>コメント</th><th>操作</th></tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section id="crHome" class="card hide">
+<div class="crTitle">教室モード</div>
+<div class="crSubtitle">この端末で複数の生徒が自習時間を記録できます</div>
+<div class="crBigButtons">
+<button class="btn crBigBtn crEnterBtn" type="button" onclick="crGoScreen('crCheckin')">入室する</button>
+<button class="btn crBigBtn crExitBtn" type="button" onclick="crGoScreen('crCheckout')">退室する</button>
+</div>
+<div id="crHomeMsg"></div>
+</section>
+
+<section id="crCheckin" class="card hide">
+<button class="timerBackBtn" type="button" onclick="crGoScreen('crHome')">← 戻る</button>
+<h2 class="crScreenTitle">入室する</h2>
+<label>生徒名</label>
+<label>登録済みの生徒<select id="mcRoster"><option value="">読み込み中…</option></select></label><p class="small">同姓同名は末尾の生徒IDで区別します。新規の場合のみ下の名前を入力してください。</p><input id="crName" placeholder="例：山田太郎" autocomplete="off">
+<div id="crRecentNames" class="crChipRow"></div>
+<label>学年</label>
+<select id="crGrade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select>
+<button class="btn big" type="button" id="mcCrEnter" onclick="crSubmitCheckin()">勉強を始める</button>
+<div id="crCheckinMsg"></div>
+</section>
+
+<section id="crCheckout" class="card hide">
+<button class="timerBackBtn" type="button" onclick="crGoScreen('crHome')">← 戻る</button>
+<h2 class="crScreenTitle">退室する生徒を選んでください</h2>
+<div id="crActiveList" class="crActiveList"></div>
+<div id="crCheckoutMsg"></div>
+</section>
+
+<section id="crReview" class="card hide">
+<div class="center">
+<span class="stepPill">振り返り入力</span>
+<h2 id="crReviewName">-</h2>
+<p class="small">お疲れさまでした。今日の学習をまとめて先生へ送信しましょう。</p>
+</div>
+<div class="statGrid">
+<div class="stat">入室<b id="crReviewStart">--:--</b></div>
+<div class="stat">退室<b id="crReviewEnd">--:--</b></div>
+<div class="stat">自習時間<b id="crReviewMinutes">0分</b></div>
+</div>
+<label>科目</label>
+<select id="crSubject"><option>英語</option><option>数学</option><option>国語</option><option>理科</option><option>社会</option><option>物理</option><option>化学</option><option>生物</option><option>日本史</option><option>世界史</option><option>その他</option></select>
+
+<label>集中度</label>
+<div class="starRow" id="crFocusStars"></div>
+<div class="small" id="crFocusLabel">3：ふつう</div>
+
+<label>達成度</label>
+<div class="starRow" id="crAchievementStars"></div>
+<div class="small" id="crAchievementLabel">3：ふつう</div>
+
+<label>学習内容</label>
+<textarea id="crContent" placeholder="例：数学ワーク p.20〜35、英単語50個テスト勉強"></textarea>
+
+<label>先生へのコメント（任意）</label>
+<textarea id="crComment" placeholder="例：図形の問題が難しかったです。次回質問したいです。"></textarea>
+
+<button class="btn big" id="crSendBtn" type="button" onclick="crSubmitReflection()">先生へ送信</button>
+<div id="crReviewMsg"></div>
+</section>
+
+<section id="crComplete" class="card hide completeGlow">
+<div class="center">
+<span class="stepPill">送信完了</span>
+<div class="heroIcon">
+<svg viewBox="0 0 64 64" fill="none">
+<circle cx="32" cy="32" r="24" fill="#16a34a"/>
+<path d="M21 32l7 7 16-17" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</div>
+<h2 id="crCompleteName">お疲れさまでした！</h2>
+<p class="small">記録が保存されました。</p>
+<button class="btn big" type="button" onclick="crGoScreen('crHome')">教室モードのホームに戻る</button>
+</div>
+</section>
+</div>
+
+<script>
+'use strict';
+let STATE_KEY = 'sr10State:new';
+let PROFILE_KEY = 'sr10Profile:new';
+let LOCAL_TOTAL_KEY = 'sr10Totals:new';
+const TEACHER_SESSION_KEY = 'sr10AdminSession';
+
+let appState = {
+  screen:'welcome',
+  name:'',
+  grade:'中1',
+  goalMinutes:'',
+  status:'idle',
+  startAt:null,
+  endAt:null,
+  breakStartAt:null,
+  breakTotalMs:0,
+  focus:3,
+  achievement:3,
+  activeRecordId:null
+};
+let timerId = null;
+let records = [];
+let teacherSession = sessionStorage.getItem(TEACHER_SESSION_KEY) || '';
+
+const $ = id => document.getElementById(id);
+
+function api(){ throw new Error("安全な通信を準備中です。"); }
+
+function displayTimeValue(v){
+  if(v === null || v === undefined || v === '') return '';
+  if(typeof v === 'number'){
+    const totalMinutes = Math.round((v % 1) * 24 * 60);
+    const hh = Math.floor(totalMinutes / 60) % 24;
+    const mm = totalMinutes % 60;
+    return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+  }
+  let s = String(v).trim();
+  if(!s) return '';
+
+  // Google Sheets由来の 1899/12/30 や Date文字列対策
+  if(s.includes('1899') || s.includes('GMT') || /^\d{4}-\d{2}-\d{2}T/.test(s)){
+    const d = new Date(s);
+    if(!isNaN(d.getTime())){
+      return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+  }
+
+  // 1899/12/30 22:15 のような文字列から時刻だけ抽出
+  const timeMatch = s.match(/(\d{1,2}):(\d{2})/);
+  if(timeMatch){
+    return String(Number(timeMatch[1])).padStart(2,'0') + ':' + timeMatch[2];
+  }
+
+  // シリアル値文字列 0.5 など
+  if(/^\d+(\.\d+)?$/.test(s)){
+    const n = Number(s);
+    if(n > 0 && n < 1){
+      const totalMinutes = Math.round(n * 24 * 60);
+      const hh = Math.floor(totalMinutes / 60) % 24;
+      const mm = totalMinutes % 60;
+      return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+    }
+  }
+
+  return s;
+}
+
+function displayMinutesValue(v){
+  const n = Number(v || 0);
+  if(!isFinite(n)) return '0分';
+  if(n >= 60){
+    const h = Math.floor(n / 60);
+    const m = Math.round(n % 60);
+    return h + '時間' + (m ? m + '分' : '');
+  }
+  return Math.round(n) + '分';
+}
+
+function safeDisplayTime(v){
+  if(v === null || v === undefined || v === '') return '';
+  if(typeof v === 'number'){
+    if(v > 0 && v < 1){
+      const total = Math.round(v * 24 * 60);
+      return String(Math.floor(total/60)%24).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
+    }
+    return String(v);
+  }
+  let s = String(v).trim();
+  if(!s) return '';
+
+  // Apps Script/Sheets time serial sometimes arrives as Date text around 1899/12/30.
+  // Extract the clock portion directly instead of showing the date.
+  const m = s.match(/(?:T|\s)(\d{1,2}):(\d{2})(?::\d{2})?/);
+  if(m) return String(Number(m[1])).padStart(2,'0') + ':' + m[2];
+
+  const m2 = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if(m2) return String(Number(m2[1])).padStart(2,'0') + ':' + m2[2];
+
+  // Numeric string serial
+  if(/^\d+(\.\d+)?$/.test(s)){
+    const n = Number(s);
+    if(n > 0 && n < 1){
+      const total = Math.round(n * 24 * 60);
+      return String(Math.floor(total/60)%24).padStart(2,'0') + ':' + String(total%60).padStart(2,'0');
+    }
+  }
+
+  // Date string fallback
+  const d = new Date(s);
+  if(!isNaN(d.getTime()) && (s.includes('1899') || s.includes('GMT') || s.includes('T'))){
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+
+  return s;
+}
+
+function safeDisplayMinutes(v){
+  if(v === null || v === undefined || v === '') return '0分';
+  const raw = String(v).trim();
+
+  // Already like 1時間28分 / 21分
+  if(raw.includes('時間') || raw.endsWith('分')) return raw;
+
+  let n = Number(raw);
+  if(!isFinite(n)) return raw || '0分';
+
+  // If sheet accidentally sends a day-serial duration under 1, convert to minutes.
+  if(n > 0 && n < 1) n = Math.round(n * 24 * 60);
+
+  n = Math.round(n);
+  if(n >= 60){
+    const h = Math.floor(n / 60);
+    const m = n % 60;
+    return h + '時間' + (m ? m + '分' : '');
+  }
+  return n + '分';
+}
+
+function escapeHtml(v){ return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function setMsg(id,text,type=''){ $(id).innerHTML = text ? `<div class="msg ${type}">${escapeHtml(text)}</div>` : ''; }
+function nowISO(){ return new Date().toISOString(); }
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function timeText(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function formatHMS(ms){
+  ms = Math.max(0, ms || 0);
+  const t = Math.floor(ms/1000);
+  const h = Math.floor(t/3600);
+  const m = Math.floor((t%3600)/60);
+  const s = t%60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+function formatMin(ms){ return Math.floor(Math.max(0, ms || 0)/60000) + '分'; }
+function elapsedMs(){
+  if(!appState.startAt) return 0;
+  const end = appState.endAt ? new Date(appState.endAt).getTime() : Date.now();
+  const start = new Date(appState.startAt).getTime();
+  const activeBreak = appState.status === 'break' && appState.breakStartAt ? Date.now() - new Date(appState.breakStartAt).getTime() : 0;
+  return Math.max(0, end - start - appState.breakTotalMs - activeBreak);
+}
+function breakMs(){
+  const active = appState.status === 'break' && appState.breakStartAt ? Date.now() - new Date(appState.breakStartAt).getTime() : 0;
+  return appState.breakTotalMs + active;
+}
+function saveState(){
+  localStorage.setItem(STATE_KEY, JSON.stringify(appState));
+}
+function loadState(){
+  try{
+    const p = JSON.parse(localStorage.getItem(PROFILE_KEY) || '{}');
+    if(p.name) appState.name = p.name;
+    if(p.grade) appState.grade = p.grade;
+    if(p.goalMinutes) appState.goalMinutes = p.goalMinutes;
+    const s = JSON.parse(localStorage.getItem(STATE_KEY) || '{}');
+    if(s && s.startAt) appState = Object.assign(appState, s);
+  }catch(e){}
+}
+function saveProfile(){
+  localStorage.setItem(PROFILE_KEY, JSON.stringify({name:appState.name, grade:appState.grade, goalMinutes:appState.goalMinutes}));
+}
+function goScreen(id){
+  ['welcome','timerScreen','reviewScreen','completeScreen','teacher'].forEach(x => $(x).classList.toggle('hide', x !== id));
+  appState.screen = id;
+  saveState();
+  if(id === 'timerScreen') startTicker();
+  if(id === 'reviewScreen') renderReview();
+  if(id === 'completeScreen') renderCompleteSummary();
+}
+function startApp(){
+  const name = $('studentName').value.trim();
+  if(!name){ setMsg('welcomeMsg','名前を入力してください。','err'); return; }
+  appState.name = name;
+  appState.grade = $('grade').value;
+  appState.goalMinutes = $('goalMinutes').value;
+  saveProfile();
+  saveState();
+  goScreen('timerScreen');
+  updateAccurateStatsFromSheet();
+}
+function genClientId(){
+  if(window.crypto && typeof crypto.randomUUID === 'function'){
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random()*16|0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+let pendingCheckinPromise = null;
+async function enterRoom(){
+  appState.status = 'studying';
+  appState.startAt = nowISO();
+  appState.endAt = null;
+  appState.breakStartAt = null;
+  appState.breakTotalMs = 0;
+  appState.activeRecordId = genClientId();
+  saveState();
+  setMsg('timerMsg','入室中として記録しています...');
+
+  // IDを先にこちらで決めておくことで、通信が不安定でも送信時に同じ記録を正しく更新できます。
+  pendingCheckinPromise = api('addActive', {
+    id: appState.activeRecordId,
+    date: todayISO(),
+    name: appState.name || '',
+    grade: appState.grade || '',
+    subject: '入室中',
+    startTime: timeText(appState.startAt),
+    endTime: '',
+    minutes: '',
+    focus: '',
+    achievement: '',
+    content: '入室中',
+    comment: '現在自習中'
+  }).then(res => {
+    if(res && res.result === 'success'){
+      setMsg('timerMsg','入室しました。ログ確認にも反映されます。','ok');
+    }else{
+      setMsg('timerMsg','入室しました。ただしログ確認への仮反映に失敗しました。退室後の送信はできます。','err');
+    }
+  }).catch(err => {
+    setMsg('timerMsg','入室しました。ただし通信できないため、ログ確認への仮反映はできませんでした。','err');
+  });
+
+  startTicker();
+}
+function toggleBreak(){
+  if(!appState.startAt){ setMsg('timerMsg','先に入室してください。','err'); return; }
+  if(appState.endAt){ setMsg('timerMsg','退室後は休憩できません。','err'); return; }
+  if(appState.status === 'break'){
+    appState.breakTotalMs += Date.now() - new Date(appState.breakStartAt).getTime();
+    appState.breakStartAt = null;
+    appState.status = 'studying';
+    setMsg('timerMsg','休憩を終了しました。','ok');
+  }else{
+    appState.breakStartAt = nowISO();
+    appState.status = 'break';
+    setMsg('timerMsg','休憩を開始しました。','ok');
+  }
+  saveState();
+  renderTimer();
+}
+function exitRoom(){
+  if(!appState.startAt){ setMsg('timerMsg','先に入室してください。','err'); return; }
+  if(appState.status === 'break') toggleBreak();
+  appState.endAt = nowISO();
+  appState.status = 'finished';
+  saveState();
+  goScreen('reviewScreen');
+}
+function startTicker(){
+  if(timerId) clearInterval(timerId);
+  timerId = setInterval(renderTimer, 1000);
+  renderTimer();
+}
+function localTotals(){
+  try{ return JSON.parse(localStorage.getItem(LOCAL_TOTAL_KEY) || '{}'); }catch(e){ return {}; }
+}
+function addLocalTotal(minutes){
+  const totals = localTotals();
+  const key = todayISO();
+  totals[key] = (Number(totals[key] || 0) + Number(minutes || 0));
+  localStorage.setItem(LOCAL_TOTAL_KEY, JSON.stringify(totals));
+}
+function renderTimer(){
+  const e = elapsedMs();
+  const b = breakMs();
+  $('mainClock').textContent = formatHMS(e);
+  $('sessionTimeText').textContent = formatMin(e);
+  $('breakTimeText').textContent = formatMin(b);
+  const totals = localTotals();
+  const todayMin = Number(totals[todayISO()] || 0);
+  $('localTodayText').textContent = todayMin + '分';
+  const goal = Number(appState.goalMinutes || 0);
+  const currentMin = Math.floor(e/60000);
+  const totalNow = todayMin + currentMin;
+  const percent = goal ? Math.min(100, Math.round(totalNow / goal * 100)) : 0;
+  $('goalBar').style.width = percent + '%';
+  $('goalPercent').textContent = percent + '%';
+  $('goalDetail').textContent = goal ? `${totalNow} / ${goal}分` : '目標未設定';
+  const panel = document.querySelector('.timerPanel');
+  if(panel){ panel.classList.remove('studyingMode','breakMode','finishedMode'); }
+  if(appState.status === 'break'){
+    if(panel) panel.classList.add('breakMode');
+    $('stateText').textContent = '休憩中';
+    $('clockNote').textContent = '休憩中';
+    $('breakBtn').textContent = '休憩終了';
+  }else if(appState.status === 'studying'){
+    if(panel) panel.classList.add('studyingMode');
+    $('stateText').textContent = '入室中';
+    $('clockNote').textContent = '自動保存中';
+    $('breakBtn').textContent = '休憩';
+  }else if(appState.status === 'finished'){
+    if(panel) panel.classList.add('finishedMode');
+    $('stateText').textContent = '退室済み';
+    $('clockNote').textContent = '振り返りへ';
+    $('breakBtn').textContent = '休憩';
+  }else{
+    $('stateText').textContent = '未入室';
+    $('clockNote').textContent = '入室で計測開始';
+    $('breakBtn').textContent = '休憩';
+  }
+}
+function renderStars(targetId, value, setter){
+  const el = $(targetId);
+  el.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'star' + (i <= value ? ' active' : '');
+    b.textContent = '★';
+    b.onclick = () => setter(i);
+    el.appendChild(b);
+  }
+}
+function setFocus(n){
+  appState.focus = n;
+  $('focusLabel').textContent = n + '：' + ['','かなり低い','少し低い','ふつう','集中できた','とても集中できた'][n];
+  renderStars('focusStars', n, setFocus);
+  saveState();
+}
+function setAchievement(n){
+  appState.achievement = n;
+  $('achievementLabel').textContent = n + '：' + ['','あまり進まなかった','少し進んだ','ふつう','達成できた','かなり達成できた'][n];
+  renderStars('achievementStars', n, setAchievement);
+  saveState();
+}
+function renderReview(){
+  $('date').value = todayISO();
+  $('reviewStart').textContent = timeText(appState.startAt) || '--:--';
+  $('reviewEnd').textContent = timeText(appState.endAt) || '--:--';
+  $('reviewMinutes').textContent = Math.floor(elapsedMs()/60000) + '分';
+  setFocus(appState.focus || 3);
+  setAchievement(appState.achievement || 3);
+}
+async function submitToTeacher(){
+  const btn = $('sendBtn');
+  const minutes = Math.floor(elapsedMs()/60000);
+  if(!appState.name){ setMsg('reviewMsg','名前がありません。','err'); return; }
+  if(!appState.startAt || !appState.endAt){ setMsg('reviewMsg','入室・退室時刻がありません。','err'); return; }
+  const content = $('content').value.trim();
+  if(!content){ setMsg('reviewMsg','学習内容を入力してください。','err'); return; }
+  const breakMinutes = Math.floor(breakMs()/60000);
+  const data = {
+    date:$('date').value || todayISO(),
+    name:appState.name,
+    grade:appState.grade,
+    subject:$('subject').value,
+    startTime:timeText(appState.startAt),
+    endTime:timeText(appState.endAt),
+    minutes:String(minutes),
+    focus:String(appState.focus || 3),
+    achievement:String(appState.achievement || 3),
+    content:content,
+    comment:($('comment').value.trim() + (breakMinutes ? '\n休憩：' + breakMinutes + '分' : '')).trim()
+  };
+  btn.disabled = true;
+  setMsg('reviewMsg','送信中です...');
+  try{
+    if(!appState.activeRecordId){ appState.activeRecordId = genClientId(); saveState(); }
+    data.id = appState.activeRecordId;
+    const res = await api('update', data);
+    if(res && res.result === 'success'){
+      addLocalTotal(minutes);
+      localStorage.setItem('sr10Summary', JSON.stringify({minutes:minutes, today:Number(localTotals()[todayISO()] || 0)}));
+      appState.activeRecordId = null;
+      localStorage.removeItem(STATE_KEY);
+      appState.status = 'idle';
+      appState.startAt = null;
+      appState.endAt = null;
+      appState.breakStartAt = null;
+      appState.breakTotalMs = 0;
+      saveState();
+      try{ updateHomeCards(); updateTodayUserCountFromSheet(); updateAccurateStatsFromSheet(); }catch(e){}
+      goScreen('completeScreen');
+    }else{
+      setMsg('reviewMsg','保存できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
+    }
+  }catch(err){
+    setMsg('reviewMsg', err.message || String(err), 'err');
+  }finally{
+    btn.disabled = false;
+  }
+}
+function newRecord(){
+  $('content').value = '';
+  $('comment').value = '';
+  appState.status = 'idle';
+  appState.startAt = null;
+  appState.endAt = null;
+  appState.breakStartAt = null;
+  appState.breakTotalMs = 0;
+  saveState();
+  goScreen('timerScreen');
+}
+function resetSessionConfirm(){
+  if(confirm('現在の途中記録をリセットしますか？')){
+    localStorage.removeItem(STATE_KEY);
+    appState.status='idle'; appState.startAt=null; appState.endAt=null; appState.breakStartAt=null; appState.breakTotalMs=0;
+    goScreen('welcome');
+    renderTimer();
+  }
+}
+function saveStateNow(){
+  saveState();
+  setMsg('timerMsg','途中状態を保存しました。','ok');
+}
+let teacherAutoRefreshId = null;
+function startTeacherAutoRefresh(){
+  if(teacherAutoRefreshId) clearInterval(teacherAutoRefreshId);
+  teacherAutoRefreshId = setInterval(() => {
+    const panel = $('teacherPanel');
+    if(panel && !panel.classList.contains('hide')){ loadRecords(); }
+  }, 15000);
+}
+function stopTeacherAutoRefresh(){
+  if(teacherAutoRefreshId) clearInterval(teacherAutoRefreshId);
+  teacherAutoRefreshId = null;
+}
+function teacherAuthData(extra={}){ return Object.assign({session:teacherSession}, extra); }
+async function teacherLogin(){
+  setMsg('loginMsg','認証中です...');
+  try{
+    const res = await api('teacherLogin', {teacherId:$('teacherId').value.trim(), teacherPass:$('teacherPass').value});
+    if(res && res.result === 'success'){
+      teacherSession = res.session || '';
+      sessionStorage.setItem(TEACHER_SESSION_KEY, teacherSession);
+      $('loginBox').classList.add('hide');
+      $('teacherPanel').classList.remove('hide');
+      $('teacherPass').value = '';
+      setMsg('loginMsg','');
+      await loadRecords();
+      startTeacherAutoRefresh();
+    }else{
+      setMsg('loginMsg','ログ確認へ進むできません：' + (res && res.message ? res.message : '認証失敗'), 'err');
+    }
+  }catch(err){
+    setMsg('loginMsg', err.message || String(err), 'err');
+  }
+}
+async function loadRecords(){
+  setMsg('teacherMsg','読み込み中です...');
+  try{
+    const res = await api('list', teacherAuthData());
+    if(!res || res.result !== 'success') throw new Error(res && res.message ? res.message : '取得失敗');
+    records = Array.isArray(res.records) ? res.records : [];
+    setMsg('teacherMsg','');
+    renderTeacher();
+    renderDetailPanel();
+  }catch(err){
+    setMsg('teacherMsg','取得できませんでした：' + (err.message || err), 'err');
+  }
+}
+function formatDateForCompare(v){ return String(v || '').replaceAll('/','-').slice(0,10); }
+function renderTeacher(){
+  const q = $('search').value.trim().toLowerCase();
+  const rows = records.filter(r => !q || JSON.stringify(r).toLowerCase().includes(q));
+  const today = todayISO();
+  $('statCount').textContent = rows.length;
+  $('statMinutes').textContent = safeDisplayMinutes(rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0));
+  $('statToday').textContent = rows.filter(r=>formatDateForCompare(r['日付'])===today).length;
+
+  const inRoom = rows.filter(r => (r['状態'] || '') === '入室中');
+  const pendingReflection = rows.filter(r => (r['状態'] || '') === '振り返り待ち');
+
+  $('inRoomList').innerHTML = inRoom.length ? inRoom.map(r=>`<div class="inRoomItem"><b>${escapeHtml(r['名前'])}</b><span class="statusPill green">${escapeHtml(safeDisplayTime(r['入室時間']))}〜</span></div>`).join('') : '<div class="small">現在自習中の生徒はいません。入室直後の反映には数秒かかる場合があります。</div>';
+
+  const pendingBox = $('pendingReflectionList');
+  if(pendingBox){
+    pendingBox.innerHTML = pendingReflection.length ? pendingReflection.map(r=>`<div class="inRoomItem"><b>${escapeHtml(r['名前'])}</b><span class="statusPill amber">${escapeHtml(safeDisplayTime(r['入室時間']))}〜${escapeHtml(safeDisplayTime(r['退室時間']))}</span></div>`).join('') : '<div class="small">振り返り待ちの生徒はいません。</div>';
+  }
+
+  $('tbody').innerHTML = rows.map((r,idx)=>`<tr>
+    <td>${escapeHtml(r['日付'])}</td>
+    <td>${escapeHtml(r['名前'])}</td>
+    <td>${escapeHtml(r['学年'])}</td>
+    <td>${escapeHtml(r['科目'])}</td>
+    <td><span class="timeReadable">${escapeHtml(safeDisplayTime(r['入室時間']))}-${escapeHtml(safeDisplayTime(r['退室時間']))}</span></td>
+    <td>${escapeHtml(safeDisplayMinutes(r['自習分数']))}</td>
+    <td>${escapeHtml(r['集中度'])}</td>
+    <td>${escapeHtml(r['達成度'])}</td>
+    <td>${escapeHtml(r['状態'])}</td>
+    <td>${escapeHtml(r['学習内容'])}</td>
+    <td>${escapeHtml(r['コメント'])}</td>
+    <td class="actionCell">
+      <button class="miniActionBtn" type="button" onclick="openEditModal(${idx})">修正</button>
+      <button class="miniActionBtn delete" type="button" onclick="deleteRecordFromList(${idx})">削除</button>
+    </td>
+  </tr>`).join('');
+}
+function setSelectValue(id, value){
+  const el = $(id);
+  if(!el) return;
+  const v = String(value || '');
+  const exists = Array.from(el.options).some(o => o.value === v || o.textContent === v);
+  if(!exists && v){
+    const opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = v;
+    el.appendChild(opt);
+  }
+  el.value = v;
+}
+function openEditModal(idx){
+  const r = records[idx];
+  if(!r) return;
+  $('editId').value = r['ID'] || '';
+  $('editDate').value = formatDateForCompare(r['日付']) || todayISO();
+  $('editName').value = r['名前'] || '';
+  setSelectValue('editGrade', r['学年'] || '中1');
+  setSelectValue('editSubject', r['科目'] || '英語');
+  $('editStartTime').value = safeDisplayTime(r['入室時間']) || '';
+  $('editEndTime').value = safeDisplayTime(r['退室時間']) || '';
+  $('editMinutes').value = Number(r['自習分数'] || 0);
+  setSelectValue('editFocus', r['集中度'] || '3');
+  setSelectValue('editAchievement', r['達成度'] || '3');
+  $('editContent').value = r['学習内容'] || '';
+  $('editComment').value = r['コメント'] || '';
+  setMsg('editMsg','');
+  $('editModal').classList.remove('hide');
+}
+function closeEditModal(){ $('editModal').classList.add('hide'); }
+function editDataFromModal(){
+  return {
+    id:$('editId').value,
+    date:$('editDate').value,
+    name:$('editName').value.trim(),
+    grade:$('editGrade').value,
+    subject:$('editSubject').value,
+    startTime:$('editStartTime').value,
+    endTime:$('editEndTime').value,
+    minutes:$('editMinutes').value,
+    focus:$('editFocus').value,
+    achievement:$('editAchievement').value,
+    content:$('editContent').value.trim(),
+    comment:$('editComment').value.trim()
+  };
+}
+async function saveEditRecord(){
+  const data = editDataFromModal();
+  if(!data.id){ setMsg('editMsg','IDが見つかりません。','err'); return; }
+  setMsg('editMsg','保存中です...');
+  try{
+    const res = await api('update', teacherAuthData(data));
+    if(res && res.result === 'success'){
+      setMsg('editMsg','保存しました。','ok');
+      await loadRecords();
+      closeEditModal();
+    }else{
+      setMsg('editMsg','保存できません：' + (res && res.message ? res.message : '原因不明'), 'err');
+    }
+  }catch(err){
+    setMsg('editMsg', err.message || String(err), 'err');
+  }
+}
+async function deleteEditRecord(){
+  const id = $('editId').value;
+  if(!id){ setMsg('editMsg','IDが見つかりません。','err'); return; }
+  if(!confirm('この記録を削除しますか？')) return;
+  setMsg('editMsg','削除中です...');
+  try{
+    const res = await api('delete', teacherAuthData({id:id}));
+    if(res && res.result === 'success'){
+      closeEditModal();
+      await loadRecords();
+    }else{
+      setMsg('editMsg','削除できません：' + (res && res.message ? res.message : '原因不明'), 'err');
+    }
+  }catch(err){
+    setMsg('editMsg', err.message || String(err), 'err');
+  }
+}
+async function deleteRecordFromList(idx){
+  const r = records[idx];
+  if(!r || !r['ID']) return;
+  if(!confirm((r['名前'] || 'この生徒') + 'の記録を削除しますか？')) return;
+  setMsg('teacherMsg','削除中です...');
+  try{
+    const res = await api('delete', teacherAuthData({id:r['ID']}));
+    if(res && res.result === 'success'){
+      await loadRecords();
+    }else{
+      setMsg('teacherMsg','削除できません：' + (res && res.message ? res.message : '原因不明'), 'err');
+    }
+  }catch(err){
+    setMsg('teacherMsg', err.message || String(err), 'err');
+  }
+}
+function downloadCSV(){
+  const headers = ['ID','送信日時','日付','名前','学年','科目','入室時間','退室時間','自習分数','集中度','達成度','学習内容','コメント','状態','教室'];
+  const csv = [headers.join(',')].concat(records.map(r => headers.map(h => '"' + String(r[h] ?? '').replace(/"/g,'""') + '"').join(','))).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = '自習室ログ.csv';
+  a.click();
+}
+function openTeacherFromWelcome(){ goScreen('teacher'); }
+function useStudyRoomAgain(){
+  const keepName = appState.name;
+  const keepGrade = appState.grade;
+  const keepGoal = appState.goalMinutes;
+  appState = Object.assign(appState, {
+    screen:'timerScreen', name:keepName, grade:keepGrade, goalMinutes:keepGoal,
+    status:'idle', startAt:null, endAt:null, breakStartAt:null, breakTotalMs:0,
+    activeRecordId:null, focus:3, achievement:3
+  });
+  $('content').value = '';
+  $('comment').value = '';
+  saveState();
+  goScreen('timerScreen');
+}
+function finishAndExit(){
+  const keepName = appState.name;
+  const keepGrade = appState.grade;
+  const keepGoal = appState.goalMinutes;
+  localStorage.removeItem(STATE_KEY);
+  appState = Object.assign(appState, {
+    screen:'welcome', name:keepName, grade:keepGrade, goalMinutes:keepGoal,
+    status:'idle', startAt:null, endAt:null, breakStartAt:null, breakTotalMs:0,
+    activeRecordId:null, focus:3, achievement:3
+  });
+  $('studentName').value = keepName || '';
+  $('grade').value = keepGrade || '中1';
+  $('goalMinutes').value = keepGoal || '';
+  saveProfile();
+  goScreen('welcome');
+}
+function cleanFinishedStateOnLoad(){
+  if(appState && appState.status === 'finished'){
+    appState.status = 'idle';
+    appState.startAt = null;
+    appState.endAt = null;
+    appState.breakStartAt = null;
+    appState.breakTotalMs = 0;
+    appState.activeRecordId = null;
+    saveState();
+  }
+}
+function normalizeStartupState(){
+  const canRestoreTimer = appState.startAt && !appState.endAt && (appState.status === 'studying' || appState.status === 'break');
+  if(!canRestoreTimer){
+    appState.screen = 'welcome';
+    appState.status = 'idle';
+    appState.startAt = null;
+    appState.endAt = null;
+    appState.breakStartAt = null;
+    appState.breakTotalMs = 0;
+    appState.activeRecordId = null;
+    saveState();
+  }
+}
+function renderCompleteSummary(){
+  const box = $('completeSummary');
+  if(!box) return;
+  let data = {};
+  try{ data = JSON.parse(localStorage.getItem('sr10Summary') || '{}'); }catch(e){}
+  const minutes = Number(data.minutes || 0);
+  const today = Number(data.today || 0);
+  box.innerHTML = `
+    <div class="statGrid completeStats">
+      <div class="stat">今回<b>${minutes}分</b></div>
+      <div class="stat">今日の合計<b>${today}分</b></div>
+    </div>
+  `;
+}
+let detailPeriod = 'today';
+function showDetailPanel(){
+  const panel = $('detailPanel');
+  if(panel) panel.classList.remove('hide');
+  renderDetailPanel();
+}
+function hideDetailPanel(){
+  const panel = $('detailPanel');
+  if(panel) panel.classList.add('hide');
+}
+function setDetailPeriod(period){
+  detailPeriod = period;
+  document.querySelectorAll('.periodBtn').forEach(btn=>{ btn.classList.toggle('active', btn.dataset.period === period); });
+  renderDetailPanel();
+}
+function minutesToText(min){ return safeDisplayMinutes(min); }
+function recordDateObj(r){
+  const raw = formatDateForCompare(r['日付']);
+  if(!raw) return null;
+  const d = new Date(raw + 'T00:00:00');
+  return isNaN(d.getTime()) ? null : d;
+}
+function detailFilteredRows(){
+  const now = new Date();
+  return records.filter(r=>{
+    const d = recordDateObj(r);
+    if(!d) return false;
+    if(detailPeriod === 'today'){ return formatDateForCompare(r['日付']) === todayISO(); }
+    if(detailPeriod === 'month'){ return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth(); }
+    if(detailPeriod === 'year'){ return d.getFullYear() === now.getFullYear(); }
+    if(detailPeriod === 'customMonth'){
+      const val = $('detailMonth') ? $('detailMonth').value : '';
+      if(!val) return false;
+      const [y,m] = val.split('-').map(Number);
+      return d.getFullYear() === y && d.getMonth() === m - 1;
+    }
+    if(detailPeriod === 'customYear'){
+      const y = Number($('detailYear') ? $('detailYear').value : 0);
+      if(!y) return false;
+      return d.getFullYear() === y;
+    }
+    return true;
+  });
+}
+function renderDetailPanel(){
+  if(!$('detailPanel') || $('detailPanel').classList.contains('hide')) return;
+  const rows = detailFilteredRows();
+  const total = rows.reduce((s,r)=>s+(Number(r['自習分数'])||0),0);
+  const avg = rows.length ? Math.round(total / rows.length) : 0;
+  $('detailCount').textContent = rows.length;
+  $('detailMinutes').textContent = minutesToText(total);
+  $('detailAvg').textContent = minutesToText(avg);
+
+  const byStudent = {};
+  rows.forEach(r=>{
+    const name = (r['名前'] || '未入力') + '（' + (r['教室']||'') + '／' + (r['生徒ID']||'').slice(0,8) + '）';
+    byStudent[name] = (byStudent[name] || 0) + (Number(r['自習分数']) || 0);
+  });
+  const ranking = Object.entries(byStudent).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  $('detailRanking').innerHTML = ranking.length ? ranking.map((x,i)=>`<div class="rankItem"><b>${i+1}位 ${escapeHtml(x[0])}</b><span>${minutesToText(x[1])}</span></div>`).join('') : '<div class="small">対象期間の記録がありません。</div>';
+
+  const bySubject = {};
+  rows.forEach(r=>{
+    const sub = r['科目'] || '未入力';
+    bySubject[sub] = (bySubject[sub] || 0) + (Number(r['自習分数']) || 0);
+  });
+  const subject = Object.entries(bySubject).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  $('subjectRanking').innerHTML = subject.length ? subject.map((x,i)=>`<div class="rankItem"><b>${escapeHtml(x[0])}</b><span>${minutesToText(x[1])}</span></div>`).join('') : '<div class="small">対象期間の記録がありません。</div>';
+}
+function init(){
+  mcStorageKeys();
+  updateModeButton();
+  loadState();
+
+  $('studentName').value = appState.name || '';
+  $('grade').value = appState.grade || '中1';
+  $('goalMinutes').value = appState.goalMinutes || '';
+  // 起動時の復元ルール：
+  // 1. 入室中・休憩中だけタイマー画面を復元
+  // 2. 退室済みの状態は勝手に振り返り画面へ飛ばさない
+  // 3. それ以外は必ず最初の画面
+  if(appState.startAt) {
+    goScreen(appState.endAt?'reviewScreen':'timerScreen');
+  } else {
+    appState.screen = 'welcome';
+    appState.status = 'idle';
+    appState.startAt = null;
+    appState.endAt = null;
+    appState.breakStartAt = null;
+    appState.breakTotalMs = 0;
+    appState.activeRecordId = null;
+    saveState();
+    goScreen('welcome');
+  }
+  startTicker();
+  $('search').addEventListener('input', renderTeacher);
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) renderTimer(); });
+}
+if(location.hostname==='study-navi.github.io' && 'serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+
+/* ================= 教室モード (Classroom Mode) ================= */
+const CR_CLASSROOM_ID = ''; // v10 uses the authenticated school selector
+const CR_RECENT_NAMES_KEY = 'studyRoomV9CrRecentNames';
+let crActiveRecords = [];
+let crSelected = null;
+let crFocus = 3;
+let crAchievement = 3;
+
+function isClassroomMode(){
+  try{ return new URLSearchParams(window.location.search).get('mode') === 'classroom'; }
+  catch(e){ return false; }
+}
+
+// ヘッダー右上の「教室モード」⇔「個人モードに戻る」切り替えボタンの表示・動作を設定する
+function updateModeButton(){
+  const btn = $('headerModeBtn');
+  if(!btn) return;
+  if(isClassroomMode()){
+    btn.textContent = '個人モードに戻る';
+  } else {
+    btn.textContent = '教室モード';
+  }
+}
+
+function toggleClassroomMode(){
+  const url = new URL(window.location.href);
+  if(isClassroomMode()){
+    url.searchParams.delete('mode');
+  } else {
+    url.searchParams.set('mode', 'classroom');
+  }
+  window.location.href = url.toString();
+}
+
+function crScreenIds(){ return ['crHome','crCheckin','crCheckout','crReview','crComplete']; }
+
+function crGoScreen(id){
+  crScreenIds().forEach(x => { const el = $(x); if(el) el.classList.toggle('hide', x !== id); });
+  if(id === 'crHome'){
+    setMsg('crHomeMsg','');
+  }
+  if(id === 'crCheckin'){
+    $('crName').value = '';
+    crRenderRecentNames();
+    setMsg('crCheckinMsg','');
+    setTimeout(() => { const el = $('crName'); if(el) el.focus(); }, 50);
+  }
+  if(id === 'crCheckout'){
+    crLoadActiveList();
+  }
+  if(id === 'crReview'){
+    crRenderReview();
+  }
+}
+
+function crRecentNames(){
+  try{ return JSON.parse(localStorage.getItem(CR_RECENT_NAMES_KEY) || '[]'); }catch(e){ return []; }
+}
+function crAddRecentName(name, grade){
+  if(!name) return;
+  let list = crRecentNames().filter(x => x.name !== name);
+  list.unshift({name:name, grade:grade || ''});
+  list = list.slice(0, 8);
+  try{ localStorage.setItem(CR_RECENT_NAMES_KEY, JSON.stringify(list)); }catch(e){}
+}
+function crRenderRecentNames(){
+  const box = $('crRecentNames');
+  if(!box) return;
+  const list = crRecentNames();
+  box.innerHTML = list.length ? list.map((x,i) => `<button type="button" class="crChip" onclick="crFillRecentName(${i})">${escapeHtml(x.name)}</button>`).join('') : '';
+}
+function crFillRecentName(i){
+  const list = crRecentNames();
+  const item = list[i];
+  if(!item) return;
+  $('crName').value = item.name;
+  if(item.grade) setSelectValue('crGrade', item.grade);
+}
+
+async function crSubmitCheckin(){
+  const name = $('crName').value.trim();
+  if(!name){ setMsg('crCheckinMsg','生徒名を入力してください。','err'); return; }
+  const grade = $('crGrade').value;
+  const id = genClientId();
+  setMsg('crCheckinMsg','入室処理中です...');
+  try{
+    const res = await api('addActive', {
+      id: id,
+      classroom: CR_CLASSROOM_ID,
+      date: todayISO(),
+      name: name,
+      grade: grade,
+      subject: '入室中',
+      startTime: timeText(nowISO()),
+      content: '入室中',
+      comment: '現在自習中'
+    });
+    if(res && res.result === 'success' && res.alreadyActive){
+      setMsg('crCheckinMsg', res.message || 'すでに入室中です。', 'err');
+      return;
+    }
+    if(res && res.result === 'success'){
+      crAddRecentName(name, grade);
+      setMsg('crCheckinMsg','');
+      crGoScreen('crHome');
+    }else{
+      setMsg('crCheckinMsg','入室できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
+    }
+  }catch(err){
+    setMsg('crCheckinMsg', err.message || String(err), 'err');
+  }
+}
+
+async function crLoadActiveList(){
+  setMsg('crCheckoutMsg','読み込み中です...');
+  $('crActiveList').innerHTML = '';
+  try{
+    const res = await api('listActive', { classroom: CR_CLASSROOM_ID });
+    if(!res || res.result !== 'success') throw new Error(res && res.message ? res.message : '取得失敗');
+    crActiveRecords = Array.isArray(res.records) ? res.records : [];
+    setMsg('crCheckoutMsg','');
+    crRenderActiveList();
+  }catch(err){
+    setMsg('crCheckoutMsg','取得できませんでした：' + (err.message || err), 'err');
+  }
+}
+
+function crRenderActiveList(){
+  const box = $('crActiveList');
+  if(!crActiveRecords.length){
+    box.innerHTML = '<div class="small">現在入室中・振り返り待ちの生徒はいません。</div>';
+    return;
+  }
+  box.innerHTML = crActiveRecords.map((r,i) => `
+    <button class="crStudentRow${r.status === '振り返り待ち' ? ' pending' : ''}" type="button" onclick="crSelectCheckout(${i})">
+      <span class="crStudentMain">
+        <span class="crStudentName">${escapeHtml(r.name)}</span>
+        <span class="crStudentGrade">${escapeHtml(r.grade)}</span>
+      </span>
+      <span class="crStudentTime">${r.status === '振り返り待ち' ? '振り返り待ち（入室 ' + escapeHtml(r.startTime) + '）' : escapeHtml(r.startTime) + '〜 入室中'}</span>
+    </button>
+  `).join('');
+}
+
+async function crSelectCheckout(i){
+  const rec = crActiveRecords[i];
+  if(!rec) return;
+  setMsg('crCheckoutMsg','処理中です...');
+  try{
+    const res = await api('checkout', { id: rec.id });
+    if(!res || res.result !== 'success') throw new Error(res && res.message ? res.message : '処理失敗');
+    crSelected = {
+      id: rec.id,
+      name: res.name || rec.name,
+      grade: res.grade || rec.grade,
+      startTime: res.startTime || rec.startTime,
+      endTime: res.endTime,
+      minutes: res.minutes
+    };
+    setMsg('crCheckoutMsg','');
+    crGoScreen('crReview');
+  }catch(err){
+    setMsg('crCheckoutMsg','処理できませんでした：' + (err.message || err), 'err');
+  }
+}
+
+function crSetFocus(n){
+  crFocus = n;
+  $('crFocusLabel').textContent = n + '：' + ['','かなり低い','少し低い','ふつう','集中できた','とても集中できた'][n];
+  renderStars('crFocusStars', n, crSetFocus);
+}
+function crSetAchievement(n){
+  crAchievement = n;
+  $('crAchievementLabel').textContent = n + '：' + ['','あまり進まなかった','少し進んだ','ふつう','達成できた','かなり達成できた'][n];
+  renderStars('crAchievementStars', n, crSetAchievement);
+}
+
+function crRenderReview(){
+  if(!crSelected) return;
+  $('crReviewName').textContent = crSelected.name + 'さん';
+  $('crReviewStart').textContent = crSelected.startTime || '--:--';
+  $('crReviewEnd').textContent = crSelected.endTime || '--:--';
+  $('crReviewMinutes').textContent = (crSelected.minutes || 0) + '分';
+  $('crContent').value = '';
+  $('crComment').value = '';
+  crSetFocus(3);
+  crSetAchievement(3);
+}
+
+async function crSubmitReflection(){
+  if(!crSelected) return;
+  const btn = $('crSendBtn');
+  const content = $('crContent').value.trim();
+  if(!content){ setMsg('crReviewMsg','学習内容を入力してください。','err'); return; }
+  const data = {
+    id: crSelected.id,
+    date: todayISO(),
+    name: crSelected.name,
+    grade: crSelected.grade,
+    subject: $('crSubject').value,
+    startTime: crSelected.startTime,
+    endTime: crSelected.endTime,
+    minutes: String(crSelected.minutes || 0),
+    focus: String(crFocus),
+    achievement: String(crAchievement),
+    content: content,
+    comment: $('crComment').value.trim()
+  };
+  btn.disabled = true;
+  setMsg('crReviewMsg','送信中です...');
+  try{
+    const res = await api('update', data);
+    if(res && res.result === 'success'){
+      $('crCompleteName').textContent = crSelected.name + 'さん、お疲れさまでした！';
+      crSelected = null;
+      crGoScreen('crComplete');
+    }else{
+      setMsg('crReviewMsg','保存できませんでした：' + (res && res.message ? res.message : '原因不明'), 'err');
+    }
+  }catch(err){
+    setMsg('crReviewMsg', err.message || String(err), 'err');
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+function crInit(){
+  document.body.classList.add('classroomMode');
+  ['welcome','timerScreen','reviewScreen','completeScreen','teacher'].forEach(x=>{ const el = $(x); if(el) el.classList.add('hide'); });
+  const titleEl = $('appTitle');
+  if(titleEl) titleEl.textContent = 'Study Room（教室モード）';
+  updateModeButton();
+  crGoScreen('crHome');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if(isClassroomMode()){
+    crInit();
+  }else{
+    init();
+  }
+});
+/* Study Room v1.1 safe JS additions */
+const STUDY_QUOTES_V11 = ["学問に近道なし。", "継続は力なり。", "千里の道も一歩から。", "急がば回れ。", "ローマは一日にして成らず。", "できるかどうかより、やるかどうか。", "小さな努力を軽く見ない。", "昨日より一歩進めば十分。", "苦手は、伸びしろの名前。", "分からないことは、成長の入口。", "一問ずつ、確実に前へ。", "集中は、始めたあとについてくる。", "目標は、行動にして初めて意味を持つ。", "積み重ねた時間は、自分を裏切らない。", "勉強は未来の選択肢を増やす。", "続けた人だけが見える景色がある。", "今日の努力は、未来の安心になる。", "失敗は、次に直す場所を教えてくれる。", "できない問題ほど、価値がある。", "一日一歩でも、止まらなければ進んでいる。", "勉強は、自分を助ける準備。", "時間を大切にする人は、結果に近づく。", "始める勇気が、集中をつくる。", "できたことを記録すれば、自信になる。", "答え合わせは、伸びるためにある。", "今日の自分にできることをやる。", "大きな成果は、小さな反復から生まれる。", "努力の差は、毎日の差。", "今やる人が、あとで楽になる。", "迷ったら、まず一問。", "集中できる場所に来た時点で、一歩前進。", "苦手から逃げない人は強い。", "短い時間でも、本気なら意味がある。", "勉強は量だけでなく、戻る力も大切。", "振り返りは、次の作戦になる。", "できないを減らすことが、成績を上げること。", "続ける力は、才能より強い。", "今日の記録は、明日の自分への手紙。", "やる気より、まず行動。", "一問解けば、流れが変わる。", "学び続ける人は、変わり続ける。", "努力は見えにくい。でも積み上がる。", "焦る日は、目の前だけを見る。", "積み重ねは、必ず形になる。", "今日も机に向かえた。それだけで前進。", "考える時間は、力になる。", "間違いは、学びの材料。", "一度でできなくても、二度目がある。", "目標がある人は、時間の使い方が変わる。", "自分で決めて始める勉強は強い。", "昨日の反省を、今日の行動に変える。", "勉強は、未来の自分への投資。", "一つ覚えれば、一つ世界が広がる。", "小さな勝ちを積み重ねよう。", "最後に伸びる人は、続けた人。", "記録は、努力を見える形にする。", "今日の10分が、本番の自信になる。", "できる問題を増やし、できない問題を減らす。", "学力は、毎日の選択で育つ。", "休憩してもいい。戻ることが大切。", "集中は短くても、何度でも戻ればいい。", "自習は、自分を育てる時間。", "今できる一番小さなことから始めよう。", "前進は、いつも小さな一歩から。", "勉強した事実は消えない。", "苦手な単元ほど、早めに向き合う。", "目標時間は、自分との約束。", "分かった瞬間は、努力のごほうび。", "できるまで続ける人が、できる人になる。", "学ぶ姿勢が、結果を変える。", "自分のペースで、でも止まらずに。", "毎日少しずつが、一番強い。", "本気の一問は、ただの一問ではない。", "成長は、記録すると見つけやすい。", "今日の努力を、明日の普通にしよう。", "やり切った経験は、次の自信になる。", "考え抜いた時間は、無駄にならない。", "始めた人から変わっていく。", "復習する人は、同じ失敗を減らせる。", "勉強は、自分を裏切らない準備。", "習慣になった努力は、とても強い。", "小さく始めて、大きく続ける。", "今ここでの努力が、未来を変える。", "自分の成長は、自分の行動から始まる。", "今日の一歩を、明日の力に。", "続けるほど、昨日の自分を超えていく。", "学ぶことは、自分の武器を増やすこと。", "できない日は、少しだけやる。", "机に向かうことから、勝負は始まる。", "努力は、未来の不安を減らす。", "勉強は、可能性を広げる作業。", "今日の集中を、明日の自信に。", "積み上げたものだけが、本番で支えになる。", "一問一答の積み重ねが、大きな力になる。", "準備した人ほど、本番で落ち着ける。", "学ぶ人は、未来を自分で広げる。", "今日の小さな集中が、明日の大きな差になる。", "できたところより、直したところが力になる。", "続けることが、いちばん確かな才能。", "努力はすぐ見えなくても、必ず残る。", "自分を変えるのは、今日の行動。"];
+let quoteOffsetV11 = 0;
+function srDateKeyFromOffset(offset){
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function srQuoteIndexForToday(){
+  const d = new Date();
+  const base = Number(String(d.getFullYear()) + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0'));
+  return base % STUDY_QUOTES_V11.length;
+}
+function renderDailyQuote(){
+  const idx = (srQuoteIndexForToday() + quoteOffsetV11) % STUDY_QUOTES_V11.length;
+  const text = STUDY_QUOTES_V11[idx];
+  ['dailyQuote','welcomeDailyQuote'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = text; });
+}
+function nextQuote(){
+  quoteOffsetV11 = (quoteOffsetV11 + 1) % STUDY_QUOTES_V11.length;
+  renderDailyQuote();
+}
+function srLocalTotalsSafe(){
+  try { if(typeof localTotals === 'function') return localTotals(); return JSON.parse(localStorage.getItem('sr10Totals:new') || '{}'); } catch(e) { return {}; }
+}
+function srTodayISOSafe(){
+  if(typeof todayISO === 'function') return todayISO();
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function calculateStreakDays(){
+  const totals = srLocalTotalsSafe();
+  let streak = 0;
+  for(let i=0; i<365; i++){
+    const key = srDateKeyFromOffset(-i);
+    if(Number(totals[key] || 0) > 0) streak++; else break;
+  }
+  return streak;
+}
+function updateHomeCards(){
+  const streak = calculateStreakDays();
+  ['streakDays','welcomeStreakDays'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = streak; });
+  const localToday = Number(srLocalTotalsSafe()[srTodayISOSafe()] || 0);
+  ['todayUserCount','welcomeTodayUserCount'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = localToday > 0 ? '1' : '0'; });
+  renderDailyQuote();
+}
+async function updateTodayUserCountFromSheet(){
+  if(typeof api !== 'function') return;
+  try{
+    const res = await api('list', {});
+    if(res && res.result === 'success' && Array.isArray(res.records)){
+      const today = srTodayISOSafe();
+      const names = new Set();
+      res.records.forEach(r => {
+        const d = typeof formatDateForCompare === 'function' ? formatDateForCompare(r['日付']) : String(r['日付'] || '').slice(0,10).replaceAll('/','-');
+        if(d === today && r['名前']) names.add(String(r['名前']).trim());
+      });
+      ['todayUserCount','welcomeTodayUserCount'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = names.size; });
+    }
+  }catch(e){}
+}
+window.addEventListener('load', () => {
+  if(isClassroomMode()) return;
+  setTimeout(() => { updateHomeCards(); updateTodayUserCountFromSheet(); updateAccurateStatsFromSheet(); }, 300);
+});
+/* Study Room v1.2 accurate stats from spreadsheet */
+async function updateAccurateStatsFromSheet(){
+  if(typeof api !== 'function') return;
+  try{
+    const nameEl = document.getElementById('studentName');
+    const name = nameEl ? nameEl.value.trim() : (typeof appState !== 'undefined' ? (appState.name || '') : '');
+    const res = await api('stats', { name: name });
+    if(res && res.result === 'success'){
+      ['todayUserCount','welcomeTodayUserCount'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = Number(res.todayUserCount || 0); });
+      ['streakDays','welcomeStreakDays'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = Number(res.streakDays || 0); });
+    }
+  }catch(e){
+    // 通信できない場合は従来のローカル表示のまま
+  }
+}
+</script>
+
+<div id="editModal" class="modalBg hide">
+<div class="modal">
+<div class="teacherHead">
+<h2>記録を修正</h2>
+<button class="teacherBackBtn" type="button" onclick="closeEditModal()">閉じる</button>
+</div>
+<input type="hidden" id="editId">
+<div class="grid2">
+<div><label>日付</label><input id="editDate" type="date"></div>
+<div><label>名前</label><input id="editName"></div>
+<div><label>学年</label><select id="editGrade"><option>中1</option><option>中2</option><option>中3</option><option>高1</option><option>高2</option><option>高3</option><option>その他</option></select></div>
+<div><label>科目</label><select id="editSubject"><option>英語</option><option>数学</option><option>国語</option><option>理科</option><option>社会</option><option>物理</option><option>化学</option><option>生物</option><option>日本史</option><option>世界史</option><option>その他</option></select></div>
+<div><label>入室時間</label><input id="editStartTime" type="time"></div>
+<div><label>退室時間</label><input id="editEndTime" type="time"></div>
+<div><label>自習分数</label><input id="editMinutes" type="number" min="0"></div>
+<div><label>集中度</label><select id="editFocus"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+<div><label>達成度</label><select id="editAchievement"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+</div>
+<label>学習内容</label>
+<textarea id="editContent"></textarea>
+<label>コメント</label>
+<textarea id="editComment"></textarea>
+<div class="row">
+<button class="btn" type="button" onclick="saveEditRecord()">保存する</button>
+<button class="btn red" type="button" onclick="deleteEditRecord()">削除する</button>
+</div>
+<div id="editMsg"></div>
+</div>
+</div>
+<script>
+/* Pure domain functions shared by Apps Script and Node verification. */
+const SR = (() => {
+  const fields = ['date','name','grade','subject','startTime','endTime','minutes','focus','achievement','content','comment'];
+  const jp = ['日付','名前','学年','科目','入室時間','退室時間','自習分数','集中度','達成度','学習内容','コメント'];
+  function fail(message, code='INVALID'){ const e=new Error(message); e.code=code; throw e; }
+  function text(v,max=200){ v=String(v??'').trim(); if(v.length>max) fail('入力が長すぎます。'); return v; }
+  function id(v){ v=text(v,100); if(!/^[a-zA-Z0-9_-]{3,100}$/.test(v)) fail('IDが不正です。'); return v; }
+  function date(v){ v=text(v); if(!/^\d{4}-\d{2}-\d{2}$/.test(v)||new Date(v+'T00:00:00Z').toISOString().slice(0,10)!==v) fail('日付が不正です。'); return v; }
+  function number(v,min,max){ const n=Number(v); if(!Number.isFinite(n)||n<min||n>max||!Number.isInteger(n)) fail('数値が不正です。'); return n; }
+  function scope(admin,schoolId){ if(!admin) fail('管理者ログインが必要です。','AUTH'); if(admin.role!=='global'&&!admin.schoolIds.includes(schoolId)) fail('この教室への権限がありません。','FORBIDDEN'); }
+  function school(data, previous){
+    const s={id:previous?previous.id:id(data.id), name:text(data.name,100), code:text(data.code,40), active:data.active!==false, enrolled:data.enrolled===''||data.enrolled==null?null:number(data.enrolled,1,100000), createdAt:previous?previous.createdAt:new Date().toISOString()};
+    if(!s.name||!s.code) fail('教室名と教室コードを入力してください。'); return s;
+  }
+  function cleanRecord(d){
+    const r={}; fields.forEach(k=>r[k]=text(d[k], k==='content'||k==='comment'?3000:200));
+    r.date=date(r.date); if(!r.name||!r.grade) fail('名前と学年を入力してください。');
+    for(const k of ['startTime','endTime']) if(r[k]&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(r[k])) fail('時刻が不正です。');
+    r.minutes=number(d.minutes||0,0,10080);
+    r.focus=number(d.focus||3,1,5); r.achievement=number(d.achievement||3,1,5); return r;
+  }
+  function display(r,schools){
+    const x={'ID':r.id,'生徒ID':r.studentId,'教室ID':r.schoolId,'教室':(schools.find(s=>s.id===r.schoolId)||{}).name||r.schoolId,'送信日時':r.createdAt,'状態':r.status,version:r.version};
+    fields.forEach((k,i)=>x[jp[i]]=r[k]??''); return x;
+  }
+  function dashboard(records,students,schools,from,to,today){
+    date(from);date(to); if(from>to) fail('期間の開始日と終了日を確認してください。');
+    const live=records.filter(r=>!r.deletedAt), period=live.filter(r=>r.date>=from&&r.date<=to), completed=period.filter(r=>r.status==='送信済み');
+    const used=new Set(completed.map(r=>r.schoolId+':'+r.studentId));
+    const enrolled=schools.every(s=>s.enrolled>0)?schools.reduce((n,s)=>n+s.enrolled,0):null;
+    const total=rows=>rows.reduce((n,r)=>n+Number(r.minutes||0),0);
+    const rankingMap=new Map(), grades={};
+    completed.forEach(r=>{const key=r.schoolId+':'+r.studentId;const v=rankingMap.get(key)||{studentId:r.studentId,schoolId:r.schoolId,name:r.name,minutes:0,visits:0};v.minutes+=r.minutes;v.visits++;rankingMap.set(key,v);if(!grades[r.grade])grades[r.grade]=new Set();grades[r.grade].add(key);});
+    // Equal 28-day windows ending at the selected end date. Unknown roster members cannot be inferred.
+    const offset=n=>new Date(Date.parse(to+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
+    const recentStart=offset(-27), priorStart=offset(-55), allDone=live.filter(r=>r.status==='送信済み'&&r.date<=to);
+    const alerts=[];
+    students.forEach(s=>{const own=allDone.filter(r=>r.schoolId===s.schoolId&&r.studentId===s.id);if(!own.length)return;const dates=[...new Set(own.map(r=>r.date))].sort(),last=dates[dates.length-1],recent=dates.filter(d=>d>=recentStart).length,prior=dates.filter(d=>d>=priorStart&&d<recentStart).length;if(last<recentStart||prior>=2&&recent<=prior/2)alerts.push({studentId:s.id,schoolId:s.schoolId,name:s.name,last,recent,prior,reason:last<recentStart?'28日以上利用なし':'利用日数が半分以下'});});
+    return {schoolCount:schools.length,enrolled,users:used.size,recordCount:completed.length,active:new Set(live.filter(r=>r.status==='入室中').map(r=>r.schoolId+':'+r.studentId)).size,todayMinutes:total(live.filter(r=>r.status==='送信済み'&&r.date===today)),monthMinutes:total(live.filter(r=>r.status==='送信済み'&&r.date.slice(0,7)===today.slice(0,7))),minutes:total(completed),utilization:enrolled?used.size/enrolled*100:null,grades:Object.entries(grades).map(([grade,ids])=>({grade,users:ids.size})),ranking:[...rankingMap.values()].sort((a,b)=>b.minutes-a.minutes),alerts,schools:schools.map(s=>{const rows=completed.filter(r=>r.schoolId===s.id),users=new Set(rows.map(r=>r.studentId)).size;return {...s,users,minutes:total(rows),utilization:s.enrolled?users/s.enrolled*100:null};})};
+  }
+  function csv(rows){ const h=['教室ID','教室','生徒ID','ID','送信日時',...jp,'状態'];const cell=v=>'"'+String(v??'').replace(/^(?:[\s]*[=+@\-]|[\t\r\n])/,"'$&").replace(/"/g,'""')+'"';return '\ufeff'+[h,...rows.map(r=>h.map(k=>r[k]))].map(row=>row.map(cell).join(',')).join('\r\n'); }
+  return {fail,text,id,date,number,scope,school,cleanRecord,display,dashboard,csv};
+})();
+if(typeof module!=='undefined') module.exports=SR;
+
+/* Explicit transports only. Never put credentials in URLs or use JSONP/no-cors. */
+const SRTransport = (() => {
+  function endpoint(value){
+    const u=new URL(String(value));
+    if(u.origin!=='https://script.google.com'||!/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)||u.search||u.hash||u.username||u.password)throw new Error('接続先の設定を管理者に確認してください。');
+    return u.href;
+  }
+  async function send(request,options={}){
+    const timeout=options.timeoutMs||120000;
+    if(options.rpc)return new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>reject(new Error('通信がタイムアウトしました。入力は保持しています。同じ操作を再送できます。')),timeout);
+      options.rpc.withSuccessHandler(r=>{clearTimeout(timer);resolve(r);}).withFailureHandler(()=>{clearTimeout(timer);reject(new Error('通信できません。入力は保持しています。接続後に再送してください。'));}).srApi(request);
+    });
+    if(!options.endpoint)throw new Error('接続先の設定が完了していません。管理者に連絡してください。');
+    const url=endpoint(options.endpoint),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
+    try{
+      const response=await (options.fetchImpl||fetch)(url,{method:'POST',mode:'cors',credentials:'omit',cache:'no-store',redirect:'follow',referrerPolicy:'no-referrer',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(request),signal:controller.signal});
+      if(!response.ok||response.type==='opaque')throw new Error('接続先の公開設定を管理者に確認してください。');
+      let data;try{data=await response.json();}catch(e){throw new Error('サーバーの応答を確認できません。入力は保持しています。管理者に連絡してください。');}
+      if(!data||!['success','error'].includes(data.result))throw new Error('サーバーの応答形式が不正です。入力は保持しています。');
+      return data;
+    }catch(e){if(e.name==='AbortError')throw new Error('通信がタイムアウトしました。入力は保持しています。同じ操作を再送できます。');throw e;}
+    finally{clearTimeout(timer);}
+  }
+  return {endpoint,send};
+})();
+
+/* v9 integration layer. Bundled into App.html; no external code or JSONP. */
+let mcSchools=[],mcAdmin=null,mcAdminSchools=[],mcClassroom=false,mcRoster=[];
+let mcIdentity=(()=>{try{return JSON.parse(localStorage.getItem('sr10Identity')||'null');}catch(e){return null;}})();
+const mcUuid=()=>crypto.randomUUID();
+function mcSecret(){return Array.from(crypto.getRandomValues(new Uint8Array(32)),n=>n.toString(16).padStart(2,'0')).join('');}
+function mcSaveIdentity(){localStorage.setItem('sr10Identity',JSON.stringify(mcIdentity));}
+function mcContext(){return mcIdentity?{schoolId:mcIdentity.schoolId,studentId:mcIdentity.id,studentKey:mcIdentity.key}:{};}
+function mcFilters(){return {schoolId:$('mcAdminSchool').value,from:$('mcFrom').value,to:$('mcTo').value};}
+function mcBusy(msg){$('mcNotice').textContent=msg;}
+function mcDrawSchool(){const s=mcSchools.find(s=>s.id===$('mcSchool').value);$('mcSchoolLabel').textContent=s?s.name:'教室を選択してください';}
+function mcResetLocal(){
+  if(appState.startAt){alert('進行中の自習を送信してから切り替えてください。');return false;}
+  [STATE_KEY,PROFILE_KEY,LOCAL_TOTAL_KEY,'sr10Summary'].forEach(k=>localStorage.removeItem(k));
+  mcIdentity=null;localStorage.removeItem('sr10Identity');appState={screen:'welcome',name:'',grade:'中1',status:'idle',breakTotalMs:0};
+  $('studentName').value='';$('grade').value='中1';$('goalMinutes').value='';$('mcHistory').innerHTML='';
+  ['todayUserCount','welcomeTodayUserCount','streakDays','welcomeStreakDays'].forEach(id=>$(id).textContent='0');return true;
+}
+function mcSwitchUser(){if(confirm('この端末のプロフィールと履歴キーを解除します。元の履歴へ戻すには先生の確認が必要です。切り替えますか？')){if(mcResetLocal()){mcStorageKeys();goScreen('welcome');mcBusy('新しい利用者の名前と学年を入力してください。');}}}
+function mcStorageKeys(){const id=mcIdentity?mcIdentity.id:'new';STATE_KEY='sr10State:'+id;PROFILE_KEY='sr10Profile:'+id;LOCAL_TOTAL_KEY='sr10Totals:'+id;}
+let mcCalls=0;
+api=async function(action,data={},attempt=0,requestId=mcUuid()){
+  if(action==='addActive'&&!data.session&&appState.activeRecordId===data.id)data={...data,startedAt:appState.startAt,goalMinutes:appState.goalMinutes};
+  const context=['registerStudent','history','stats','addActive','update','checkout'].includes(action)&&!data.session?mcContext():{};
+  const q={action,data:{...context,...data},requestId};
+  mcCalls++;$('mcNetwork').textContent='通信中…';
+  try{
+    const result=await SRTransport.send(q,{rpc:window.google&&google.script&&google.script.run,endpoint:document.querySelector('meta[name="study-room-api"]')?.content});
+    if(action==='addActive'&&result.result==='success'&&result.alreadyActive&&result.id!==data.id&&!data.session){appState.activeRecordId=result.id;if(result.startedAt)appState.startAt=result.startedAt;if(result.endedAt){appState.endAt=result.endedAt;appState.status='finished';}saveState();}
+    if(result.result==='error'&&result.code==='AUTH'&&data.session){mcClearAdmin();}
+    return result;
+  }catch(e){
+    if(attempt<2&&action!=='teacherLogin'&&action!=='saveAdmin'){await new Promise(r=>setTimeout(r,700*(attempt+1)));return api(action,data,attempt+1,requestId);}
+    throw e;
+  }finally{mcCalls--;$('mcNetwork').textContent=mcCalls?'通信中…':'';}
+};
+function mcRequire(r){if(!r||r.result!=='success')throw new Error(r&&r.message||'処理に失敗しました。');return r;}
+const mcOldStart=startApp;
+startApp=async function(){
+  const btn=$('mcStart');btn.disabled=true;
+  try{
+    const schoolId=$('mcSchool').value,name=$('studentName').value.trim();if(!schoolId||!name)throw new Error('教室と名前を入力してください。');
+    if(mcIdentity&&mcIdentity.name&&mcIdentity.name!==name)throw new Error('別の生徒が使う場合は「利用者を切り替える」を押してください。');
+    if(!mcIdentity){mcIdentity={id:mcUuid(),key:mcSecret(),schoolId};mcSaveIdentity();mcStorageKeys();}
+    mcIdentity.name=name;mcIdentity.grade=$('grade').value;mcSaveIdentity();
+    mcRequire(await api('registerStudent',{name,grade:mcIdentity.grade}));mcOldStart();mcBusy('');
+  }catch(e){setMsg('welcomeMsg',e.message,'err');}finally{btn.disabled=false;}
+};
+// Preserve one logical operation ID across manual retries, including ambiguous responses.
+function mcOperation(action,data){const {session,studentKey,...payload}=data;const key='sr10Op:'+action+':'+JSON.stringify(payload);let op=sessionStorage.getItem(key);if(!op){op=mcUuid();sessionStorage.setItem(key,op);}return op;}
+const mcApi=api;
+api=function(action,data={},attempt=0,requestId){if(!requestId&&['addActive','update','checkout','delete'].includes(action))requestId=mcOperation(action,data);return mcApi(action,data,attempt,requestId);};
+const mcOldSubmit=submitToTeacher;
+submitToTeacher=async function(){
+  const button=$('sendBtn');if(button.disabled)return;button.disabled=true;
+  try{
+    if(pendingCheckinPromise)await pendingCheckinPromise;
+    if(!appState.activeRecordId){appState.activeRecordId=mcUuid();saveState();}
+    const r=mcRequire(await api('addActive',{id:appState.activeRecordId,date:todayISO(),startTime:timeText(appState.startAt),subject:'入室中',content:'入室中'}));
+    if(r.id!==appState.activeRecordId)throw new Error('別の入室記録があります。先生に確認してください。');
+    await mcOldSubmit();if(appState.status==='idle'){appState.reviewDraft=null;saveState();}
+  }catch(e){setMsg('reviewMsg',e.message,'err');}finally{button.disabled=false;}
+};
+const mcOldEnter=enterRoom;
+enterRoom=async function(){
+  if(appState.startAt)return;
+  await mcOldEnter();
+};
+updateTodayUserCountFromSheet=async function(){await updateAccurateStatsFromSheet();};
+updateAccurateStatsFromSheet=async function(){const identity=mcIdentity;if(!identity)return;try{const r=mcRequire(await api('stats'));if(mcIdentity!==identity)return;['todayUserCount','welcomeTodayUserCount'].forEach(id=>$(id).textContent=r.todayUserCount);['streakDays','welcomeStreakDays'].forEach(id=>$(id).textContent=r.streakDays);}catch(e){if(mcIdentity===identity)mcBusy(e.message);}};
+async function mcHistory(){
+  const identity=mcIdentity;
+  try{if(!identity)throw new Error('名前を登録してから履歴を確認してください。');const r=mcRequire(await api('history'));if(mcIdentity!==identity)return;$('mcHistory').innerHTML='<h3>自分の学習履歴</h3>'+r.records.map(x=>`<div class="mcItem"><b>${escapeHtml(x['日付'])} ${escapeHtml(x['科目'])} ${escapeHtml(x['自習分数'])}分</b><p>${escapeHtml(x['学習内容'])}</p><p>${escapeHtml(x['コメント'])}</p></div>`).join('');if(!r.records.length)$('mcHistory').innerHTML+='<p>記録はまだありません。</p>';}catch(e){if(mcIdentity===identity)mcBusy(e.message);}
+}
+function mcClearAdmin(){teacherSession='';mcAdmin=null;records=[];mcRoster=[];crActiveRecords=[];crSelected=null;mcClassroom=false;stopTeacherAutoRefresh();sessionStorage.removeItem(TEACHER_SESSION_KEY);$('teacherPanel').classList.add('hide');$('loginBox').classList.remove('hide');$('tbody').innerHTML='';$('mcDashboard').innerHTML='';$('mcAdminEditor').innerHTML='';$('mcSchoolEditor').innerHTML='';$('mcStudentEditor').innerHTML='';$('crActiveList').innerHTML='';$('mcRoster').innerHTML='';$('mcAdminSchool').innerHTML='';$('crRecentNames').innerHTML='';['inRoomList','pendingReflectionList','detailRanking','subjectRanking'].forEach(id=>$(id).innerHTML='');window.mcAdmins=[];mcAdminSchools=[];$('appTitle').textContent='Study Room';updateModeButton();document.body.classList.remove('classroomMode');crScreenIds().forEach(id=>$(id).classList.add('hide'));}
+async function mcLogout(){try{mcRequire(await api('logout',{session:teacherSession}));}catch(e){mcBusy(e.message);}finally{mcClearAdmin();goScreen('teacher');}}
+teacherLogin=async function(){
+  $('mcLogin').disabled=true;setMsg('loginMsg','認証中です…');
+  try{const r=mcRequire(await api('teacherLogin',{teacherId:$('teacherId').value.trim(),teacherPass:$('teacherPass').value}));teacherSession=r.session;sessionStorage.setItem(TEACHER_SESSION_KEY,teacherSession);$('teacherPass').value='';await mcLoadAdmin();setMsg('loginMsg','');}catch(e){setMsg('loginMsg',e.message,'err');}finally{$('mcLogin').disabled=false;}
+};
+async function mcLoadAdmin(){
+  const r=mcRequire(await api('me',{session:teacherSession}));mcAdmin=r.admin;mcAdminSchools=r.schools;
+  $('mcRole').textContent=mcAdmin.role==='global'?'全体管理者':'教室管理者';
+  $('mcGlobal').classList.toggle('hide',mcAdmin.role!=='global');$('loginBox').classList.add('hide');$('teacherPanel').classList.remove('hide');
+  const chosen=$('mcAdminSchool').value;$('mcAdminSchool').innerHTML=(mcAdmin.role==='global'?'<option value="">全教室</option>':'')+r.schools.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}${s.active?'':'（停止中）'}</option>`).join('');if(r.schools.some(s=>s.id===chosen))$('mcAdminSchool').value=chosen;
+  await loadRecords();startTeacherAutoRefresh();
+}
+let mcLoadSequence=0;
+loadRecords=async function(){
+  if(!mcAdmin)return;$('mcSchoolLabel').textContent='管理：'+(($('mcAdminSchool').value&&(mcAdminSchools.find(s=>s.id===$('mcAdminSchool').value)||{}).name)||'全教室');const sequence=++mcLoadSequence;setMsg('teacherMsg','読み込み中です…');
+  try{const data={session:teacherSession,...mcFilters()},r=mcRequire(await api('list',data)),dashboard=mcRequire(await api('dashboard',data));if(sequence!==mcLoadSequence)return;records=r.records;renderTeacher();renderDetailPanel();mcRenderDashboard(dashboard.dashboard);setMsg('teacherMsg','');}catch(e){if(sequence!==mcLoadSequence)return;records=[];$('tbody').innerHTML='';$('mcDashboard').innerHTML='';setMsg('teacherMsg',e.message,'err');}
+};
+function mcRenderDashboard(d){
+  const ratio=v=>v==null?'算出不可（在籍生徒数未設定）':v.toFixed(1)+'%';const card=(name,value)=>`<div class="stat">${name}<b>${escapeHtml(value)}</b></div>`;
+  $('mcDashboard').innerHTML='<h3>管理ダッシュボード</h3><div class="statGrid">'+card('対象教室数',d.schoolCount)+card('在籍生徒数',d.enrolled??'未設定')+card('自習利用生徒数',d.users+'人')+card('現在自習中',d.active+'人')+card('本日の総学習時間',d.todayMinutes+'分')+card('今月の総学習時間',d.monthMinutes+'分')+card('対象期間の総学習時間',d.minutes+'分')+card('自習室利用率',ratio(d.utilization))+'</div><p class="small">利用人数は生徒IDの重複を除外した送信済み記録の人数です。在籍生徒数が全教室に設定されている場合に全体利用率を計算します。別端末・利用者切替による重複IDは先生の確認が必要です。</p><h3>教室別比較</h3>'+d.schools.map(s=>`<div class="mcItem"><b>${escapeHtml(s.name)}</b><p>在籍 ${s.enrolled??'未設定'}人 ／ 利用 ${s.users}人 ／ ${s.minutes}分 ／ ${ratio(s.utilization)}</p></div>`).join('')+'<h3>学年別利用状況</h3>'+d.grades.map(g=>`<span class="crChip">${escapeHtml(g.grade)}：${g.users}人</span>`).join('')+'<h3>教室別ランキング</h3>'+d.schools.map(s=>`<h4>${escapeHtml(s.name)}</h4>`+d.ranking.filter(r=>r.schoolId===s.id).slice(0,10).map((r,i)=>`<div class="mcItem">${i+1}位 ${escapeHtml(r.name)}（${escapeHtml(r.studentId.slice(0,8))}）：${r.minutes}分</div>`).join('')).join('')+'<h3>利用状況の確認が必要な生徒</h3><p class="small">選択した終了日を基準に直近28日と前の28日を比較。前期間2日以上かつ利用日数半分以下、または28日以上利用なし。利用歴のない在籍生徒は判定対象外です。</p>'+d.alerts.map(a=>`<div class="mcItem">${escapeHtml((mcAdminSchools.find(s=>s.id===a.schoolId)||{}).name||'')} ／ ${escapeHtml(a.name)}：${escapeHtml(a.reason)}（最終 ${a.last}、前 ${a.prior}日→直近 ${a.recent}日）</div>`).join('');
+}
+function mcDownload(name,text){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+downloadCSV=function(){const q=$('search').value.trim().toLowerCase();mcDownload('自習室ログ_'+todayISO()+'.csv',SR.csv(records.filter(r=>!q||JSON.stringify(r).toLowerCase().includes(q))));};
+const mcOldGoScreen=goScreen;goScreen=function(id){mcOldGoScreen(id);if(id!=='teacher')mcDrawSchool();};
+const mcOldRender=renderTeacher;
+renderTeacher=function(){mcOldRender();document.querySelector('#teacher .tableWrap').scrollLeft=0;const rows=records.filter(r=>!$('search').value.trim()||JSON.stringify(r).toLowerCase().includes($('search').value.trim().toLowerCase()));$('statToday').textContent=new Set(rows.filter(r=>r['日付']===todayISO()).map(r=>r['教室ID']+':'+r['生徒ID'])).size;};
+// Search-filtered row buttons must resolve by stable record ID, not the filtered index.
+let mcEditVersion=null;
+const mcOldOpenEdit=openEditModal,mcOldDelete=deleteRecordFromList;
+function mcFilteredIndex(i){const q=$('search').value.trim().toLowerCase(),r=records.filter(r=>!q||JSON.stringify(r).toLowerCase().includes(q))[i];return records.findIndex(x=>r&&x['ID']===r['ID']);}
+openEditModal=i=>{const idx=mcFilteredIndex(i);mcEditVersion=(records[idx]||{}).version;mcOldOpenEdit(idx);};deleteRecordFromList=i=>mcOldDelete(mcFilteredIndex(i));
+const mcOldEditData=editDataFromModal;
+editDataFromModal=()=>({...mcOldEditData(),version:mcEditVersion});
+async function mcEditSchools(){
+  $('mcSchoolEditor').innerHTML='<h3>教室の追加・編集</h3>'+mcAdminSchools.map((s,i)=>`<button class="btn light" type="button" onclick="mcFillSchool(${i})">${escapeHtml(s.name)}</button>`).join('')+'<button class="btn light" onclick="mcFillSchool(-1)">新しい教室</button><div id="mcSchoolForm"></div>';mcFillSchool(-1);
+}
+function mcFillSchool(i){const s=mcAdminSchools[i]||{id:mcUuid(),name:'',code:'',active:true,enrolled:null};$('mcSchoolForm').innerHTML=`<input id="mcSchoolId" type="hidden" value="${escapeHtml(s.id)}"><label>教室名<input id="mcSchoolName" value="${escapeHtml(s.name)}"></label><label>教室コード<input id="mcSchoolCode" value="${escapeHtml(s.code)}"></label><label>在籍生徒数（未設定なら空欄）<input id="mcEnrolled" type="number" min="1" value="${s.enrolled??''}"></label><label>利用状態<select id="mcSchoolActive"><option value="true">利用中</option><option value="false">停止中</option></select></label><p>登録日時：${escapeHtml(s.createdAt||'保存時に登録')} ／ 担当管理者：${escapeHtml((s.adminIds||[]).join('、')||'未設定')}</p><button class="btn" onclick="mcSaveSchool()">保存する</button>`;$('mcSchoolActive').value=String(s.active);}
+async function mcSaveSchool(){try{mcRequire(await api('saveSchool',{session:teacherSession,school:{id:$('mcSchoolId').value,name:$('mcSchoolName').value,code:$('mcSchoolCode').value,enrolled:$('mcEnrolled').value,active:$('mcSchoolActive').value==='true'}}));await mcLoadAdmin();await mcEditSchools();mcBusy('教室を保存しました。');}catch(e){mcBusy(e.message);}}
+async function mcEditAdmins(){
+  try{const r=mcRequire(await api('admins',{session:teacherSession}));window.mcAdmins=r.admins;$('mcAdminEditor').innerHTML='<h3>管理者の登録・権限設定</h3>'+r.admins.map((a,i)=>`<button class="btn light" onclick="mcFillAdmin(${i})">${escapeHtml(a.id)}（${a.role==='global'?'全体管理者':'教室管理者'}）</button>`).join('')+'<button class="btn light" onclick="mcFillAdmin(-1)">新しい管理者</button><div id="mcAdminForm"></div>';mcFillAdmin(-1);}catch(e){mcBusy(e.message);}
+}
+function mcFillAdmin(i){const a=window.mcAdmins[i]||{id:'',role:'school',schoolIds:[],active:true};$('mcAdminForm').innerHTML=`<label>管理者ID<input id="mcAdminId" value="${escapeHtml(a.id)}" ${a.id?'readonly':''}></label><label>パスワード（12文字以上／編集時は空欄で維持）<input id="mcAdminPass" type="password" autocomplete="new-password"></label><label>権限<select id="mcAdminRole"><option value="school">教室管理者</option><option value="global">全体管理者</option></select></label><fieldset><legend>担当教室</legend>${mcAdminSchools.map(s=>`<label class="mcCheck"><input type="checkbox" name="mcAdminScope" value="${escapeHtml(s.id)}" ${a.schoolIds.includes(s.id)?'checked':''}>${escapeHtml(s.name)}</label>`).join('')}</fieldset><label>利用状態<select id="mcAdminActive"><option value="true">利用中</option><option value="false">停止中</option></select></label><button class="btn" onclick="mcSaveAdmin()">保存する</button>`;$('mcAdminRole').value=a.role;$('mcAdminActive').value=String(a.active);}
+async function mcSaveAdmin(){try{mcRequire(await api('saveAdmin',{session:teacherSession,admin:{id:$('mcAdminId').value,password:$('mcAdminPass').value,role:$('mcAdminRole').value,active:$('mcAdminActive').value==='true',schoolIds:[...document.querySelectorAll('[name="mcAdminScope"]:checked')].map(e=>e.value)}}));$('mcAdminPass').value='';await mcEditAdmins();mcBusy('管理者を保存しました。変更した管理者の既存ログインは失効します。');}catch(e){mcBusy(e.message);}}
+// Classroom mode is a supervised admin surface; student mode never receives a peer list.
+isClassroomMode=()=>mcClassroom;
+toggleClassroomMode=async function(){
+  if(mcClassroom){mcClassroom=false;$('appTitle').textContent='Study Room';document.body.classList.remove('classroomMode');crScreenIds().forEach(id=>$(id).classList.add('hide'));goScreen('teacher');updateModeButton();return;}
+  if(!mcAdmin){goScreen('teacher');setMsg('loginMsg','教室モードを使うには先生がログインしてください。');return;}
+  if(!$('mcAdminSchool').value){mcBusy('教室モードで使う教室を選んでください。');goScreen('teacher');return;}
+  mcClassroom=true;crInit();mcLoadRoster();
+};
+crRecentNames=()=>[];crAddRecentName=()=>{};crRenderRecentNames=()=>{};
+async function mcLoadRoster(){try{const r=mcRequire(await api('students',{session:teacherSession,schoolId:$('mcAdminSchool').value}));mcRoster=r.students;$('mcRoster').innerHTML='<option value="">初めての生徒（新規）</option>'+r.students.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}／${escapeHtml(s.grade)}／${escapeHtml(s.id.slice(0,8))}</option>`).join('');}catch(e){setMsg('crCheckinMsg',e.message,'err');}}
+crSubmitCheckin=async function(){
+  $('mcCrEnter').disabled=true;
+  try{const schoolId=$('mcAdminSchool').value;let studentId=$('mcRoster').value;if(!studentId){const r=mcRequire(await api('saveStudent',{session:teacherSession,schoolId,student:{id:mcUuid(),name:$('crName').value.trim(),grade:$('crGrade').value}}));studentId=r.studentId;await mcLoadRoster();}
+    const id=mcUuid(),r=mcRequire(await api('addActive',{session:teacherSession,schoolId,studentId,id,date:todayISO(),startTime:timeText(nowISO()),subject:'入室中',content:'入室中'}));if(r.alreadyActive)throw new Error(r.message||'すでに入室中です。');crGoScreen('crHome');
+  }catch(e){setMsg('crCheckinMsg',e.message,'err');}finally{$('mcCrEnter').disabled=false;}
+};
+crLoadActiveList=async function(){try{const r=mcRequire(await api('listActive',{session:teacherSession,schoolId:$('mcAdminSchool').value}));crActiveRecords=r.records;crRenderActiveList();setMsg('crCheckoutMsg','');}catch(e){crActiveRecords=[];$('crActiveList').innerHTML='';setMsg('crCheckoutMsg',e.message,'err');}};
+// Existing classroom checkout and reflection functions call the same API; attach teacher auth.
+const mcApiWithRetry=api;
+api=function(action,data={},attempt=0,requestId){if(mcClassroom&&['checkout','update'].includes(action)&&!data.session)data={...data,session:teacherSession};return mcApiWithRetry(action,data,attempt,requestId);};
+const mcOldCrGo=crGoScreen;
+crGoScreen=function(id){if(!mcAdmin){goScreen('teacher');return;}mcOldCrGo(id);if(id==='crCheckin')mcLoadRoster();};
+openTeacherFromWelcome=()=>{mcClassroom=false;$('appTitle').textContent='Study Room';updateModeButton();document.body.classList.remove('classroomMode');crScreenIds().forEach(id=>$(id).classList.add('hide'));goScreen('teacher');};
+async function mcInit(){
+  mcStorageKeys();$('mcFrom').value=todayISO().slice(0,7)+'-01';$('mcTo').value=todayISO();
+  try{const r=mcRequire(await api('schools'));mcSchools=r.schools;$('mcSchool').innerHTML='<option value="">教室を選択</option>'+r.schools.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`).join('');if(mcIdentity)$('mcSchool').value=mcIdentity.schoolId;mcDrawSchool();mcBusy(r.schools.length?'':'利用できる教室がありません。先生に確認してください。');}catch(e){mcBusy(e.message);}
+  if(mcIdentity){loadState();$('studentName').value=mcIdentity.name||appState.name||'';$('grade').value=mcIdentity.grade||appState.grade||'中1';if(appState.startAt)goScreen(appState.endAt?'reviewScreen':'timerScreen');}
+  if(teacherSession){try{await mcLoadAdmin();}catch(e){mcClearAdmin();}}
+  $('mcSchool').addEventListener('change',()=>{if(mcIdentity&&mcIdentity.schoolId!==$('mcSchool').value){if(!mcResetLocal())$('mcSchool').value=mcIdentity.schoolId;else mcStorageKeys();}mcDrawSchool();});
+  ['mcAdminSchool','mcFrom','mcTo'].forEach(id=>$(id).addEventListener('change',()=>{records=[];$('tbody').innerHTML='';$('mcStudentEditor').innerHTML='';$('mcSchoolEditor').innerHTML='';$('mcAdminEditor').innerHTML='';closeEditModal();loadRecords();}));
+}
+document.addEventListener('DOMContentLoaded',mcInit);
+
+async function mcRedeemLink(){
+  if(appState.startAt){mcBusy('進行中の自習を送信してから引き継いでください。');return;}
+  try{const key=mcSecret(),r=mcRequire(await api('redeemStudentLink',{link:$('mcLinkCode').value.trim(),studentKey:key}));mcResetLocal();mcIdentity={...r.student,key};mcSaveIdentity();mcStorageKeys();$('mcSchool').value=mcIdentity.schoolId;$('studentName').value=mcIdentity.name;$('grade').value=mcIdentity.grade;$('mcLinkCode').value='';mcDrawSchool();mcBusy('履歴を引き継ぎました。');}catch(e){mcBusy(e.message);}
+}
+async function mcManageStudents(){
+  try{const schoolId=$('mcAdminSchool').value;if(!schoolId)throw new Error('対象教室を選んでください。');const r=mcRequire(await api('students',{session:teacherSession,schoolId}));const options=r.students.map(s=>`<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}／${escapeHtml(s.grade)}／${escapeHtml(s.id.slice(0,8))}</option>`).join('');$('mcStudentEditor').innerHTML='<h3>生徒の履歴引継ぎ・重複の確認</h3><label>引継ぎ先の生徒<select id="mcStudentTarget">'+options+'</select></label><button class="btn light" onclick="mcIssueLink()">10分間有効な引継ぎコードを発行</button><p id="mcIssuedCode" class="mcItem"></p><label>重複して作られた生徒ID（統合元）<select id="mcStudentSource">'+options+'</select></label><button class="btn light" onclick="mcMergeStudents()">上の引継ぎ先へ記録を統合</button><p class="small">本人と確認できた場合のみ操作してください。名前だけで統合しないでください。統合元の端末キーは無効になります。</p>';}catch(e){mcBusy(e.message);}
+}
+async function mcIssueLink(){try{const r=mcRequire(await api('issueStudentLink',{session:teacherSession,studentId:$('mcStudentTarget').value}));$('mcIssuedCode').textContent='本人にだけ伝えてください：'+r.link;}catch(e){mcBusy(e.message);}}
+async function mcMergeStudents(){if(!confirm('同じ生徒本人であると確認しましたか？統合元の学習記録を選択した引継ぎ先へ移し、統合元の端末キーを失効させます。'))return;try{mcRequire(await api('mergeStudents',{session:teacherSession,sourceId:$('mcStudentSource').value,targetId:$('mcStudentTarget').value}));await mcManageStudents();await loadRecords();mcBusy('生徒IDを統合しました。');}catch(e){mcBusy(e.message);}}
+
+const mcOldReview=renderReview;
+renderReview=function(){mcOldReview();const d=appState.reviewDraft;if(d){$('content').value=d.content||'';$('comment').value=d.comment||'';$('subject').value=d.subject||'英語';}};
+document.addEventListener('DOMContentLoaded',()=>{['content','comment','subject'].forEach(id=>$(id).addEventListener('input',()=>{appState.reviewDraft={content:$('content').value,comment:$('comment').value,subject:$('subject').value};saveState();}));});
+
+</script></body>
+</html>

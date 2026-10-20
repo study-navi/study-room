@@ -1,0 +1,9 @@
+{
+  "status": "candidate-unverified-live-post",
+  "endpoint": "https://script.google.com/macros/s/AKfycbx6Qaaei0Fbh1_agSFSGG1_zywyiGWtetXYuCI-6iHri0LDc2rxTg3C5exK0RLdsQKq/exec",
+  "files": {
+    "index.html": "32f688d4d8cbaac0247639214a4811bad13907f70f96204ce0b72ed494cf94e4",
+    "manifest.webmanifest": "d8f7fcf7d705734b398a880ddf07790b92d34f88f09676491dbbb0d473107d3c",
+    "sw.js": "b01c8a2c7cca06b2dfd229ecae316c5f851c5024708044a3b123c083e6f5b134"
+  }
+}
