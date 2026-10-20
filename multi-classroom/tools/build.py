@@ -44,6 +44,6 @@ body:has(#teacher:not(.hide)) .wrap{max-width:1240px!important}#teacher table{mi
 @media(max-width:480px){.statGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat b{font-size:21px!important;overflow-wrap:anywhere}.row .btn{flex:1}#mcSchoolLabel{font-size:19px}}
 </style></head>''')
 # Add the pure domain helpers and integration before DOMContentLoaded fires.
-s=s.replace('</body>','<script>\n'+(p/'Core.gs').read_text()+'\n'+(p/'Client.js').read_text()+'\n</script></body>')
+s=s.replace('</body>','<script>\n'+(p/'Core.gs').read_text()+'\n'+(p/'Transport.js').read_text()+'\n'+(p/'Client.js').read_text()+'\n</script></body>')
 (p/'App.html').write_text(s)
 print('Built multi-classroom/App.html from v9')
