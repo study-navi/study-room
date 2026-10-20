@@ -2,6 +2,8 @@
 
 現行公開版を変更せず追加した実装です。現状調査、仕様、制限は [AUDIT.md](AUDIT.md) を参照してください。本番移行・デプロイはまだ実行していません。
 
+本番切替の判定、POST/PWA候補、検証環境の公開範囲変更、移行・切り戻しの順序は [RELEASE.md](RELEASE.md) を参照してください。候補の生成だけでは本番反映できません。
+
 ## ローカル検証
 
 リポジトリルートから：
@@ -12,11 +14,13 @@ python3 multi-classroom/tools/build.py
 node --test multi-classroom/tests/*.test.cjs
 npm exec --prefix multi-classroom -- playwright install chromium
 node multi-classroom/tests/browser.cjs
+# POST/PWA候補の同じ画面試験（代替GAS、外部通信なし）
+SR_HTTP_TEST=1 node multi-classroom/tests/browser.cjs
 ```
 
 実行環境に別のChromiumがある場合は `SR_CHROMIUM_PATH` で指定できます。ブラウザ試験は実バックエンドに接続せず、ローカルのGAS代替実装へRPCを渡します。外部リクエストは遮断します。スクリーンショット出力先は `SR_TEST_OUTPUT`（既定はOSの一時ディレクトリ）です。
 
-`App.html` は生成物です。画面連携は `Client.js`、v9からの変換は `tools/build.py`、共通ロジックは `Core.gs` を編集して再生成します。GASへ渡すファイルは `Code.gs`, `Core.gs`, `Password.gs`, `Migration.gs`, `App.html`, `appsscript.json` です。旧GASとは同じプロジェクトに入れないでください。
+`App.html` は生成物です。画面連携は `Client.js`、RPC/POST通信は `Transport.js`、v9からの変換は `tools/build.py`、共通ロジックは `Core.gs` を編集して再生成します。GASへ渡すファイルは `Code.gs`, `Core.gs`, `Password.gs`, `Migration.gs`, `App.html`, `appsscript.json` です。旧GASとは同じプロジェクトに入れないでください。
 
 ## 承認後のステージング準備
 

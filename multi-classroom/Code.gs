@@ -1,8 +1,19 @@
-/* NEW Apps Script project only. Public: HTML doGet and validated srApi RPC.
+/* NEW Apps Script project only. Public: HTML doGet, validated srApi and gated doPost.
  * All operator helpers end in '_' and are inaccessible via google.script.run.
  */
 const SR_TABLES = ['Schools','Students','Admins','Records','Sessions'];
 function doGet(){ return HtmlService.createHtmlOutputFromFile('App').setTitle('Study Room').addMetaTag('viewport','width=device-width, initial-scale=1'); }
+function doPost(e){
+  let result;
+  try{
+    if(srProps_().getProperty('SR_HTTP_ENABLED')!=='approved')SR.fail('POST通信は検証・承認前です。','SETUP');
+    if(!e||e.queryString||!e.postData||!/^text\/plain(?:;|$)/i.test(e.postData.type||'')||typeof e.postData.contents!=='string'||e.postData.contents.length>30000)SR.fail('POST形式が不正です。');
+    const q=JSON.parse(e.postData.contents);
+    if(!q||typeof q!=='object'||Array.isArray(q)||typeof q.action!=='string'||!q.data||typeof q.data!=='object'||Array.isArray(q.data))SR.fail('リクエストが不正です。');
+    result=srApi(q);
+  }catch(error){result={result:'error',code:error.code||'INVALID',message:error.code?error.message:'リクエストのJSON形式が不正です。'};}
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
 function srApi(request){
   const lock=LockService.getScriptLock();
   try {

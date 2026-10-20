@@ -19,16 +19,12 @@ function mcSwitchUser(){if(confirm('この端末のプロフィールと履歴�
 function mcStorageKeys(){const id=mcIdentity?mcIdentity.id:'new';STATE_KEY='sr10State:'+id;PROFILE_KEY='sr10Profile:'+id;LOCAL_TOTAL_KEY='sr10Totals:'+id;}
 let mcCalls=0;
 api=async function(action,data={},attempt=0,requestId=mcUuid()){
-  if(!(window.google&&google.script&&google.script.run))throw new Error('複数教室版は、準備済みのGASアプリURLから開いてください。現在の公開版には送信しません。');
   if(action==='addActive'&&!data.session&&appState.activeRecordId===data.id)data={...data,startedAt:appState.startAt,goalMinutes:appState.goalMinutes};
   const context=['registerStudent','history','stats','addActive','update','checkout'].includes(action)&&!data.session?mcContext():{};
   const q={action,data:{...context,...data},requestId};
   mcCalls++;$('mcNetwork').textContent='通信中…';
   try{
-    const result=await new Promise((resolve,reject)=>{
-      const timer=setTimeout(()=>reject(new Error('通信がタイムアウトしました。入力は保持しています。同じ操作を再送できます。')),120000);
-      google.script.run.withSuccessHandler(r=>{clearTimeout(timer);resolve(r);}).withFailureHandler(()=>{clearTimeout(timer);reject(new Error('通信できません。入力は保持しています。接続後に再送してください。'));}).srApi(q);
-    });
+    const result=await SRTransport.send(q,{rpc:window.google&&google.script&&google.script.run,endpoint:document.querySelector('meta[name="study-room-api"]')?.content});
     if(action==='addActive'&&result.result==='success'&&result.alreadyActive&&result.id!==data.id&&!data.session){appState.activeRecordId=result.id;if(result.startedAt)appState.startAt=result.startedAt;if(result.endedAt){appState.endAt=result.endedAt;appState.status='finished';}saveState();}
     if(result.result==='error'&&result.code==='AUTH'&&data.session){mcClearAdmin();}
     return result;
