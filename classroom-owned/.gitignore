@@ -1,0 +1,7 @@
+node_modules/
+release/
+*.sqlite
+*.sqlite-*
+*.private.json
+.env
+.env.*
