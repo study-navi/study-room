@@ -27,3 +27,12 @@ test('Google errors and network exceptions are redacted and revocation asks for 
     const f=fake([reply]);await assert.rejects(f.workspace.identity(),e=>e.code===code&&!e.message.includes('secret-token'));
   }
 });
+test('batch reads preserve physical row numbers and reject corrupt or duplicate identities',async()=>{
+  const ranges=Array.from({length:5},()=>({values:[['id','json']]}));ranges[0].values.push([],['class',JSON.stringify({id:'class',name:'森本校'})]);
+  const f=fake([{valueRanges:ranges}]),tables=await f.workspace.readTables('file');assert.equal(tables.Schools[0].row,3);assert.equal(new URL(f.calls[0].url).searchParams.getAll('ranges').length,5);
+  const bad=structuredClone(ranges);bad[0].values.push(['class',JSON.stringify({id:'class'})]);await assert.rejects(fake([{valueRanges:bad}]).workspace.readTables('file'),{code:'SCHEMA'});
+});
+test('batch writes are RAW and backups cannot masquerade as the original registration',async()=>{
+  const f=fake([{},{}]);await f.workspace.writeCells('file',[{range:"'SR10_Records'!A2:B2",values:[['id','{"id":"id"}']]}]);assert.equal(JSON.parse(f.calls[0].options.body).valueInputOption,'RAW');
+  await f.workspace.backup('file','バックアップ','2026-10-21');const props=JSON.parse(f.calls[1].options.body).appProperties;assert.equal(props.srClassroomId,'backup');assert.equal(props.srRegistrationId,'backup');assert.equal(props.srBackupFor,'file');assert.equal(props.srBackupTag,'2026-10-21');
+});
