@@ -2,6 +2,28 @@
   "name": "study-room-classroom-owned",
   "private": true,
   "type": "module",
-  "scripts": {"test": "node --test tests/*.test.mjs"},
-  "engines": {"node": ">=22"}
+  "scripts": {
+    "build": "node build.mjs",
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "node browser-check.mjs",
+    "pretest": "npm run build",
+    "prestart": "npm run build",
+    "pretest:browser": "npm run build",
+    "check:worker": "wrangler deploy --env=\"\" --dry-run --outdir release/worker-bundle && node worker-check.mjs",
+    "dev:worker": "wrangler dev"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "google-auth-library": "^11.3.1",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@sparticuz/chromium": "^131.0.1",
+    "miniflare": "^5.20261019.1-beta",
+    "playwright": "^1.64.1",
+    "wrangler": "^4.151.3"
+  }
 }
