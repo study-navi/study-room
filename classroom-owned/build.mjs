@@ -26,6 +26,7 @@ html=html.replace("if(teacherSession){try{await mcLoadAdmin();}catch(e){mcClearA
 html=html.replace("try{mcRequire(await api('logout',{session:teacherSession}));}","try{const me=await fetch('/api/me',{cache:'no-store'}).then(r=>r.json());await fetch('/auth/logout',{method:'POST',headers:{'X-CSRF-Token':me.csrf}});}");
 // Settings use the server-authorized owner of this classroom, never role escalation.
 html=html.replace('<div id="mcSchoolEditor"></div>','');
+html=html.replace('<div id="mcDashboard"></div>','<details id="ownedAnalytics"><summary class="btn light">利用状況・ランキングを見る</summary><div id="mcDashboard"></div></details>');
 html=html.replace('<div id="mcGlobal" class="hide">','<button class="btn light" onclick="ownedSettings()">教室名・在籍生徒数・利用状態</button><a class="btn light" href="/teacher">教室URL・QR・バックアップ</a><div id="mcSchoolEditor"></div><div id="mcGlobal" class="hide">');
 html=html.replace('</body>',`<script>
 const ownedOriginalSettings=mcEditSchools;
@@ -36,6 +37,7 @@ teacherLogin=()=>location.assign('/teacher');
 mcLogout=async()=>{try{const me=await fetch('/api/me',{cache:'no-store'}).then(r=>r.json());const response=await fetch('/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':me.csrf},body:'{}'});if(!response.ok)throw Error();mcClearAdmin();location.assign('/teacher');}catch{mcBusy('ログアウトを完了できませんでした。接続を確認して再試行してください。');}};
 </script></body>`);
 html=html.replaceAll('https://study-navi.github.io/study-room/','/');
+html=html.replace('</head>','<style>a.btn{display:inline-block;text-decoration:none;line-height:1.5}#teacherPanel>.btn{margin:5px 0;max-width:100%}@media(max-width:600px){#teacherPanel>.btn{display:block;width:100%;text-align:left}}</style></head>');
 html=html.replaceAll("location.hostname==='study-navi.github.io' && 'serviceWorker' in navigator","'serviceWorker' in navigator");
 // Never silently use a restored marker as authentication.
 html=html.replace("sessionStorage.getItem(TEACHER_SESSION_KEY)","''");

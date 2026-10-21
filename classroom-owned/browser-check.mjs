@@ -29,13 +29,13 @@ try{
   await page.reload();await page.waitForFunction(()=>!document.querySelector('#reviewScreen').classList.contains('hide'));assert.equal(await page.inputValue('#content'),'数学：方程式の復習');
   await page.click('#sendBtn');await page.waitForFunction(()=>!document.querySelector('#completeScreen').classList.contains('hide'));
   await page.evaluate(()=>goScreen('welcome'));await page.click('button[onclick="mcHistory()"]');await page.waitForFunction(()=>document.querySelector('#mcHistory').textContent.includes('方程式'));
-  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('student-mobile.png',output).pathname,fullPage:true});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('student-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
   // Opening a different classroom on the same browser cannot restore the first profile/history.
   await page.goto(origin+'/study?classroom='+f.b);await page.waitForFunction(()=>document.querySelector('#mcSchool').value!=='');assert.equal(await page.inputValue('#studentName'),'');
   await page.click('button[onclick="mcHistory()"]');assert.ok(!(await page.locator('#mcHistory').textContent()).includes('方程式'));
   await context.addCookies([{name:'sr_local_session',value:'alice-session',url:origin,httpOnly:true,sameSite:'Lax'}]);
   await page.goto(origin+'/teacher');await page.waitForSelector('#classrooms article');assert.match(await page.locator('#classrooms').textContent(),/森本校/);assert.doesNotMatch(await page.locator('#classrooms').textContent(),/尾西校/);await page.waitForFunction(()=>document.querySelector('#classrooms img').complete&&document.querySelector('#classrooms img').naturalWidth>0);
-  await page.screenshot({path:new URL('portal-mobile.png',output).pathname,fullPage:true});
+  await page.screenshot({path:new URL('portal-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('管理ダッシュボード'));
   assert.equal(await page.locator('#mcRole').textContent(),'教室管理者');assert.equal(await page.locator('#mcAdminSchool option').count(),1);
   await page.click('button[onclick="ownedSettings()"]');await page.fill('#mcEnrolled','100');await page.click('button[onclick="mcSaveSchool()"]');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('1.0%'));
@@ -45,8 +45,8 @@ try{
   const id=f.files.get('file-'+f.a).tables.Students[0].value.id;await page.selectOption('#mcRoster',id);await page.click('#mcCrEnter');await page.waitForFunction(()=>!document.querySelector('#crHome').classList.contains('hide'));
   await page.evaluate(()=>crGoScreen('crCheckout'));await page.waitForSelector('#crActiveList button');await page.click('#crActiveList button');await page.waitForFunction(()=>!document.querySelector('#crReview').classList.contains('hide'));await page.fill('#crContent','教室モード：英単語');await page.click('#crSendBtn');await page.waitForFunction(()=>!document.querySelector('#crComplete').classList.contains('hide'));
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#tbody').textContent.includes('英単語'));
-  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('admin-mobile.png',output).pathname,fullPage:true});
-  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:new URL('admin-desktop.png',output).pathname,fullPage:true});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('admin-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
+  await page.setViewportSize({width:1440,height:1000});await page.click('#ownedAnalytics summary');await page.screenshot({path:new URL('admin-desktop.png',output).pathname,fullPage:true,animations:'disabled'});
   await page.evaluate(()=>navigator.serviceWorker.ready);assert.equal(await page.evaluate(async()=>(await caches.keys()).length),0);
   await page.goto(origin+'/study?classroom='+f.b+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcNotice').textContent.includes('権限'));assert.equal(await page.locator('#teacherPanel').isVisible(),false);
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('管理ダッシュボード'));await page.click('button[onclick="mcLogout()"]');await page.waitForURL(origin+'/teacher');await page.waitForSelector('#login:visible');assert.equal(f.sessions.has('alice-session'),false);
