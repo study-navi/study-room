@@ -11,7 +11,7 @@ export class GoogleWorkspace {
   }
   async #request(url,{method='GET',body}={}){
     let response;
-    try{response=await this.#fetch(url,{method,headers:{Authorization:`Bearer ${this.#token}`,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),redirect:'error',cache:'no-store',signal:AbortSignal.timeout(20000)});}
+    try{response=await this.#fetch(url,{method,headers:{Authorization:`Bearer ${this.#token}`,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),redirect:'manual',cache:'no-store',signal:AbortSignal.timeout(20000)});}
     catch{throw new RegistrationError('GOOGLE_UNAVAILABLE','Googleとの通信を確認できません。しばらくしてから再試行してください。');}
     if(!response.ok){
       const code=response.status===401?'REAUTHORIZE':response.status===403?'PERMISSION':response.status===429?'RATE':'GOOGLE_UNAVAILABLE';
