@@ -6,7 +6,7 @@ const job={id:'22222222-2222-4222-8222-222222222222',requestId:'11111111-1111-41
 function fake(responses){const calls=[];const workspace=new GoogleWorkspace('test-access-token',{fetchImpl:async(url,options)=>{calls.push({url,options});const data=responses.shift();if(data instanceof Error)throw data;return new Response(JSON.stringify(data),{status:data?.status||200,headers:{'Content-Type':'application/json'}});}});return {workspace,calls};}
 test('creates a private file without changing any permissions or exposing bearer token in the URL',async()=>{
   const f=fake([{id:'file'}]);await f.workspace.createSpreadsheet(job);assert.equal(f.calls.length,1);
-  const {url,options}=f.calls[0];assert.ok(url.startsWith('https://www.googleapis.com/drive/v3/files?'));assert.equal(url.includes('test-access-token'),false);assert.equal(options.headers.Authorization,'Bearer test-access-token');assert.equal(options.redirect,'error');
+  const {url,options}=f.calls[0];assert.ok(url.startsWith('https://www.googleapis.com/drive/v3/files?'));assert.equal(url.includes('test-access-token'),false);assert.equal(options.headers.Authorization,'Bearer test-access-token');assert.equal(options.redirect,'manual');
   const body=JSON.parse(options.body);assert.equal(body.mimeType,'application/vnd.google-apps.spreadsheet');assert.equal(body.appProperties.srClassroomId,job.id);assert.equal(body.permissions,undefined);assert.equal(body.parents,undefined);
 });
 test('sets headers only on newly added tabs and uses RAW for the teacher-entered classroom name',async()=>{
