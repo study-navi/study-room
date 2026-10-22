@@ -20,3 +20,12 @@
 ブラウザのスクリーンショットは`npm run test:browser`実行時に`release/proofs/`へ出力する。架空生徒・架空Google応答のみ。Node 24.19.0、ローカルChromium 131、Noto Sans CJK JPで画面を確認した。
 
 実Googleの同意画面・所有者別の専用Sheets作成・認証失効と復旧・実スマホでのQR/PWA・バックアップからの実復元は未確認。詳細な受入項目と影響・承認範囲はDEPLOYMENT.mdを参照する。ローカルで通ったことを、一般公開済み・他教室で運用可能・実Googleで確認済みとは扱わない。
+
+# 検証環境の作成状況：2026-10-22
+
+検証用のCloudflare Workerと、Google Cloudの専用プロジェクトを作成した。いずれも検証用の作成のみで、この時点では認証用設定を投入しておらず、動作確認は行っていない。本番切替・実データ移行・既存GitHub Pages／GAS／元スプレッドシートの変更は行っていない。
+
+- Cloudflare：Worker `study-room-classroom-owned-staging` をWorkers Buildsで作成。ルートは`classroom-owned`、実行ブランチは`feature/classroom-owned-registration`、プレビュービルドは無効。`SR_ORIGIN`・`GOOGLE_CLIENT_ID`・`GOOGLE_CLIENT_SECRET`・`SR_KEY`・`SR_CONTACT_EMAIL`は未設定のため、設定完了まで503で停止する想定。
+- - Google Cloud：専用プロジェクトを作成し、Google Drive API・Google Sheets APIを有効化。OAuth同意画面・OAuthクライアントは未設定。請求先は追加していない。
+  - - 未確認のまま：実Googleアカウントでの認証、先生所有の専用Sheets作成、2アカウント間の分離、接続失効・再接続、実スマホのQR／PWA、バックアップからの実復元。
+    - 
