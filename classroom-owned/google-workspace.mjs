@@ -7,7 +7,7 @@ export class GoogleWorkspace {
   #token;#fetch;
   constructor(accessToken,{fetchImpl=fetch}={}){
     if(typeof accessToken!=='string'||!accessToken||/[\s\r\n]/.test(accessToken))throw Error('Invalid server-side bearer token.');
-    this.#token=accessToken;this.#fetch=fetchImpl;
+    this.#token=accessToken;this.#fetch=(...args)=>fetchImpl(...args);
   }
   async #request(url,{method='GET',body}={}){
     let response;
