@@ -47,6 +47,9 @@ try{
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#tbody').textContent.includes('英単語'));
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('admin-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
   await page.setViewportSize({width:1440,height:1000});await page.click('#ownedAnalytics summary');await page.screenshot({path:new URL('admin-desktop.png',output).pathname,fullPage:true,animations:'disabled'});
+  // One-tap classroom mode from the teacher list, and a visible button inside the admin screen.
+  await page.goto(origin+'/study?classroom='+f.a+'&manage=1&mode=classroom');await page.waitForFunction(()=>document.querySelector('#appTitle').textContent.includes('教室モード'));
+  await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>[...document.querySelectorAll('#teacherPanel > button')].some(b=>b.textContent.includes('教室モードを開く')));
   // Per-classroom status dashboard: own classroom only, never another teacher's.
   await page.setViewportSize({width:390,height:844});await page.goto(origin+'/dashboard?classroom='+f.a);await page.waitForFunction(()=>!document.querySelector('#view').hidden&&document.querySelector('#cards').textContent.includes('利用生徒数'));
   assert.match(await page.locator('#title').textContent(),/森本校/);assert.match(await page.locator('#recent').textContent(),/英単語/);assert.match(await page.locator('#ranking').textContent(),/架空ブラウザ検証/);assert.doesNotMatch(await page.locator('body').textContent(),/尾西校|本部/);
