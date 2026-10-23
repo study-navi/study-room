@@ -44,7 +44,7 @@ export function createHandler({getAsset,contactEmail,staging=true,origin,reposit
       }
       if(req.method==='GET'&&url.pathname==='/auth/callback'){
         try{const result=await auth.complete({state:url.searchParams.get('state'),code:url.searchParams.get('code'),binding:cookieValue(req,bindingName),previousSession:sessionRaw});res.setHeader('Set-Cookie',[cookie(sessionName,result.session,21600),cookie(bindingName,'',0)]);res.writeHead(303,{Location:'/teacher'});}
-        catch{res.setHeader('Set-Cookie',cookie(bindingName,'',0));res.writeHead(303,{Location:'/teacher?authError=1'});}res.end();return;
+        catch(error){res.setHeader('Set-Cookie',cookie(bindingName,'',0));res.writeHead(303,{Location:error?.code==='CONSENT'?'/teacher?authError=consent':'/teacher?authError=1'});}res.end();return;
       }
       if(req.method==='POST'&&url.pathname==='/auth/logout'){auth.logout(sessionRaw);res.setHeader('Set-Cookie',cookie(sessionName,'',0));json(res,{ok:true});return;}
       if(req.method==='GET'&&url.pathname==='/api/me'){json(res,session?{signedIn:true,email:session.email,csrf:session.csrf}:{signedIn:false});return;}
