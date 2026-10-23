@@ -21,11 +21,11 @@ try{
   page.on('dialog',dialog=>dialog.accept());
   await page.goto(origin+'/study?classroom='+f.a);await page.waitForFunction(()=>document.querySelector('#mcSchool').value!=='');
   assert.equal(await page.locator('#mcSchoolLabel').textContent(),'森本校');
-  await page.fill('#studentName','架空ブラウザ検証');await page.selectOption('#grade','中2');await page.fill('#goalMinutes','60');await page.click('#mcStart');
+  await page.fill('#studentName','架空ブラウザ検証');await page.selectOption('#grade','中2');await page.fill('#goalMinutes','60');await page.selectOption('#planSubject','数学');await page.fill('#planContent','数学：方程式の復習');await page.click('#mcStart');
   await page.waitForFunction(()=>!document.querySelector('#timerScreen').classList.contains('hide'));
   await page.evaluate(()=>enterRoom());await page.waitForFunction(()=>document.querySelector('#timerMsg').textContent.includes('入室しました。'));
   await page.evaluate(()=>toggleBreak());assert.equal(await page.evaluate(()=>appState.status),'break');await page.evaluate(()=>toggleBreak());
-  await page.evaluate(()=>exitRoom());await page.fill('#content','数学：方程式の復習');await page.fill('#comment','途中式を見直した');
+  await page.evaluate(()=>exitRoom());await page.waitForFunction(()=>!document.querySelector('#reviewScreen').classList.contains('hide'));assert.equal(await page.inputValue('#content'),'数学：方程式の復習');assert.equal(await page.inputValue('#subject'),'数学');await page.fill('#comment','途中式を見直した');
   await page.reload();await page.waitForFunction(()=>!document.querySelector('#reviewScreen').classList.contains('hide'));assert.equal(await page.inputValue('#content'),'数学：方程式の復習');
   await page.click('#sendBtn');await page.waitForFunction(()=>!document.querySelector('#completeScreen').classList.contains('hide'));
   await page.evaluate(()=>goScreen('welcome'));await page.click('button[onclick="mcHistory()"]');await page.waitForFunction(()=>document.querySelector('#mcHistory').textContent.includes('方程式'));
