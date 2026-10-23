@@ -22,12 +22,12 @@ html=html.replaceAll("'sr10Summary'","'srOwnedSummary:'+new URL(location.href).s
 html=html.replaceAll('sr10State:','srOwnedState:').replaceAll('sr10Profile:','srOwnedProfile:').replaceAll('sr10Totals:','srOwnedTotals:').replaceAll('sr10AdminSession','srOwnedAdminMarker');
 html=html.replace("const id=mcIdentity?mcIdentity.id:'new';","const id=new URL(location.href).searchParams.get('classroom')+':'+(mcIdentity?mcIdentity.id:'new');");
 html=html.replace("if(mcIdentity)$('mcSchool').value=mcIdentity.schoolId;", "if(mcIdentity)$('mcSchool').value=mcIdentity.schoolId;else if(r.schools.length===1)$('mcSchool').value=r.schools[0].id;$('mcSchool').disabled=true;");
-html=html.replace("if(teacherSession){try{await mcLoadAdmin();}catch(e){mcClearAdmin();}}", "if(new URL(location.href).searchParams.get('manage')==='1'){teacherSession='cookie';try{await mcLoadAdmin();goScreen('teacher');}catch(e){mcClearAdmin();mcBusy(e.message);}}");
+html=html.replace("if(teacherSession){try{await mcLoadAdmin();}catch(e){mcClearAdmin();}}", "if(new URL(location.href).searchParams.get('manage')==='1'){teacherSession='cookie';try{await mcLoadAdmin();goScreen('teacher');if(new URL(location.href).searchParams.get('mode')==='classroom')await toggleClassroomMode();}catch(e){mcClearAdmin();mcBusy(e.message);}}");
 html=html.replace("try{mcRequire(await api('logout',{session:teacherSession}));}","try{const me=await fetch('/api/me',{cache:'no-store'}).then(r=>r.json());await fetch('/auth/logout',{method:'POST',headers:{'X-CSRF-Token':me.csrf}});}");
 // Settings use the server-authorized owner of this classroom, never role escalation.
 html=html.replace('<div id="mcSchoolEditor"></div>','');
 html=html.replace('<div id="mcDashboard"></div>','<details id="ownedAnalytics"><summary class="btn light">利用状況・ランキングを見る</summary><div id="mcDashboard"></div></details>');
-html=html.replace('<div id="mcGlobal" class="hide">','<button class="btn light" onclick="ownedSettings()">教室名・在籍生徒数・利用状態</button><a class="btn light" href="/teacher">教室URL・QR・バックアップ</a><div id="mcSchoolEditor"></div><div id="mcGlobal" class="hide">');
+html=html.replace('<div id="mcGlobal" class="hide">','<button class="btn" onclick="toggleClassroomMode()">教室モードを開く（この端末で生徒の入退室を記録）</button><button class="btn light" onclick="ownedSettings()">教室名・在籍生徒数・利用状態</button><a class="btn light" href="/teacher">教室URL・QR・バックアップ</a><div id="mcSchoolEditor"></div><div id="mcGlobal" class="hide">');
 html=html.replace('</body>',`<script>
 const ownedOriginalSettings=mcEditSchools;
 mcEditSchools=async()=>{await ownedOriginalSettings();mcFillSchool(0);$('mcSchoolEditor').querySelectorAll('button').forEach(b=>{if(b.textContent!=='保存する')b.hidden=true;});};
