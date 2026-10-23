@@ -53,6 +53,14 @@ html=html.replaceAll("location.hostname==='study-navi.github.io' && 'serviceWork
 // Never silently use a restored marker as authentication.
 html=html.replace("sessionStorage.getItem(TEACHER_SESSION_KEY)","''");
 html=html.replace("panel && !panel.classList.contains('hide')","panel && document.visibilityState==='visible' && !panel.classList.contains('hide')").replace('}, 15000);','}, 60000);');
+// 生徒用画面と先生用画面を分ける：生徒用には先生向けのボタンを出さず、管理画面には生徒の個人画面を出さない。
+html=html.replace('</head>',`<script>(()=>{const q=new URL(location.href).searchParams;document.documentElement.dataset.view=q.get('mode')==='classroom'?'classroom':q.get('manage')==='1'?'manage':'student';})();</script><style>:root[data-view="student"] .headerBtnGroup{display:none !important}:root[data-view="manage"] .headerBtnGroup{display:none !important}:root[data-view="manage"] #teacher .teacherBackBtn{display:none}.viewLink{text-align:center;margin:18px 0 6px}.viewLink a{color:#1768ad}</style></head>`);
+html=html.replace('</body>',`<script>
+(()=>{const id=new URL(location.href).searchParams.get('classroom')||'',view=document.documentElement.dataset.view;
+if(view==='student'){const p=document.createElement('p');p.className='small viewLink';const a=document.createElement('a');a.href='/open?classroom='+encodeURIComponent(id);a.textContent='先生の方はこちら（管理画面・教室モード）';p.append(a);document.querySelector('.wrap').append(p);}
+if(view==='manage'){const h=document.querySelector('#teacher .teacherHead'),p=document.createElement('p');p.className='small viewLink';const a=document.createElement('a');a.href='/study?classroom='+encodeURIComponent(id);a.textContent='生徒用の画面を開く（生徒に配るURLと同じです）';p.append(a);h.after(p);}
+})();
+</script></body>`);
 // 画面と応答メッセージの日本語表記をそろえる（元のアプリのソースは変更しない）。
 const wording=[
 ['ログ確認へ進むできません：','ログ確認へ進めません：'],

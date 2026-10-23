@@ -21,6 +21,8 @@ try{
   page.on('dialog',dialog=>dialog.accept());
   await page.goto(origin+'/study?classroom='+f.a);await page.waitForFunction(()=>document.querySelector('#mcSchool').value!=='');
   assert.equal(await page.locator('#mcSchoolLabel').textContent(),'森本校');
+  // 生徒用画面には先生向けのボタンを出さない（入口は小さなリンクだけ）。
+  assert.equal(await page.locator('.headerBtnGroup').isVisible(),false);assert.match(await page.locator('.viewLink a').textContent(),/先生の方はこちら/);assert.match(await page.locator('.viewLink a').getAttribute('href'),/^\/open\?classroom=/);assert.equal(await page.locator('#teacher').isVisible(),false);
   await page.fill('#studentName','架空ブラウザ検証');await page.selectOption('#grade','中2');await page.fill('#goalMinutes','60');await page.selectOption('#planSubject','数学');await page.fill('#planContent','数学：方程式の復習');await page.click('#mcStart');
   await page.waitForFunction(()=>!document.querySelector('#timerScreen').classList.contains('hide'));
   await page.evaluate(()=>enterRoom());await page.waitForFunction(()=>document.querySelector('#timerMsg').textContent.includes('入室しました。'));
@@ -36,7 +38,7 @@ try{
   await context.addCookies([{name:'sr_local_session',value:'alice-session',url:origin,httpOnly:true,sameSite:'Lax'}]);
   await page.goto(origin+'/teacher');await page.waitForSelector('#classrooms article');assert.match(await page.locator('#classrooms').textContent(),/森本校/);assert.doesNotMatch(await page.locator('#classrooms').textContent(),/尾西校/);await page.waitForFunction(()=>document.querySelector('#classrooms img').complete&&document.querySelector('#classrooms img').naturalWidth>0);
   await page.screenshot({path:new URL('portal-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
-  await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('管理ダッシュボード'));
+  await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>!document.querySelector('#teacher').classList.contains('hide'));assert.equal(await page.locator('#welcome').isVisible(),false);assert.equal(await page.locator('.headerBtnGroup').isVisible(),false);assert.match(await page.locator('.viewLink a').textContent(),/生徒用の画面を開く/);await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('管理ダッシュボード'));
   assert.equal(await page.locator('#mcRole').textContent(),'教室管理者');assert.equal(await page.locator('#mcAdminSchool option').count(),1);
   await page.click('button[onclick="ownedSettings()"]');await page.fill('#mcEnrolled','100');await page.click('button[onclick="mcSaveSchool()"]');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('1.0%'));
   await page.fill('#search','方程式');await page.locator('#tbody .miniActionBtn').first().click();await page.fill('#editContent','数学：検算まで完了');await page.click('button[onclick="saveEditRecord()"]');await page.waitForFunction(()=>document.querySelector('#editModal').classList.contains('hide'));await page.fill('#search','');
