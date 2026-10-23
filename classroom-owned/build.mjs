@@ -35,7 +35,8 @@ async function ownedSettings(){await mcEditSchools();}
 mcEditAdmins=()=>{};
 teacherLogin=()=>location.assign('/teacher');
 const ownedOpen='/open?classroom='+encodeURIComponent(new URL(location.href).searchParams.get('classroom'))+'&mode=classroom',ownedToggle=toggleClassroomMode;
-toggleClassroomMode=async()=>{const own=encodeURIComponent(new URL(location.href).searchParams.get('classroom')||'');if(isClassroomMode()){location.assign('/study?classroom='+own);return;}if(!mcAdmin&&!mcClassroom){location.assign(ownedOpen);return;}return ownedToggle();};
+toggleClassroomMode=async()=>{if(!mcAdmin&&!mcClassroom){location.assign(ownedOpen);return;}return ownedToggle();};
+function ownedHeaderMode(){if(isClassroomMode()){location.assign('/study?classroom='+encodeURIComponent(new URL(location.href).searchParams.get('classroom')||''));return;}toggleClassroomMode();}
 if(document.documentElement.dataset.view==='classroom'){const g=document.querySelector('.headerBtnGroup'),b=document.createElement('button');b.type='button';b.className='headerTeacherBtn';b.textContent='管理画面へ';b.onclick=()=>location.assign('/study?classroom='+encodeURIComponent(new URL(location.href).searchParams.get('classroom')||'')+'&manage=1');g.prepend(b);}
 document.querySelectorAll('#loginBox a.btn').forEach(a=>{a.href=ownedOpen;a.textContent='Googleでログインして教室モードを開く';});
 mcLogout=async()=>{try{const me=await fetch('/api/me',{cache:'no-store'}).then(r=>r.json());const response=await fetch('/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':me.csrf},body:'{}'});if(!response.ok)throw Error();mcClearAdmin();location.assign('/teacher');}catch{mcBusy('ログアウトを完了できませんでした。接続を確認して再試行してください。');}};
@@ -55,6 +56,7 @@ html=html.replaceAll("location.hostname==='study-navi.github.io' && 'serviceWork
 html=html.replace("sessionStorage.getItem(TEACHER_SESSION_KEY)","''");
 html=html.replace("panel && !panel.classList.contains('hide')","panel && document.visibilityState==='visible' && !panel.classList.contains('hide')").replace('}, 15000);','}, 60000);');
 // 生徒用画面と先生用画面を分ける：生徒用には先生向けのボタンを出さず、管理画面には生徒の個人画面を出さない。
+html=html.replace('id="headerModeBtn" class="headerTeacherBtn" type="button" onclick="toggleClassroomMode()"','id="headerModeBtn" class="headerTeacherBtn" type="button" onclick="ownedHeaderMode()"');
 html=html.replace('</head>',`<meta name="sr-view" content="auto"><script>(()=>{const url=new URL(location.href),q=url.searchParams,forced=document.querySelector('meta[name=sr-view]').content;if(forced==='student'&&(q.has('manage')||q.has('mode'))){q.delete('manage');q.delete('mode');history.replaceState(null,'',url);}document.documentElement.dataset.view=forced==='student'?'student':q.get('mode')==='classroom'?'classroom':q.get('manage')==='1'?'manage':'student';})();</script><style>:root[data-view="student"] .headerBtnGroup{display:none !important}:root[data-view="manage"] .headerBtnGroup{display:none !important}:root[data-view="manage"] #teacher .teacherBackBtn{display:none}.viewLink{text-align:center;margin:18px 0 6px}.viewLink a{color:#1768ad}</style></head>`);
 html=html.replace('</body>',`<script>
 (()=>{const id=new URL(location.href).searchParams.get('classroom')||'',view=document.documentElement.dataset.view;
