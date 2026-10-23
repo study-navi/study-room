@@ -50,6 +50,10 @@ try{
   // One-tap classroom mode from the teacher list, and a visible button inside the admin screen.
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1&mode=classroom');await page.waitForFunction(()=>document.querySelector('#appTitle').textContent.includes('教室モード'));
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>[...document.querySelectorAll('#teacherPanel > button')].some(b=>b.textContent.includes('教室モードを開く')));
+  // Not logged in: tapping classroom mode on the student URL goes straight to Google login.
+  await context.clearCookies();await page.goto(origin+'/study?classroom='+f.a);await page.waitForFunction(()=>document.querySelector('#mcSchool').value!=='');
+  await Promise.all([page.waitForURL(/\/auth\/google/),page.evaluate(()=>toggleClassroomMode())]);assert.match(page.url(),/return=/);
+  await context.addCookies([{name:'sr_local_session',value:'alice-session',url:origin,httpOnly:true,sameSite:'Lax'}]);
   // Per-classroom status dashboard: own classroom only, never another teacher's.
   await page.setViewportSize({width:390,height:844});await page.goto(origin+'/dashboard?classroom='+f.a);await page.waitForFunction(()=>!document.querySelector('#view').hidden&&document.querySelector('#cards').textContent.includes('利用生徒数'));
   assert.match(await page.locator('#title').textContent(),/森本校/);assert.match(await page.locator('#recent').textContent(),/英単語/);assert.match(await page.locator('#ranking').textContent(),/架空ブラウザ検証/);assert.doesNotMatch(await page.locator('body').textContent(),/尾西校|本部/);
