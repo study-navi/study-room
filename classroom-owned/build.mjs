@@ -54,13 +54,15 @@ html=html.replaceAll("location.hostname==='study-navi.github.io' && 'serviceWork
 html=html.replace("sessionStorage.getItem(TEACHER_SESSION_KEY)","''");
 html=html.replace("panel && !panel.classList.contains('hide')","panel && document.visibilityState==='visible' && !panel.classList.contains('hide')").replace('}, 15000);','}, 60000);');
 // 生徒用画面と先生用画面を分ける：生徒用には先生向けのボタンを出さず、管理画面には生徒の個人画面を出さない。
-html=html.replace('</head>',`<script>(()=>{const q=new URL(location.href).searchParams;document.documentElement.dataset.view=q.get('mode')==='classroom'?'classroom':q.get('manage')==='1'?'manage':'student';})();</script><style>:root[data-view="student"] .headerBtnGroup{display:none !important}:root[data-view="manage"] .headerBtnGroup{display:none !important}:root[data-view="manage"] #teacher .teacherBackBtn{display:none}.viewLink{text-align:center;margin:18px 0 6px}.viewLink a{color:#1768ad}</style></head>`);
+html=html.replace('</head>',`<meta name="sr-view" content="auto"><script>(()=>{const url=new URL(location.href),q=url.searchParams,forced=document.querySelector('meta[name=sr-view]').content;if(forced==='student'&&(q.has('manage')||q.has('mode'))){q.delete('manage');q.delete('mode');history.replaceState(null,'',url);}document.documentElement.dataset.view=forced==='student'?'student':q.get('mode')==='classroom'?'classroom':q.get('manage')==='1'?'manage':'student';})();</script><style>:root[data-view="student"] .headerBtnGroup{display:none !important}:root[data-view="manage"] .headerBtnGroup{display:none !important}:root[data-view="manage"] #teacher .teacherBackBtn{display:none}.viewLink{text-align:center;margin:18px 0 6px}.viewLink a{color:#1768ad}</style></head>`);
 html=html.replace('</body>',`<script>
 (()=>{const id=new URL(location.href).searchParams.get('classroom')||'',view=document.documentElement.dataset.view;
 if(view==='student'){const p=document.createElement('p');p.className='small viewLink';const a=document.createElement('a');a.href='/open?classroom='+encodeURIComponent(id);a.textContent='先生の方はこちら（管理画面・教室モード）';p.append(a);document.querySelector('.wrap').append(p);}
 if(view==='manage'){const h=document.querySelector('#teacher .teacherHead'),p=document.createElement('p');p.className='small viewLink';const a=document.createElement('a');a.href='/study?classroom='+encodeURIComponent(id);a.textContent='生徒用の画面を開く（生徒に配るURLと同じです）';p.append(a);h.after(p);}
 })();
 </script></body>`);
+// 先生用の画面（管理画面と教室モード）を、サーバーが生徒用に返すときに丸ごと取り除けるよう目印を付ける。
+{const a=html.indexOf('<section id="teacher"'),c=html.indexOf('<section id="crComplete"');const e=html.indexOf('</section>',c)+'</section>'.length;if(a<0||c<a||e<c)throw new Error('先生用画面の範囲を特定できません');html=html.slice(0,a)+'<!--SR-ADMIN-START-->'+html.slice(a,e)+'<!--SR-ADMIN-END-->'+html.slice(e);}
 // 画面と応答メッセージの日本語表記をそろえる（元のアプリのソースは変更しない）。
 const wording=[
 ['ログ確認へ進むできません：','ログ確認へ進めません：'],
@@ -78,6 +80,7 @@ const wording=[
 ['選択した終了日を基準に直近28日と前の28日を比較。前期間2日以上かつ利用日数半分以下、または28日以上利用なし。利用歴のない在籍生徒は判定対象外です。','選択した終了日を基準に、直近28日とその前の28日を比べます。前の28日に2日以上利用があり、利用日数が半分以下に減った生徒、または28日以上利用がない生徒を表示します。利用歴のない在籍生徒は対象外です。'],
 ];
 const polish=text=>wording.reduce((t,[a,b])=>t.replaceAll(a,b),text);
+html=html.replace("$('search').addEventListener('input', renderTeacher);","if($('search'))$('search').addEventListener('input', renderTeacher);");
 html=polish(html);
 mkdirSync(out,{recursive:true});writeFileSync(new URL('study.html',out),html);
 for(const [,js] of html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new Script(js);

@@ -101,7 +101,16 @@ export function createHandler({getAsset,contactEmail,staging=true,origin,reposit
       }
       if(url.pathname==='/study'){
         const id=url.searchParams.get('classroom');if(!uuid.test(id||'')||!repository.getClassroom(id))error('NOT_FOUND','教室URLが見つかりません。先生から案内されたURLを確認してください。');
-        const html=String(await getAsset('study.html'));res.writeHead(200,{'Content-Type':'text/html;charset=utf-8'});res.end(decorate(html.replace('href="/manifest.webmanifest"',`href="/manifest.webmanifest?classroom=${id}"`)));return;
+        // 先生用の画面（管理画面・教室モード）は、その教室の持ち主がログインしているときだけ返す。生徒用の応答には、先生用の画面を含めない。
+        const wantsAdmin=url.searchParams.get('manage')==='1'||url.searchParams.get('mode')==='classroom';
+        const owner=!!session&&repository.getClassroom(id).ownerSubject===session.subject;
+        if(wantsAdmin&&!owner){res.writeHead(302,{Location:session?'/teacher':'/open?classroom='+id+(url.searchParams.get('mode')==='classroom'?'&mode=classroom':'')});res.end();return;}
+        let html=String(await getAsset('study.html')).replace('href="/manifest.webmanifest"',`href="/manifest.webmanifest?classroom=${id}"`);
+        if(!wantsAdmin){
+          const stubs=['teacher','crHome','crCheckin','crCheckout','crReview','crComplete'].map(x=>x==='teacher'?'<section id="teacher" class="hide"><input id="mcFrom" type="hidden"><input id="mcTo" type="hidden"><select id="mcAdminSchool" hidden></select></section>':`<section id="${x}" class="hide"></section>`).join('');
+          html=html.replace(/<!--SR-ADMIN-START-->[\s\S]*?<!--SR-ADMIN-END-->/,stubs).replace('<meta name="sr-view" content="auto">','<meta name="sr-view" content="student">');
+        }
+        res.writeHead(200,{'Content-Type':'text/html;charset=utf-8','Cache-Control':'no-store'});res.end(decorate(html));return;
       }
       if(url.pathname==='/manifest.webmanifest'){
         const manifest=JSON.parse(String(await getAsset('manifest.webmanifest'))),id=url.searchParams.get('classroom');

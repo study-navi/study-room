@@ -73,7 +73,7 @@ try{
   await page.goto(origin+'/dashboard?classroom='+f.b);await page.waitForFunction(()=>document.querySelector('#status').classList.contains('error'));
   assert.equal(await page.locator('#view').isVisible(),false);assert.doesNotMatch(await page.locator('#cards').textContent(),/人/);
   await page.evaluate(()=>navigator.serviceWorker.ready);assert.equal(await page.evaluate(async()=>(await caches.keys()).length),0);
-  await page.goto(origin+'/study?classroom='+f.b+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcNotice').textContent.includes('権限'));assert.equal(await page.locator('#teacherPanel').isVisible(),false);
+  await page.goto(origin+'/study?classroom='+f.b+'&manage=1');await page.waitForURL(u=>new URL(u).pathname==='/teacher');assert.equal(await page.locator('#teacherPanel').count(),0);
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('管理ダッシュボード'));await page.click('button[onclick="mcLogout()"]');await page.waitForURL(origin+'/teacher');await page.waitForSelector('#login:visible');assert.equal(f.sessions.has('alice-session'),false);
   assert.equal(f.files.get('file-'+f.a).tables.Records.length,2);assert.equal(f.files.get('file-'+f.b).tables.Records.length,0);assert.equal(errors.length,0,errors.join('\n'));
   console.log('PASS: real HTTP/domain/Google-adapter boundary; student start/break/reflection/reload/history, cross-classroom storage, teacher scope/settings/edit/CSV/classroom mode, QR, mobile390/desktop1440, PWA private cache empty, logout revocation; API calls='+calls.length);
