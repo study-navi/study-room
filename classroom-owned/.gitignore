@@ -1,0 +1,10 @@
+node_modules/
+release/
+*.sqlite
+*.sqlite-*
+*.private.json
+.env
+.env.*
+.wrangler/
+.dev.vars
+.dev.vars.*

@@ -1,0 +1,215 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>自習室の利用状況</title><style>
+*{box-sizing:border-box}body{margin:0;background:#eef4fa;color:#19334d;font-family:system-ui,sans-serif;line-height:1.6}main{max-width:1040px;margin:auto;padding:20px 16px 48px}h1{color:#175c92;margin:0;font-size:26px}h2{font-size:18px;margin:0 0 10px}h3{font-size:15px;margin:14px 0 6px}
+section{background:#fff;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 5px 24px #173f6d0b}a{color:#1768ad}.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}.top nav{display:flex;flex-wrap:wrap;gap:6px}
+.btn{display:inline-block;border:0;border-radius:10px;background:#1768ad;color:#fff;font:inherit;font-weight:700;padding:9px 14px;min-height:42px;text-decoration:none;cursor:pointer}.btn.light{background:#e8f1fb;color:#194e7e}.btn.on{background:#1768ad;color:#fff}.periods{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.dates{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}input[type=date],select{font:inherit;border:1px solid #aabed3;border-radius:8px;padding:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.card{background:#f4f8fc;border-radius:12px;padding:12px}.card span{display:block;font-size:13px;color:#536c82}.card b{display:block;font-size:26px;color:#175c92;overflow-wrap:anywhere}.card small{color:#536c82}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}.cols>section{margin:0}
+.bars{display:flex;align-items:flex-end;gap:2px;height:150px;border-bottom:1px solid #aabed3;padding-top:10px}.bars div{flex:1;min-width:3px;background:#3b8fd6;border-radius:3px 3px 0 0;position:relative}.bars div.zero{background:#d5e1ee}
+.axis{display:flex;justify-content:space-between;font-size:12px;color:#536c82;margin-top:4px}
+.row{display:grid;grid-template-columns:minmax(80px,30%) 1fr auto;gap:8px;align-items:center;margin:6px 0;font-size:14px}.meter{background:#e3edf7;border-radius:6px;height:12px;overflow:hidden}.meter i{display:block;height:100%;background:#3b8fd6}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:6px 8px;border-bottom:1px solid #dbe6f1;text-align:left;vertical-align:top}th{color:#536c82;font-weight:600}.num{text-align:right;white-space:nowrap}
+.chip{display:inline-block;background:#e8f1fb;color:#194e7e;border-radius:999px;padding:3px 10px;margin:3px 4px 3px 0;font-size:14px}
+.note{color:#536c82;font-size:13px}#status{white-space:pre-wrap;overflow-wrap:anywhere}#status.error{color:#a33124}.empty{color:#536c82}
+#stuTable,#dRecords{overflow-x:auto}#stuTable table{min-width:560px}.stuLink{background:none;border:0;padding:0;font:inherit;color:#1768ad;text-decoration:underline;cursor:pointer;text-align:left}.search{width:100%;max-width:320px;font:inherit;border:1px solid #aabed3;border-radius:8px;padding:8px;margin:0 8px 8px 0}.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.report h1{font-size:24px}.printOnly{display:none}
+@media print{.printOnly{display:block!important}body.reportMode #view,body.reportMode .top,body.reportMode #status{display:none!important}body.reportMode #detail{display:block!important}#detail section{break-inside:avoid}.stuLink{color:#000;text-decoration:none}}
+@media print{body{background:#fff}.top nav,.periods,.dates,.noprint{display:none!important}section{box-shadow:none;break-inside:avoid;border:1px solid #ccd8e4}}
+@media(max-width:480px){h1{font-size:22px}.card b{font-size:22px}}
+</style></head><body><main>
+<div class="top"><div><h1 id="title">自習室の利用状況</h1><div class="note" id="sub"></div></div><nav class="noprint"><a class="btn light" id="manage" href="/teacher" hidden>管理画面</a><a class="btn light" href="/teacher">教室の一覧</a><button class="btn light" id="print" type="button">印刷</button></nav></div>
+<p id="status" role="status" aria-live="polite">読み込み中です…</p>
+<div id="login" hidden><section><h2>先生のログインが必要です</h2><p>自分の教室の状況は、教室を登録したGoogleアカウントでのみ見られます。</p><a class="btn" href="/auth/google">Googleでログイン</a></section></div>
+<div id="picker" hidden><section><h2>教室を選んでください</h2><div id="pickList"></div></section></div>
+<div id="view" hidden>
+<section class="noprint"><h2>期間</h2><div class="periods" id="periods"></div><div class="dates"><input type="date" id="from" aria-label="開始日"><span>〜</span><input type="date" id="to" aria-label="終了日"><button class="btn light" id="apply" type="button">この期間で表示</button></div></section>
+<section><h2 id="rangeTitle">概要</h2><div class="cards" id="cards"></div><p class="note" id="cardNote"></p></section>
+<section><h2>いま自習中</h2><div id="active"></div></section>
+<section><h2 id="chartTitle">学習時間の推移</h2><div class="bars" id="bars"></div><div class="axis"><span id="axisL"></span><span id="axisR"></span></div><p class="note" id="chartNote"></p></section>
+<div class="cols">
+<section><h2>科目別の学習時間</h2><div id="subjects"></div></section>
+<section><h2>学年別の利用人数</h2><div id="grades"></div><h3>平均の振り返り評価</h3><div id="scores"></div></section>
+</div>
+<div class="cols" style="margin-top:14px">
+<section><h2>学習時間ランキング</h2><div id="ranking"></div></section>
+<section><h2>利用状況の確認が必要な生徒</h2><p class="note">選択した終了日を基準に、直近28日と前の28日を比べています。前の期間に2日以上利用があり、利用日数が半分以下になった生徒、または28日以上利用がない生徒です。</p><div id="alerts"></div></section>
+</div>
+<section id="students"><h2>生徒別の集計</h2><p class="note">選択した期間の、送信済みの記録を生徒ごとにまとめています。名前を押すと、その生徒のレポート（印刷できます）が開きます。</p><div class="tools noprint"><input class="search" id="stuSearch" type="search" placeholder="名前で絞り込む" aria-label="名前で絞り込む"><button class="btn light" id="stuCsv" type="button">この表をCSVで保存</button></div><div id="stuTable"></div></section>
+<section><h2>最近の振り返り</h2><div id="recent"></div></section>
+<p class="note">利用人数は、生徒IDの重複を除いた送信済みの記録から数えています。別の端末や利用者の切り替えで生徒IDが分かれている場合は、管理画面の「生徒の履歴引き継ぎ・重複確認」で統合してください。名前だけで自動的に統合することはありません。</p>
+</div><div id="detail" class="report" hidden><div class="top noprint"><div class="tools"><button class="btn light" id="stuBack" type="button">← 生徒別の一覧へ戻る</button><button class="btn" id="stuPrint" type="button">この生徒のレポートを印刷</button></div></div>
+<section><h1 id="dName"></h1><div class="note" id="dSub"></div><div class="cards" id="dCards" style="margin-top:10px"></div></section>
+<section><h2>学習時間の推移</h2><div class="bars" id="dBars"></div><div class="axis"><span id="dAxisL"></span><span id="dAxisR"></span></div></section>
+<section><h2>科目別の学習時間</h2><div id="dSubjects"></div></section>
+<section><h2>学習の記録</h2><div id="dRecords"></div></section>
+<p class="note printOnly" id="dFoot"></p></div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let csrf='',classroom='',classrooms=[],period={from:'',to:''},busy=0;
+const setStatus=(t,err=false)=>{$('status').textContent=t;$('status').classList.toggle('error',err);};
+const tokyo=d=>{const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;};
+const today=()=>tokyo(new Date());
+const addDays=(iso,n)=>new Date(Date.parse(iso+'T00:00:00Z')+n*86400000).toISOString().slice(0,10);
+const diffDays=(a,b)=>Math.round((Date.parse(b+'T00:00:00Z')-Date.parse(a+'T00:00:00Z'))/86400000);
+const md=iso=>Number(iso.slice(5,7))+'/'+Number(iso.slice(8,10));
+const fmtMin=m=>{m=Math.round(m||0);return m>=60?Math.floor(m/60)+'時間'+(m%60?m%60+'分':''):m+'分';};
+function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;}
+async function request(path,body){
+  const r=await fetch(path,{method:body?'POST':'GET',credentials:'same-origin',cache:'no-store',headers:body?{'Content-Type':'application/json','X-CSRF-Token':csrf}:{},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(90000)}).catch(()=>{throw Error('通信できません。電波の良い場所で、もう一度開き直してください。');});
+  const v=await r.json().catch(()=>({}));
+  if(!r.ok||v.result==='error')throw Object.assign(Error(v.message||'通信に失敗しました。'),{code:v.code,status:r.status});
+  return v;
+}
+const study=(action,data)=>request('/api/study',{classroom,action,data,requestId:crypto.randomUUID()});
+function presets(){
+  const t=today(),m=t.slice(0,7)+'-01';
+  return [['今日',t,t],['直近7日',addDays(t,-6),t],['直近30日',addDays(t,-29),t],['今月',m,t],['全期間','2000-01-01',t]];
+}
+function drawPeriods(){
+  $('periods').replaceChildren();
+  for(const [label,from,to] of presets()){const b=el('button',label,'btn light');b.type='button';if(period.from===from&&period.to===to)b.className='btn on';b.onclick=()=>{period={from,to};load();};$('periods').append(b);}
+  $('from').value=period.from>'2000-01-01'?period.from:'';$('to').value=period.to;
+}
+function card(name,value,sub){const c=el('div',undefined,'card');c.append(el('span',name),el('b',value));if(sub)c.append(el('small',sub));return c;}
+function barRows(box,rows,unit,empty){
+  box.replaceChildren();if(!rows.length){box.append(el('p',empty,'empty'));return;}
+  const max=Math.max(...rows.map(r=>r.value),1);
+  for(const r of rows){const row=el('div',undefined,'row'),m=el('div',undefined,'meter'),i=el('i');i.style.width=Math.max(2,r.value/max*100)+'%';m.append(i);row.append(el('span',r.label),m,el('span',r.text||fmtMin(r.value),'num'));box.append(row);}
+}
+function drawChart(records,from,to){
+  const done=records.filter(r=>r['状態']==='送信済み');
+  const first=done.map(r=>r['日付']).sort()[0];
+  let start=from<'2000-01-02'?(first||to):from;if(start>to)start=to;
+  const span=diffDays(start,to)+1,weekly=span>62;
+  const buckets=new Map();
+  if(!weekly)for(let i=0;i<span;i++)buckets.set(addDays(start,i),0);
+  for(const r of done){const d=r['日付'];if(d<start||d>to)continue;const key=weekly?addDays(d,-((new Date(d+'T00:00:00Z').getUTCDay()+6)%7)):d;buckets.set(key,(buckets.get(key)||0)+Number(r['自習分数']||0));}
+  const keys=[...buckets.keys()].sort();$('bars').replaceChildren();
+  const max=Math.max(...keys.map(k=>buckets.get(k)),1);
+  for(const k of keys){const v=buckets.get(k),b=el('div');b.style.height=Math.max(v?3:2,v/max*100)+'%';if(!v)b.className='zero';b.title=(weekly?md(k)+'の週 ':md(k)+' ')+fmtMin(v);$('bars').append(b);}
+  $('axisL').textContent=keys.length?md(keys[0]):'';$('axisR').textContent=keys.length?md(keys[keys.length-1]):'';
+  $('chartTitle').textContent=weekly?'学習時間の推移（週ごと）':'学習時間の推移（日ごと）';
+  $('chartNote').textContent=done.length?'棒にカーソルを合わせる（スマホは長押し）と、その日の合計時間が表示されます。最大は '+fmtMin(max)+' です。':'この期間の送信済みの記録はまだありません。';
+}
+function render(d,active,records,from,to){
+  const e=d.enrolled;
+  $('rangeTitle').textContent=(from<'2000-01-02'?'全期間':md(from)+' 〜 '+md(to))+' の概要';
+  $('cards').replaceChildren(
+    card('いま自習中',d.active+'人'),
+    card('本日の学習時間',fmtMin(d.todayMinutes)),
+    card('今月の学習時間',fmtMin(d.monthMinutes)),
+    card('期間の学習時間',fmtMin(d.minutes),d.recordCount+'件の記録'),
+    card('期間の利用生徒数',d.users+'人',e?'在籍 '+e+'人':'在籍数は未設定'),
+    card('自習室利用率',d.utilization==null?'—':d.utilization.toFixed(1)+'%',d.utilization==null?'在籍数を設定すると出ます':'利用生徒数 ÷ 在籍数'));
+  $('cardNote').textContent=e?'':'在籍生徒数は、管理画面の「教室名を変更する」から設定できます。';
+  $('active').replaceChildren();
+  if(!active.length)$('active').append(el('p','いま自習中の生徒はいません。','empty'));
+  else{const t=el('table'),h=el('tr');['名前','学年','入室','状態'].forEach(x=>h.append(el('th',x)));t.append(h);for(const r of active){const tr=el('tr');[r.name,r.grade,r.startTime,r.status].forEach(x=>tr.append(el('td',x||'')));t.append(tr);}$('active').append(t);}
+  drawChart(records,from,to);
+  const done=records.filter(r=>r['状態']==='送信済み');
+  const subj=new Map();done.forEach(r=>{const k=r['科目']||'未入力';subj.set(k,(subj.get(k)||0)+Number(r['自習分数']||0));});
+  barRows($('subjects'),[...subj].sort((a,b)=>b[1]-a[1]).slice(0,8).map(([label,value])=>({label,value})),'分','この期間の記録はまだありません。');
+  $('grades').replaceChildren();if(!d.grades.length)$('grades').append(el('p','この期間の記録はまだありません。','empty'));
+  d.grades.forEach(g=>$('grades').append(el('span',g.grade+'：'+g.users+'人','chip')));
+  const avg=k=>{const v=done.map(r=>Number(r[k])).filter(Number.isFinite);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):'—';};
+  $('scores').replaceChildren(el('p','集中度 '+avg('集中度')+' ／ 達成度 '+avg('達成度')+'（5点満点）'));
+  $('ranking').replaceChildren();
+  if(!d.ranking.length)$('ranking').append(el('p','この期間の記録はまだありません。','empty'));
+  else{const t=el('table'),h=el('tr');['順位','名前','回数','合計'].forEach((x,i)=>h.append(el('th',x,i>1?'num':'')));t.append(h);d.ranking.slice(0,10).forEach((r,i)=>{const tr=el('tr');tr.append(el('td',String(i+1)),el('td',r.name),el('td',String(r.visits),'num'),el('td',fmtMin(r.minutes),'num'));t.append(tr);});$('ranking').append(t);}
+  $('alerts').replaceChildren();
+  if(!d.alerts.length)$('alerts').append(el('p','確認が必要な生徒はいません。','empty'));
+  d.alerts.forEach(a=>{const p=el('p');p.append(el('b',a.name),document.createTextNode('：'+a.reason+'（最終 '+a.last+'、前の28日に'+a.prior+'日 → 直近28日に'+a.recent+'日）'));$('alerts').append(p);});
+  $('recent').replaceChildren();
+  const notes=done.filter(r=>r['学習内容']||r['コメント']).sort((a,b)=>(b['日付']+b['入室時間']).localeCompare(a['日付']+a['入室時間'])).slice(0,10);
+  if(!notes.length)$('recent').append(el('p','この期間の振り返りはまだありません。','empty'));
+  else{const t=el('table'),h=el('tr');['日付','名前','科目','学習内容・コメント'].forEach(x=>h.append(el('th',x)));t.append(h);for(const r of notes){const tr=el('tr');tr.append(el('td',md(r['日付'])),el('td',r['名前']),el('td',r['科目']||''),el('td',[r['学習内容'],r['コメント']].filter(Boolean).join(' ／ ')));t.append(tr);}$('recent').append(t);}
+}
+async function load(){
+  const ticket=++busy;drawPeriods();setStatus('読み込み中です…');
+  try{
+    const {from,to}=period;
+    const [dash,act,list]=await Promise.all([study('dashboard',{from,to}),study('listActive',{}),study('list',{from,to})]);
+    if(ticket!==busy)return;
+    render(dash.dashboard,act.records,list.records,from,to);lastRecords=list.records;lastRange={from,to};stuRows=groupStudents(list.records);drawStudents();closeStudent();
+    const stamp=new Date().toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'});setStatus('更新 '+stamp+'（先生のスプレッドシートの内容です）');
+  }catch(e){if(ticket!==busy)return;$('view').hidden=true;setStatus(e.status===401||e.code==='AUTH'?'ログインの有効期限が切れました。もう一度ログインしてください。':e.message,true);if(e.status===401||e.code==='AUTH')$('login').hidden=false;}
+}
+function choose(c){
+  classroom=c.id;$('title').textContent=c.name+' の利用状況';$('sub').textContent='この画面は、この教室の先生だけが見られます。';
+  $('manage').hidden=false;$('manage').href=c.manageUrl;$('picker').hidden=true;
+  const u=new URL(location.href);u.searchParams.set('classroom',c.id);history.replaceState(null,'',u);
+  const t=today();period={from:addDays(t,-29),to:t};load();
+}
+async function start(){
+  try{
+    const me=await request('/api/me');csrf=me.csrf||'';
+    if(!me.signedIn){$('login').hidden=false;setStatus('');return;}
+    classrooms=(await request('/api/classrooms')).classrooms;
+    if(!classrooms.length){setStatus('教室がまだ登録されていません。「教室の一覧」から登録してください。');return;}
+    const want=new URL(location.href).searchParams.get('classroom'),hit=classrooms.find(c=>c.id===want)||(!want&&classrooms.length===1?classrooms[0]:null);
+    if(want&&!hit){setStatus('この教室を見る権限がありません。教室を登録したGoogleアカウントでログインしているか確認してください。',true);return;}
+    if(hit)return choose(hit);
+    setStatus('');$('picker').hidden=false;
+    for(const c of classrooms){const b=el('button',c.name,'btn light');b.type='button';b.style.margin='4px 6px 4px 0';b.onclick=()=>choose(c);$('pickList').append(b);}
+  }catch(e){setStatus(e.message,true);}
+}
+$('apply').onclick=()=>{const f=$('from').value||'2000-01-01',t=$('to').value||today();if(f>t){setStatus('開始日と終了日を確認してください。',true);return;}period={from:f,to:t};load();};
+
+let lastRecords=[],lastRange={from:'',to:''},stuRows=[];
+const csvCell=v=>{v=String(v??'');if(/^[=+\-@\t\r]/.test(v))v="'"+v;return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+const avgOf=(rows,k)=>{const v=rows.map(r=>Number(r[k])).filter(Number.isFinite);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
+const fmtAvg=v=>v==null?'—':v.toFixed(1);
+function groupStudents(records){
+  const m=new Map();
+  for(const r of records){if(r['状態']!=='送信済み')continue;const id=r['生徒ID']||('name:'+r['名前']);if(!m.has(id))m.set(id,{id,rows:[]});m.get(id).rows.push(r);}
+  const out=[];
+  for(const g of m.values()){
+    g.rows.sort((a,b)=>(a['日付']+a['入室時間']).localeCompare(b['日付']+b['入室時間']));
+    const last=g.rows[g.rows.length-1];
+    out.push({id:g.id,name:last['名前']||'（名前なし）',grade:last['学年']||'',rows:g.rows,count:g.rows.length,days:new Set(g.rows.map(r=>r['日付'])).size,minutes:g.rows.reduce((a,r)=>a+Number(r['自習分数']||0),0),focus:avgOf(g.rows,'集中度'),ach:avgOf(g.rows,'達成度'),last:last['日付']});
+  }
+  return out.sort((a,b)=>b.minutes-a.minutes||a.name.localeCompare(b.name,'ja'));
+}
+function drawStudents(){
+  const q=$('stuSearch').value.trim(),rows=stuRows.filter(r=>!q||r.name.includes(q));
+  const box=$('stuTable');box.replaceChildren();
+  if(!stuRows.length){box.append(el('p','この期間の記録はまだありません。','empty'));return;}
+  if(!rows.length){box.append(el('p','該当する生徒がいません。','empty'));return;}
+  const t=el('table'),h=el('tr');['名前','学年','回数','利用日数','合計','1回の平均','集中度','達成度','最終利用'].forEach((x,i)=>h.append(el('th',x,i>=2&&i<=7?'num':'')));t.append(h);
+  for(const r of rows){
+    const tr=el('tr'),td=el('td'),b=el('button',r.name,'stuLink');b.type='button';b.onclick=()=>openStudent(r.id);td.append(b);tr.append(td,el('td',r.grade),el('td',String(r.count),'num'),el('td',String(r.days),'num'),el('td',fmtMin(r.minutes),'num'),el('td',fmtMin(r.minutes/r.count),'num'),el('td',fmtAvg(r.focus),'num'),el('td',fmtAvg(r.ach),'num'),el('td',md(r.last)));t.append(tr);
+  }
+  box.append(t);
+}
+function stuCsv(){
+  const head=['名前','学年','回数','利用日数','合計（分）','1回の平均（分）','平均集中度','平均達成度','最終利用日'];
+  const lines=[head.map(csvCell).join(',')];
+  for(const r of stuRows)lines.push([r.name,r.grade,r.count,r.days,r.minutes,Math.round(r.minutes/r.count),fmtAvg(r.focus),fmtAvg(r.ach),r.last].map(csvCell).join(','));
+  const blob=new Blob(['﻿'+lines.join('\r\n')+'\r\n'],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='生徒別集計_'+lastRange.to+'.csv';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function openStudent(id){
+  const g=stuRows.find(r=>r.id===id);if(!g)return;
+  const {from,to}=lastRange,label=(from<'2000-01-02'?'全期間':from+' 〜 '+to);
+  $('dName').textContent=g.name+'さんの学習レポート';
+  $('dSub').textContent=[(classrooms.find(c=>c.id===classroom)||{}).name,g.grade,'期間：'+label].filter(Boolean).join('　／　');
+  $('dCards').replaceChildren(card('合計時間',fmtMin(g.minutes),g.count+'回'),card('利用日数',g.days+'日'),card('1回の平均',fmtMin(g.minutes/g.count)),card('平均 集中度',fmtAvg(g.focus),'5点満点'),card('平均 達成度',fmtAvg(g.ach),'5点満点'));
+  const start=from<'2000-01-02'?g.rows[0]['日付']:from,span=diffDays(start,to)+1,weekly=span>62,b=new Map();
+  if(!weekly)for(let i=0;i<span;i++)b.set(addDays(start,i),0);
+  for(const r of g.rows){const d=r['日付'];if(d<start||d>to)continue;const k=weekly?addDays(d,-((new Date(d+'T00:00:00Z').getUTCDay()+6)%7)):d;b.set(k,(b.get(k)||0)+Number(r['自習分数']||0));}
+  const keys=[...b.keys()].sort(),max=Math.max(...keys.map(k=>b.get(k)),1);$('dBars').replaceChildren();
+  for(const k of keys){const v=b.get(k),e=el('div');e.style.height=Math.max(v?3:2,v/max*100)+'%';if(!v)e.className='zero';e.title=(weekly?md(k)+'の週 ':md(k)+' ')+fmtMin(v);$('dBars').append(e);}
+  $('dAxisL').textContent=keys.length?md(keys[0])+(weekly?'の週〜':'〜'):'';$('dAxisR').textContent=keys.length?md(keys[keys.length-1]):'';
+  const subj=new Map();g.rows.forEach(r=>{const k=r['科目']||'未入力';subj.set(k,(subj.get(k)||0)+Number(r['自習分数']||0));});
+  barRows($('dSubjects'),[...subj].sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value})),'分','記録はまだありません。');
+  const t=el('table'),h=el('tr');['日付','科目','時間','集中','達成','学習内容・コメント'].forEach((x,i)=>h.append(el('th',x,i>=2&&i<=4?'num':'')));t.append(h);
+  for(const r of [...g.rows].reverse()){const tr=el('tr'),c=[r['学習内容'],r['コメント']].filter(Boolean).join('／');tr.append(el('td',md(r['日付'])),el('td',r['科目']||''),el('td',fmtMin(r['自習分数']),'num'),el('td',String(r['集中度']||''),'num'),el('td',String(r['達成度']||''),'num'),el('td',c));t.append(tr);}
+  $('dRecords').replaceChildren(t);
+  $('dFoot').textContent='作成日：'+today()+'　／　Study Room';
+  $('view').hidden=true;$('detail').hidden=false;document.body.classList.add('reportMode');window.scrollTo(0,0);
+}
+function closeStudent(){$('detail').hidden=true;$('view').hidden=false;document.body.classList.remove('reportMode');}
+$('stuSearch').oninput=drawStudents;$('stuCsv').onclick=stuCsv;$('stuBack').onclick=closeStudent;$('stuPrint').onclick=()=>window.print();
+$('print').onclick=()=>window.print();
+start();
+</script></body></html>

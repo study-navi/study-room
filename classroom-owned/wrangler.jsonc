@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "study-room-classroom-owned-staging",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {"directory": "release/public", "binding": "ASSETS", "run_worker_first": true},
+  "durable_objects": {"bindings": [{"name": "REGISTRY", "class_name": "StudyRoomRegistry"}]},
+  "migrations": [{"tag": "v1", "new_sqlite_classes": ["StudyRoomRegistry"]}],
+  "observability": {"enabled": false},
+  "build": {"command": "npm run build"},
+  "env": {"production": {
+    "name": "study-room-classroom-owned",
+    "vars": {"SR_MODE": "production", "SR_ORIGIN": "https://study-room-classroom-owned.manabit.workers.dev", "SR_CONTACT_EMAIL": "baystars1899@gmail.com"},
+    "durable_objects": {"bindings": [{"name": "REGISTRY", "class_name": "StudyRoomRegistry"}]}
+  }}
+}
