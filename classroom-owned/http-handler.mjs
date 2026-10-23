@@ -84,6 +84,7 @@ export function createHandler({getAsset,contactEmail,staging=true,origin,reposit
       if(url.pathname==='/'||url.pathname==='/teacher'){
         res.writeHead(200,{'Content-Type':'text/html;charset=utf-8'});res.end(decorate(await getAsset('portal.html')));return;
       }
+      if(url.pathname==='/dashboard'){res.writeHead(200,{'Content-Type':'text/html;charset=utf-8'});res.end(decorate(await getAsset('dashboard.html')));return;}
       if(url.pathname==='/privacy'){
         const contact=contactEmail&&/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(contactEmail)?contactEmail:'検証中のため、利用中の教室へお問い合わせください。';
         const escaped=contact.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
