@@ -30,12 +30,14 @@ html=html.replace('<div id="mcDashboard"></div>','<details id="ownedAnalytics"><
 html=html.replace('<div id="mcGlobal" class="hide">','<button class="btn" onclick="toggleClassroomMode()">教室モードを開く（この端末で生徒の入退室を記録）</button><button class="btn light" onclick="ownedSettings()">教室名・在籍生徒数・利用状態</button><a class="btn light" href="/teacher">教室URL・QR・バックアップ</a><div id="mcSchoolEditor"></div><div id="mcGlobal" class="hide">');
 html=html.replace('</body>',`<script>
 const ownedOriginalSettings=mcEditSchools;
-mcEditSchools=async()=>{await ownedOriginalSettings();mcFillSchool(0);$('mcSchoolEditor').querySelectorAll('button').forEach(b=>{if(b.textContent!=='保存する')b.hidden=true;});};
+mcEditSchools=async()=>{await ownedOriginalSettings();mcFillSchool(0);$('mcSchoolEditor').querySelectorAll('button').forEach(b=>{if(b.textContent!=='この内容で保存する')b.hidden=true;});};
 async function ownedSettings(){await mcEditSchools();}
 mcEditAdmins=()=>{};
 teacherLogin=()=>location.assign('/teacher');
 const ownedOpen='/open?classroom='+encodeURIComponent(new URL(location.href).searchParams.get('classroom'))+'&mode=classroom',ownedToggle=toggleClassroomMode;
 toggleClassroomMode=async()=>{if(!mcAdmin&&!mcClassroom){location.assign(ownedOpen);return;}return ownedToggle();};
+(()=>{const root=document.documentElement,view=root.dataset.view;if(view!=='manage'&&view!=='classroom')return;const done=()=>{root.dataset.ready='1';observer.disconnect();};const check=()=>{const shown=id=>{const e=document.getElementById(id);return e&&!e.classList.contains('hide');};if(shown('teacher')||shown('crHome'))done();};const observer=new MutationObserver(check);observer.observe(document.body,{attributes:true,subtree:true,attributeFilter:['class']});check();setTimeout(done,8000);})();
+if(document.documentElement.dataset.view==='manage'&&location.hash==='#rename'){const wait=setInterval(()=>{if(typeof mcAdmin!=='undefined'&&mcAdmin){clearInterval(wait);ownedSettings().then(()=>document.getElementById('mcSchoolEditor').scrollIntoView({behavior:'smooth',block:'start'}));}},200);setTimeout(()=>clearInterval(wait),10000);}
 function ownedHeaderMode(){if(isClassroomMode()){location.assign('/study?classroom='+encodeURIComponent(new URL(location.href).searchParams.get('classroom')||''));return;}toggleClassroomMode();}
 
 document.querySelectorAll('#loginBox a.btn').forEach(a=>{a.href=ownedOpen;a.textContent='Googleでログインして教室モードを開く';});
@@ -57,7 +59,7 @@ html=html.replace("sessionStorage.getItem(TEACHER_SESSION_KEY)","''");
 html=html.replace("panel && !panel.classList.contains('hide')","panel && document.visibilityState==='visible' && !panel.classList.contains('hide')").replace('}, 15000);','}, 60000);');
 // 生徒用画面と先生用画面を分ける：生徒用には先生向けのボタンを出さず、管理画面には生徒の個人画面を出さない。
 html=html.replace('id="headerModeBtn" class="headerTeacherBtn" type="button" onclick="toggleClassroomMode()"','id="headerModeBtn" class="headerTeacherBtn" type="button" onclick="ownedHeaderMode()"');
-html=html.replace('</head>',`<meta name="sr-view" content="auto"><script>(()=>{const url=new URL(location.href),q=url.searchParams,forced=document.querySelector('meta[name=sr-view]').content;if(forced==='student'&&(q.has('manage')||q.has('mode'))){q.delete('manage');q.delete('mode');history.replaceState(null,'',url);}document.documentElement.dataset.view=forced==='student'?'student':q.get('mode')==='classroom'?'classroom':q.get('manage')==='1'?'manage':'student';})();</script><style>:root[data-view="student"] .headerBtnGroup{display:none !important}:root[data-view="manage"] .headerBtnGroup,:root[data-view="classroom"] .headerBtnGroup{display:none !important}:root[data-view="manage"] #teacher .teacherBackBtn{display:none}.viewLink{text-align:center;margin:18px 0 6px}.viewLink a{color:#1768ad}</style></head>`);
+html=html.replace('</head>',`<meta name="sr-view" content="auto"><script>(()=>{const url=new URL(location.href),q=url.searchParams,forced=document.querySelector('meta[name=sr-view]').content;if(forced==='student'&&(q.has('manage')||q.has('mode'))){q.delete('manage');q.delete('mode');history.replaceState(null,'',url);}document.documentElement.dataset.view=forced==='student'?'student':q.get('mode')==='classroom'?'classroom':q.get('manage')==='1'?'manage':'student';})();</script><style>:root[data-view="student"] .headerBtnGroup{display:none !important}:root[data-view="manage"] .headerBtnGroup,:root[data-view="classroom"] .headerBtnGroup{display:none !important}:root[data-view="manage"] #teacher .teacherBackBtn{display:none}@keyframes srFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}:root[data-view="manage"]:not([data-ready]) .wrap,:root[data-view="classroom"]:not([data-ready]) .wrap{opacity:0}:root[data-view="manage"]:not([data-ready]) body::before,:root[data-view="classroom"]:not([data-ready]) body::before{content:"読み込み中です…";display:block;text-align:center;padding:120px 0;color:#536c82;font-size:18px}:root[data-ready] .wrap{animation:srFade .25s ease-out}.viewLink{text-align:center;margin:18px 0 6px}.viewLink a{color:#1768ad}</style></head>`);
 html=html.replace('</body>',`<script>
 (()=>{const id=new URL(location.href).searchParams.get('classroom')||'',view=document.documentElement.dataset.view;
 if(view==='student'){const p=document.createElement('p');p.className='small viewLink';const a=document.createElement('a');a.href='/open?classroom='+encodeURIComponent(id);a.textContent='先生の方はこちら（管理画面・教室モード）';p.append(a);document.querySelector('.wrap').append(p);}
@@ -77,6 +79,10 @@ const wording=[
 ['引継ぎ','引き継ぎ'],
 ['算出不可（在籍生徒数未設定）','計算できません（在籍生徒数が未設定です）'],
 ['教室URL・QR・バックアップ','教室URL・QRコード・バックアップ'],
+['教室名・在籍生徒数・利用状態','教室名を変更する（在籍生徒数・利用状態も）'],
+['<label>教室コード<input id="mcSchoolCode" value="${escapeHtml(s.code)}"></label>','<p class="small">教室名を変えても、生徒用のURLとQRコードは変わりません。</p><input id="mcSchoolCode" type="hidden" value="${escapeHtml(s.code)}">'],
+['<button class="btn" onclick="mcSaveSchool()">保存する</button>','<button class="btn" onclick="mcSaveSchool()">この内容で保存する</button>'],
+['教室を保存しました。','教室の設定を保存しました。'],
 ['が不正です。','が正しくありません。'],
 ['ログイン期限が切れました。再ログインしてください。','ログインの有効期限が切れました。もう一度ログインしてください。'],
 ['他の操作で更新されています。再読み込みしてください。','ほかの操作で更新されました。画面を再読み込みしてください。'],

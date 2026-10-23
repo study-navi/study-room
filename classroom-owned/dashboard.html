@@ -101,7 +101,7 @@ function render(d,active,records,from,to){
     card('期間の学習時間',fmtMin(d.minutes),d.recordCount+'件の記録'),
     card('期間の利用生徒数',d.users+'人',e?'在籍 '+e+'人':'在籍数は未設定'),
     card('自習室利用率',d.utilization==null?'—':d.utilization.toFixed(1)+'%',d.utilization==null?'在籍数を設定すると出ます':'利用生徒数 ÷ 在籍数'));
-  $('cardNote').textContent=e?'':'在籍生徒数は、管理画面の「教室名・在籍生徒数・利用状態」から設定できます。';
+  $('cardNote').textContent=e?'':'在籍生徒数は、管理画面の「教室名を変更する」から設定できます。';
   $('active').replaceChildren();
   if(!active.length)$('active').append(el('p','いま自習中の生徒はいません。','empty'));
   else{const t=el('table'),h=el('tr');['名前','学年','入室','状態'].forEach(x=>h.append(el('th',x)));t.append(h);for(const r of active){const tr=el('tr');[r.name,r.grade,r.startTime,r.status].forEach(x=>tr.append(el('td',x||'')));t.append(tr);}$('active').append(t);}

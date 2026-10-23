@@ -41,6 +41,15 @@ try{
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>!document.querySelector('#teacher').classList.contains('hide'));assert.equal(await page.locator('#welcome').isVisible(),false);assert.equal(await page.locator('.headerBtnGroup').isVisible(),false);assert.match(await page.locator('.viewLink a').textContent(),/生徒用の画面を開く/);await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('管理ダッシュボード'));
   assert.equal(await page.locator('#mcRole').textContent(),'教室管理者');assert.equal(await page.locator('#mcAdminSchool option').count(),1);
   await page.click('button[onclick="ownedSettings()"]');await page.fill('#mcEnrolled','100');await page.click('button[onclick="mcSaveSchool()"]');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('1.0%'));
+  // 教室名の変更：教室一覧の「教室名を変更」から直接フォームが開き、名前を変えても生徒用URLは変わらない。
+  {const before=page.url();await page.goto(origin+'/teacher');await page.waitForSelector('#classrooms article');const rename=page.locator('#classrooms .links a',{hasText:'教室名を変更'}).first();assert.match(await rename.getAttribute('href'),/manage=1#rename$/);
+   await page.goto(await rename.getAttribute('href'));await page.waitForSelector('#mcSchoolName');assert.equal(await page.locator('#mcSchoolCode').isVisible(),false);
+   assert.equal(await page.evaluate(()=>document.documentElement.dataset.ready),'1');assert.equal(await page.locator('#welcome').isVisible(),false);
+   await page.fill('#mcSchoolName','森本校（名前変更の確認）');await page.click('button[onclick="mcSaveSchool()"]');await page.waitForFunction(()=>document.querySelector('#mcNotice').textContent.includes('保存しました'));
+   await page.goto(origin+'/study?classroom='+f.a);await page.waitForFunction(()=>document.querySelector('#mcSchoolLabel').textContent.includes('名前変更の確認'));
+   await page.goto(origin+'/teacher');await page.waitForSelector('#classrooms article');assert.match(await page.locator('#classrooms').textContent(),/名前変更の確認/);
+   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#teacherPanel')&&!document.querySelector('#teacherPanel').classList.contains('hide'));}
+
   await page.fill('#search','方程式');await page.locator('#tbody .miniActionBtn').first().click();await page.fill('#editContent','数学：検算まで完了');await page.click('button[onclick="saveEditRecord()"]');await page.waitForFunction(()=>document.querySelector('#editModal').classList.contains('hide'));await page.fill('#search','');
   const downloadWait=page.waitForEvent('download');await page.click('button[onclick="downloadCSV()"]');const download=await downloadWait,csv=readFileSync(await download.path(),'utf8');assert.match(csv,/検算まで完了/);assert.match(csv,/生徒ID/);assert.doesNotMatch(csv,/尾西校/);
   await page.evaluate(()=>toggleClassroomMode());await page.evaluate(()=>crGoScreen('crCheckin'));await page.waitForFunction(()=>document.querySelector('#mcRoster').options.length>1);
