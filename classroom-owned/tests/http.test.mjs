@@ -26,3 +26,23 @@ test('student URL, classroom-specific PWA, anonymous registration and soft delet
   const r=await fetch(f.origin+'/api/study',{method:'POST',headers:{Origin:f.origin,'Content-Type':'application/json'},body:JSON.stringify(body)});assert.equal(r.status,200);assert.equal((await r.json()).result,'success');
   assert.equal((await fetch(f.origin+'/study?classroom='+randomUUID())).status,404);
 });
+
+test('classroom mode entry: one tap from the student URL, owner-only, returns only to safe teacher pages',async t=>{
+  const f=await serverFixture(t),manual=u=>fetch(f.origin+u,{redirect:'manual',headers:{Cookie:'sr_local_session=alice-session'}}),anon=u=>fetch(f.origin+u,{redirect:'manual'});
+  const target='/study?classroom='+f.a+'&manage=1&mode=classroom';
+  const own=await manual('/open?classroom='+f.a+'&mode=classroom');assert.equal(own.status,302);assert.equal(own.headers.get('location'),target);
+  const other=await anon('/open?classroom='+f.a+'&mode=classroom');assert.equal(other.status,302);assert.equal(other.headers.get('location'),'/auth/google?return='+encodeURIComponent(encodeURIComponent(target)));
+  const notOwner=await fetch(f.origin+'/open?classroom='+f.a,{redirect:'manual',headers:{Cookie:'sr_local_session=bob-session'}});assert.match(notOwner.headers.get('location'),/^\/auth\/google\?return=/);
+  assert.equal((await anon('/open?classroom='+randomUUID())).status,404);assert.equal((await anon('/open?classroom=x')).status,404);
+});
+test('after Google login the teacher returns to classroom mode, but never to an arbitrary address',async t=>{
+  const f=await fixture(),chosen=port++,origin='http://127.0.0.1:'+chosen,auth={...f.auth,begin:async()=>({url:'https://accounts.example.invalid/auth',binding:'bind'}),complete:async()=>({session:'alice-session'})};
+  const server=createApplication({...f,auth,origin,secureCookies:false});await new Promise(r=>server.listen(chosen,'127.0.0.1',r));t.after(async()=>{await new Promise(r=>server.close(r));f.close();});
+  const target='/study?classroom='+f.a+'&manage=1&mode=classroom',start=await fetch(origin+'/auth/google?return='+encodeURIComponent(encodeURIComponent(target)),{redirect:'manual'});
+  assert.equal(start.status,302);const jar=start.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');assert.match(jar,/sr_local_return=/);
+  const back=await fetch(origin+'/auth/callback?state=s&code=c',{redirect:'manual',headers:{Cookie:jar}});assert.equal(back.status,303);assert.equal(back.headers.get('location'),target);
+  for(const evil of ['https://evil.invalid/','//evil.invalid','/study?classroom='+f.a+'&manage=1&x=https://evil.invalid','/teacher']){
+    const s2=await fetch(origin+'/auth/google?return='+encodeURIComponent(encodeURIComponent(evil)),{redirect:'manual'});const jar2=s2.headers.getSetCookie().map(c=>c.split(';')[0]).filter(c=>!/return=$/.test(c)).join('; ');
+    const b2=await fetch(origin+'/auth/callback?state=s&code=c',{redirect:'manual',headers:{Cookie:jar2}});assert.equal(b2.headers.get('location'),'/teacher');
+  }
+});
