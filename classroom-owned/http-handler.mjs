@@ -9,11 +9,14 @@ const publicCodes=new Set(['INVALID','AUTH','FORBIDDEN','NOT_FOUND','RATE','SCHO
 const json=(res,value,status=200)=>{res.writeHead(status,{'Content-Type':'application/json;charset=utf-8'});res.end(JSON.stringify(value));};
 const cookieValue=(req,name)=>{const v=String(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith(name+'='));return v?.slice(name.length+1)||'';};
 const error=(code,message)=>{throw new RegistrationError(code,message);};
+// Only same-site teacher entry pages may be returned to after Google login (no open redirect).
+const returnPattern=/^\/study\?classroom=[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}&manage=1(?:&mode=classroom)?$/i;
+const safeReturn=value=>{try{const v=decodeURIComponent(String(value||''));return returnPattern.test(v)?v:'';}catch{return '';}};
 
 export function createHandler({getAsset,contactEmail,staging=true,origin,repository,auth,workspaceFactory=token=>new GoogleWorkspace(token),secureCookies=true,registration,service}={}){
   const base=new URL(origin);
   if(base.origin!==origin||base.username||base.password||(base.protocol!=='https:'&&(secureCookies||!['localhost','127.0.0.1'].includes(base.hostname))))throw Error('Use an exact HTTPS origin; local HTTP requires an explicit local-only test configuration.');
-  const sessionName=secureCookies?'__Host-sr_session':'sr_local_session',bindingName=secureCookies?'__Host-sr_oauth':'sr_local_oauth';
+  const sessionName=secureCookies?'__Host-sr_session':'sr_local_session',bindingName=secureCookies?'__Host-sr_oauth':'sr_local_oauth',returnName=secureCookies?'__Host-sr_return':'sr_local_return';
   const cookie=(name,value,maxAge)=>`${name}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secureCookies?'; Secure':''}`;
   const decorate=html=>staging?String(html).replace('<body>','<body><aside role="note" style="padding:14px 18px;background:#fff1c5;color:#583c00;font-weight:700;line-height:1.7">検証用 Study Room — 架空データのみ。本番へは移行しません。</aside>'):html;
   registration??=new ClassroomRegistration({auth,repository,workspaceFactory,studentBaseUrl:(base.protocol==='https:'?origin:'https://localhost')+'/study'});
@@ -40,10 +43,10 @@ export function createHandler({getAsset,contactEmail,staging=true,origin,reposit
       }else if(req.method!=='GET')error('INVALID','この操作は利用できません。');
       if(req.method==='GET'&&url.pathname==='/auth/google'){
         repository.rateLimit('oauth:'+digest(req.socket.remoteAddress),{limit:10,windowMs:600000});
-        const result=await auth.begin();res.setHeader('Set-Cookie',cookie(bindingName,result.binding,600));res.writeHead(302,{Location:result.url});res.end();return;
+        const result=await auth.begin(),back=safeReturn(url.searchParams.get('return'));res.setHeader('Set-Cookie',[cookie(bindingName,result.binding,600),cookie(returnName,back?encodeURIComponent(back):'',back?600:0)]);res.writeHead(302,{Location:result.url});res.end();return;
       }
       if(req.method==='GET'&&url.pathname==='/auth/callback'){
-        try{const result=await auth.complete({state:url.searchParams.get('state'),code:url.searchParams.get('code'),binding:cookieValue(req,bindingName),previousSession:sessionRaw});res.setHeader('Set-Cookie',[cookie(sessionName,result.session,21600),cookie(bindingName,'',0)]);res.writeHead(303,{Location:'/teacher'});}
+        try{const result=await auth.complete({state:url.searchParams.get('state'),code:url.searchParams.get('code'),binding:cookieValue(req,bindingName),previousSession:sessionRaw});res.setHeader('Set-Cookie',[cookie(sessionName,result.session,21600),cookie(bindingName,'',0),cookie(returnName,'',0)]);res.writeHead(303,{Location:safeReturn(cookieValue(req,returnName))||'/teacher'});}
         catch(error){res.setHeader('Set-Cookie',cookie(bindingName,'',0));res.writeHead(303,{Location:error?.code==='CONSENT'?'/teacher?authError=consent':'/teacher?authError=1'});}res.end();return;
       }
       if(req.method==='POST'&&url.pathname==='/auth/logout'){auth.logout(sessionRaw);res.setHeader('Set-Cookie',cookie(sessionName,'',0));json(res,{ok:true});return;}
@@ -83,6 +86,12 @@ export function createHandler({getAsset,contactEmail,staging=true,origin,reposit
       if(req.method!=='GET')error('NOT_FOUND','ページが見つかりません。');
       if(url.pathname==='/'||url.pathname==='/teacher'){
         res.writeHead(200,{'Content-Type':'text/html;charset=utf-8'});res.end(decorate(await getAsset('portal.html')));return;
+      }
+      if(url.pathname==='/open'){
+        const id=url.searchParams.get('classroom');if(!uuid.test(id||'')||!repository.getClassroom(id))error('NOT_FOUND','教室URLが見つかりません。先生から案内されたURLを確認してください。');
+        const target='/study?classroom='+id+'&manage=1'+(url.searchParams.get('mode')==='classroom'?'&mode=classroom':'');
+        const owner=session&&repository.getClassroom(id).ownerSubject===session.subject;
+        res.writeHead(302,{Location:owner?target:'/auth/google?return='+encodeURIComponent(encodeURIComponent(target))});res.end();return;
       }
       if(url.pathname==='/dashboard'){res.writeHead(200,{'Content-Type':'text/html;charset=utf-8'});res.end(decorate(await getAsset('dashboard.html')));return;}
       if(url.pathname==='/privacy'){
