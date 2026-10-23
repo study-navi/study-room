@@ -7,7 +7,7 @@ import {GoogleAuth} from './google-auth.mjs';
 import {createHandler} from './http-handler.mjs';
 
 export function createApplication(options){
-  return createServer(createHandler({getAsset:name=>readFile(new URL(['portal.html','privacy.html'].includes(name)?'./'+name:'./release/'+name,import.meta.url)),...options}));
+  return createServer(createHandler({getAsset:name=>readFile(new URL(['portal.html','privacy.html','dashboard.html'].includes(name)?'./'+name:'./release/'+name,import.meta.url)),...options}));
 }
 
 if(process.argv[1]===fileURLToPath(import.meta.url)){
