@@ -11,7 +11,7 @@ html=html.replace(oldTransport,`const SRTransport={send:async q=>{
   const ownUrl=new URL(location.href),classroom=ownUrl.searchParams.get('classroom');
   const headers={'Content-Type':'application/json'};
   if(q.data.session){const me=await fetch('/api/me',{cache:'no-store'}).then(r=>r.json());if(!me.csrf)return {result:'error',code:'AUTH',message:'先生がGoogleでログインしてください。'};headers['X-CSRF-Token']=me.csrf;}
-  const response=await fetch('/api/study',{method:'POST',headers,credentials:'same-origin',cache:'no-store',body:JSON.stringify({classroom,...q}),signal:AbortSignal.timeout(90000)});
+  const response=await fetch('/api/study',{method:'POST',headers,credentials:'same-origin',cache:'no-store',body:JSON.stringify({classroom,...q}),signal:AbortSignal.timeout(90000)}).catch(()=>{throw new Error('通信できません。入力内容は残しています。電波の良い場所で、もう一度送信してください。');});
   return response.json();
 }};`);
 html=html.replace(/<div class="grid2">\s*<div><label>管理者ID[\s\S]*?<div id="loginMsg"><\/div>/,
