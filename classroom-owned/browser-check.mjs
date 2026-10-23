@@ -47,6 +47,13 @@ try{
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#tbody').textContent.includes('英単語'));
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('admin-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
   await page.setViewportSize({width:1440,height:1000});await page.click('#ownedAnalytics summary');await page.screenshot({path:new URL('admin-desktop.png',output).pathname,fullPage:true,animations:'disabled'});
+  // Per-classroom status dashboard: own classroom only, never another teacher's.
+  await page.setViewportSize({width:390,height:844});await page.goto(origin+'/dashboard?classroom='+f.a);await page.waitForFunction(()=>!document.querySelector('#view').hidden&&document.querySelector('#cards').textContent.includes('利用生徒数'));
+  assert.match(await page.locator('#title').textContent(),/森本校/);assert.match(await page.locator('#recent').textContent(),/英単語/);assert.match(await page.locator('#ranking').textContent(),/架空ブラウザ検証/);assert.doesNotMatch(await page.locator('body').textContent(),/尾西校|本部/);
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('dashboard-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
+  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:new URL('dashboard-desktop.png',output).pathname,fullPage:true,animations:'disabled'});
+  await page.goto(origin+'/dashboard?classroom='+f.b);await page.waitForFunction(()=>document.querySelector('#status').classList.contains('error'));
+  assert.equal(await page.locator('#view').isVisible(),false);assert.doesNotMatch(await page.locator('#cards').textContent(),/人/);
   await page.evaluate(()=>navigator.serviceWorker.ready);assert.equal(await page.evaluate(async()=>(await caches.keys()).length),0);
   await page.goto(origin+'/study?classroom='+f.b+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcNotice').textContent.includes('権限'));assert.equal(await page.locator('#teacherPanel').isVisible(),false);
   await page.goto(origin+'/study?classroom='+f.a+'&manage=1');await page.waitForFunction(()=>document.querySelector('#mcDashboard').textContent.includes('管理ダッシュボード'));await page.click('button[onclick="mcLogout()"]');await page.waitForURL(origin+'/teacher');await page.waitForSelector('#login:visible');assert.equal(f.sessions.has('alice-session'),false);
