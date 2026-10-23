@@ -46,3 +46,17 @@ test('after Google login the teacher returns to classroom mode, but never to an 
     const b2=await fetch(origin+'/auth/callback?state=s&code=c',{redirect:'manual',headers:{Cookie:jar2}});assert.equal(b2.headers.get('location'),'/teacher');
   }
 });
+
+test('student page never contains the teacher screens; admin page only for the owner',async t=>{
+  const f=await serverFixture(t),alice={Cookie:'sr_local_session=alice-session'},bob={Cookie:'sr_local_session=bob-session'};
+  const get=(path,headers={})=>fetch(f.origin+path,{redirect:'manual',headers});
+  const student=await (await get('/study?classroom='+f.a)).text();
+  for(const word of ['teacherPanel','mcDashboard0','crActiveList','mcRoster','mcDashboard','loginBox'])assert.ok(!student.includes('id="'+word+'"'),word);
+  assert.match(student,/name="sr-view" content="student"/);
+  // 生徒がURLに manage や mode を付けても、先生用の画面は返らない。
+  const anon=await get('/study?classroom='+f.a+'&manage=1');assert.equal(anon.status,302);assert.equal(anon.headers.get('location'),'/open?classroom='+f.a);
+  const anonMode=await get('/study?classroom='+f.a+'&manage=1&mode=classroom');assert.equal(anonMode.status,302);assert.equal(anonMode.headers.get('location'),'/open?classroom='+f.a+'&mode=classroom');
+  const other=await get('/study?classroom='+f.a+'&manage=1',bob);assert.equal(other.status,302);assert.equal(other.headers.get('location'),'/teacher');
+  const own=await get('/study?classroom='+f.a+'&manage=1',alice);assert.equal(own.status,200);const ownHtml=await own.text();assert.ok(ownHtml.includes('id="teacherPanel"'));assert.match(ownHtml,/name="sr-view" content="auto"/);
+  const ownStudent=await (await get('/study?classroom='+f.a,alice)).text();assert.ok(!ownStudent.includes('id="teacherPanel"'));
+});
