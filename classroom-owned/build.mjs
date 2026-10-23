@@ -34,6 +34,9 @@ mcEditSchools=async()=>{await ownedOriginalSettings();mcFillSchool(0);$('mcSchoo
 async function ownedSettings(){await mcEditSchools();}
 mcEditAdmins=()=>{};
 teacherLogin=()=>location.assign('/teacher');
+const ownedOpen='/open?classroom='+encodeURIComponent(new URL(location.href).searchParams.get('classroom'))+'&mode=classroom',ownedToggle=toggleClassroomMode;
+toggleClassroomMode=async()=>{if(!mcAdmin&&!mcClassroom){location.assign(ownedOpen);return;}return ownedToggle();};
+document.querySelectorAll('#loginBox a.btn').forEach(a=>{a.href=ownedOpen;a.textContent='Googleでログインして教室モードを開く';});
 mcLogout=async()=>{try{const me=await fetch('/api/me',{cache:'no-store'}).then(r=>r.json());const response=await fetch('/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':me.csrf},body:'{}'});if(!response.ok)throw Error();mcClearAdmin();location.assign('/teacher');}catch{mcBusy('ログアウトを完了できませんでした。接続を確認して再試行してください。');}};
 </script></body>`);
 html=html.replaceAll('https://study-navi.github.io/study-room/','/');
