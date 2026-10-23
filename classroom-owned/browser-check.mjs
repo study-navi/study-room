@@ -58,6 +58,15 @@ try{
   await page.setViewportSize({width:390,height:844});await page.goto(origin+'/dashboard?classroom='+f.a);await page.waitForFunction(()=>!document.querySelector('#view').hidden&&document.querySelector('#cards').textContent.includes('利用生徒数'));
   assert.match(await page.locator('#title').textContent(),/森本校/);assert.match(await page.locator('#recent').textContent(),/英単語/);assert.match(await page.locator('#ranking').textContent(),/架空ブラウザ検証/);assert.doesNotMatch(await page.locator('body').textContent(),/尾西校|本部/);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:new URL('dashboard-mobile.png',output).pathname,fullPage:true,animations:'disabled'});
+  // 生徒別の集計と個別レポート（印刷用表示）
+  await page.waitForFunction(()=>document.querySelector('#stuTable').textContent.includes('架空ブラウザ検証'));
+  await page.fill('#stuSearch','存在しない名前');assert.ok((await page.locator('#stuTable').textContent()).includes('該当する生徒がいません'));await page.fill('#stuSearch','');
+  await page.locator('#stuTable .stuLink').first().click();
+  await page.waitForFunction(()=>!document.querySelector('#detail').hidden&&document.querySelector('#view').hidden);
+  assert.ok((await page.locator('#dName').textContent()).includes('架空ブラウザ検証'));assert.match(await page.locator('#dRecords').textContent(),/英単語|方程式/);assert.ok((await page.locator('#dSubjects').textContent()).includes('分'));
+  await page.emulateMedia({media:'print'});assert.equal(await page.evaluate(()=>getComputedStyle(document.querySelector('#view')).display),'none');assert.ok(await page.locator('#dName').isVisible());assert.equal(await page.locator('.top').first().isVisible(),false);await page.screenshot({path:new URL('student-report-print.png',output).pathname,fullPage:true,animations:'disabled'});await page.emulateMedia({media:'screen'});
+  await page.click('#stuBack');await page.waitForFunction(()=>document.querySelector('#detail').hidden&&!document.querySelector('#view').hidden);
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:new URL('dashboard-desktop.png',output).pathname,fullPage:true,animations:'disabled'});
   await page.goto(origin+'/dashboard?classroom='+f.b);await page.waitForFunction(()=>document.querySelector('#status').classList.contains('error'));
   assert.equal(await page.locator('#view').isVisible(),false);assert.doesNotMatch(await page.locator('#cards').textContent(),/人/);
