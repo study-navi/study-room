@@ -35,7 +35,7 @@ export class ClassroomRegistration {
       if(job.status==='ready')return this.#result(job);
       if(['creating','uncertain'].includes(job.status)){
         const matches=await workspace.findRegistration(job);
-        if(matches.length!==1)fail('RECONCILE','保存先の作成結果を確認中です。新しく作成し直さず、管理者へお問い合わせください。');
+        if(matches.length!==1)fail('RECONCILE','保存先を作成できたか確認中です。作り直さずに、運営窓口までお問い合わせください。');
         this.#verifyFile(matches[0],job);job={...job,fileId:matches[0].id,spreadsheetUrl:matches[0].webViewLink,status:'initializing'};await this.repository.putOperation(job);
       }
       if(job.status==='new'){

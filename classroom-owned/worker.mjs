@@ -31,6 +31,6 @@ export default {
     if(!env.SR_ORIGIN||!env.GOOGLE_CLIENT_ID||!env.GOOGLE_CLIENT_SECRET||!env.SR_KEY)return new Response('Study Room の公開設定が完了していません。',{status:503,headers:{'Cache-Control':'no-store','Content-Type':'text/plain;charset=utf-8'}});
     if(env.SR_MODE==='production'&&(!env.SR_CONTACT_EMAIL||!env.SR_ORIGIN.startsWith('https://')))return new Response('Study Room の運営窓口と公開URLの設定が必要です。',{status:503,headers:{'Cache-Control':'no-store','Content-Type':'text/plain;charset=utf-8'}});
     try{return await env.REGISTRY.get(env.REGISTRY.idFromName('study-room-registry-v1')).fetch(request);}
-    catch{return new Response('処理を完了できませんでした。入力を保持して再試行してください。',{status:503,headers:{'Cache-Control':'no-store','Content-Type':'text/plain;charset=utf-8'}});}
+    catch{return new Response('処理を完了できませんでした。入力内容は残っています。もう一度お試しください。',{status:503,headers:{'Cache-Control':'no-store','Content-Type':'text/plain;charset=utf-8'}});}
   }
 };

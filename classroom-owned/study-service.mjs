@@ -21,7 +21,7 @@ export class StudyService {
   async run(classroomId,q,session){
     if(!q||!q.data||typeof q.data!=='object'||Array.isArray(q.data)||typeof q.action!=='string')fail('INVALID','リクエストを確認してください。');
     const classroom=this.repository.getClassroom(classroomId);if(!classroom)fail('SCHOOL','教室が見つかりません。先生のURLを確認してください。');
-    if(q.data.schoolId&&q.data.schoolId!==classroom.id)fail('FORBIDDEN','別の教室へアクセスできません。');
+    if(q.data.schoolId&&q.data.schoolId!==classroom.id)fail('FORBIDDEN','他の教室にはアクセスできません。');
     const teacher=!!q.data.session||teacherActions.has(q.action);
     if(teacher&&session?.subject!==classroom.ownerSubject)fail('FORBIDDEN','この教室の管理権限がありません。');
     if(!publicActions.has(q.action)&&!teacherActions.has(q.action)&&q.action!=='schools')fail('FORBIDDEN','この操作は利用できません。');
@@ -40,7 +40,7 @@ export class StudyService {
         if(!committed){
           // Sheets has a 180s processing limit. Do not replay a timed-out write while
           // its first request may still commit later and overwrite newer changes.
-          if(Date.now()<pending.retryAfter)fail('BUSY','前回の保存結果を確認中です。入力は保持しています。3分ほど待ってから再送してください。');
+          if(Date.now()<pending.retryAfter)fail('BUSY','前回の保存結果を確認中です。入力内容は残っています。3分ほど待ってから、もう一度送信してください。');
           if(!pending.before||!pending.data.every((cell,i)=>matches(cell,pending.before[i])))fail('CONFLICT','保存先が別の操作で変更されています。上書きせず停止しました。先生に確認してください。');
           await workspace.writeCells(pending.fileId,pending.data);
         }
@@ -72,7 +72,7 @@ export class StudyService {
         if(!backup){
           await this.repository.putOperation({ownerSubject:classroom.ownerSubject,requestId:key,status:'creating'});
           try{const copy=await workspace.backup(classroom.fileId,`Study Room ${classroom.name} バックアップ ${day}`,day);await this.repository.putOperation({ownerSubject:classroom.ownerSubject,requestId:key,status:'ready',fileId:copy.id});}
-          catch{fail('BACKUP','バックアップの作成結果を確認できません。先生に確認してください。記録は端末に保持しています。');}
+          catch{fail('BACKUP','バックアップの作成結果を確認できません。先生に確認してください。記録は端末に残っています。');}
         }else if(backup.status!=='ready'){
           const copies=await workspace.findBackup(classroom.fileId,day);
           if(copies.length!==1)fail('BACKUP','バックアップの確認が必要です。先生に連絡してください。');

@@ -53,6 +53,24 @@ html=html.replaceAll("location.hostname==='study-navi.github.io' && 'serviceWork
 // Never silently use a restored marker as authentication.
 html=html.replace("sessionStorage.getItem(TEACHER_SESSION_KEY)","''");
 html=html.replace("panel && !panel.classList.contains('hide')","panel && document.visibilityState==='visible' && !panel.classList.contains('hide')").replace('}, 15000);','}, 60000);');
+// 画面と応答メッセージの日本語表記をそろえる（元のアプリのソースは変更しない）。
+const wording=[
+['ログ確認へ進むできません：','ログ確認へ進めません：'],
+['現在時刻で入室を押すと計測します','「入室」を押すと、計測を始めます'],
+['>自習室を利用する<','>続けて自習する<'],
+['ただしログ確認への仮反映に失敗しました。退室後の送信はできます。','ただし、ログ確認にはまだ表示されていません。退室後に送信できます。'],
+['ただし通信できないため、ログ確認への仮反映はできませんでした。','ただし通信できなかったため、ログ確認にはまだ表示されていません。'],
+['原因不明','原因は不明です'],
+['引継ぎ','引き継ぎ'],
+['算出不可（在籍生徒数未設定）','計算できません（在籍生徒数が未設定です）'],
+['教室URL・QR・バックアップ','教室URL・QRコード・バックアップ'],
+['が不正です。','が正しくありません。'],
+['ログイン期限が切れました。再ログインしてください。','ログインの有効期限が切れました。もう一度ログインしてください。'],
+['他の操作で更新されています。再読み込みしてください。','ほかの操作で更新されました。画面を再読み込みしてください。'],
+['選択した終了日を基準に直近28日と前の28日を比較。前期間2日以上かつ利用日数半分以下、または28日以上利用なし。利用歴のない在籍生徒は判定対象外です。','選択した終了日を基準に、直近28日とその前の28日を比べます。前の28日に2日以上利用があり、利用日数が半分以下に減った生徒、または28日以上利用がない生徒を表示します。利用歴のない在籍生徒は対象外です。'],
+];
+const polish=text=>wording.reduce((t,[a,b])=>t.replaceAll(a,b),text);
+html=polish(html);
 mkdirSync(out,{recursive:true});writeFileSync(new URL('study.html',out),html);
 for(const [,js] of html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))new Script(js);
 const domainSource='export function dispatch(request,hooks){\n'+readFileSync(new URL('multi-classroom/Core.gs',root),'utf8').replace("if(typeof module!=='undefined') module.exports=SR;",'')+'\n'+readFileSync(new URL('multi-classroom/Code.gs',root),'utf8')+`\n
@@ -60,7 +78,7 @@ srAll_=hooks.all;srSave_=hooks.save;srAdmin_=hooks.admin;srHash_=hooks.hash;srTo
 srNow_=()=>new Date().toISOString();srToday_=hooks.today;
 const Utilities={formatDate:hooks.formatDate};
 return srDispatch_(request);\n}\n`;
-writeFileSync(new URL('domain-engine.mjs',out),domainSource);
+writeFileSync(new URL('domain-engine.mjs',out),polish(domainSource));
 writeFileSync(new URL('portal.html',out),readFileSync(new URL('./portal.html',import.meta.url)));
 writeFileSync(new URL('privacy.html',out),readFileSync(new URL('./privacy.html',import.meta.url)));
 writeFileSync(new URL('dashboard.html',out),readFileSync(new URL('./dashboard.html',import.meta.url)));

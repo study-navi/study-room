@@ -15,7 +15,7 @@ export class GoogleWorkspace {
     catch{throw new RegistrationError('GOOGLE_UNAVAILABLE','Googleとの通信を確認できません。しばらくしてから再試行してください。');}
     if(!response.ok){
       const code=response.status===401?'REAUTHORIZE':response.status===403?'PERMISSION':response.status===429?'RATE':'GOOGLE_UNAVAILABLE';
-      throw new RegistrationError(code,response.status===401?'Googleとの接続が切れました。再ログインしてください。':response.status===429?'Googleの利用上限に達しました。1分ほど待って同じ操作を再送してください。入力は保持しています。':'Googleの保存先を利用できません。権限と接続状況を確認してください。');
+      throw new RegistrationError(code,response.status===401?'Googleとの接続が切れました。再ログインしてください。':response.status===429?'Googleの利用上限に達しました。1分ほど待ってから、もう一度お試しください。入力内容は残っています。':'Googleの保存先を利用できません。権限と接続状況を確認してください。');
     }
     try{return await response.json();}catch{throw new RegistrationError('GOOGLE_UNAVAILABLE','Googleの応答を確認できません。');}
   }

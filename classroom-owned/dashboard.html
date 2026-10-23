@@ -35,7 +35,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:6px 8px;b
 </div>
 <section id="students"><h2>生徒別の集計</h2><p class="note">選択した期間の、送信済みの記録を生徒ごとにまとめています。名前を押すと、その生徒のレポート（印刷できます）が開きます。</p><div class="tools noprint"><input class="search" id="stuSearch" type="search" placeholder="名前で絞り込む" aria-label="名前で絞り込む"><button class="btn light" id="stuCsv" type="button">この表をCSVで保存</button></div><div id="stuTable"></div></section>
 <section><h2>最近の振り返り</h2><div id="recent"></div></section>
-<p class="note">利用人数は、生徒IDの重複を除いた送信済みの記録から数えています。別の端末や利用者の切り替えで生徒IDが分かれている場合は、管理画面の「生徒の履歴引継ぎ・重複確認」で統合してください。名前だけで自動的に統合することはありません。</p>
+<p class="note">利用人数は、生徒IDの重複を除いた送信済みの記録から数えています。別の端末や利用者の切り替えで生徒IDが分かれている場合は、管理画面の「生徒の履歴引き継ぎ・重複確認」で統合してください。名前だけで自動的に統合することはありません。</p>
 </div><div id="detail" class="report" hidden><div class="top noprint"><div class="tools"><button class="btn light" id="stuBack" type="button">← 生徒別の一覧へ戻る</button><button class="btn" id="stuPrint" type="button">この生徒のレポートを印刷</button></div></div>
 <section><h1 id="dName"></h1><div class="note" id="dSub"></div><div class="cards" id="dCards" style="margin-top:10px"></div></section>
 <section><h2>学習時間の推移</h2><div class="bars" id="dBars"></div><div class="axis"><span id="dAxisL"></span><span id="dAxisR"></span></div></section>
@@ -89,7 +89,7 @@ function drawChart(records,from,to){
   for(const k of keys){const v=buckets.get(k),b=el('div');b.style.height=Math.max(v?3:2,v/max*100)+'%';if(!v)b.className='zero';b.title=(weekly?md(k)+'の週 ':md(k)+' ')+fmtMin(v);$('bars').append(b);}
   $('axisL').textContent=keys.length?md(keys[0]):'';$('axisR').textContent=keys.length?md(keys[keys.length-1]):'';
   $('chartTitle').textContent=weekly?'学習時間の推移（週ごと）':'学習時間の推移（日ごと）';
-  $('chartNote').textContent=done.length?'棒にカーソルを合わせる（スマホは長押し）と、その日の合計時間が出ます。最大は '+fmtMin(max)+' です。':'この期間の送信済みの記録はまだありません。';
+  $('chartNote').textContent=done.length?'棒にカーソルを合わせる（スマホは長押し）と、その日の合計時間が表示されます。最大は '+fmtMin(max)+' です。':'この期間の送信済みの記録はまだありません。';
 }
 function render(d,active,records,from,to){
   const e=d.enrolled;

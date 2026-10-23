@@ -112,6 +112,6 @@ export function createHandler({getAsset,contactEmail,staging=true,origin,reposit
         const bytes=await getAsset(url.pathname.slice(1));res.writeHead(200,{'Content-Type':url.pathname.endsWith('.js')?'text/javascript':'image/png'});res.end(bytes);return;
       }
       error('NOT_FOUND','ページが見つかりません。');
-    }catch(e){const safe=publicCodes.has(e.code),status=!safe?503:['AUTH','REAUTHORIZE'].includes(e.code)?401:e.code==='FORBIDDEN'?403:e.code==='NOT_FOUND'?404:e.code==='RATE'?429:400;json(res,{result:'error',code:safe?e.code:'SERVER',message:safe?e.message:'処理を完了できませんでした。入力を保持して再試行してください。'},status);}
+    }catch(e){const safe=publicCodes.has(e.code),status=!safe?503:['AUTH','REAUTHORIZE'].includes(e.code)?401:e.code==='FORBIDDEN'?403:e.code==='NOT_FOUND'?404:e.code==='RATE'?429:400;json(res,{result:'error',code:safe?e.code:'SERVER',message:safe?e.message:'処理を完了できませんでした。入力内容は残っています。もう一度お試しください。'},status);}
   };
 }
